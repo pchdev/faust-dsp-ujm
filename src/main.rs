@@ -16,19 +16,8 @@ use ratatui::{
     DefaultTerminal, Frame
 };
 
-use crate::screens::{title::Title, toc::TableOfContents};
+use crate::screens::{title::Title, toc::TableOfContents, Screen};
 
-/// Got from: https://patorjk.com/software/taag/
-/// Font is 'ANSI Shadow'
-const FAUST: &'static str = r"
-███████╗ █████╗ ██╗   ██╗███████╗████████╗
-██╔════╝██╔══██╗██║   ██║██╔════╝╚══██╔══╝
-█████╗  ███████║██║   ██║███████╗   ██║   
-██╔══╝  ██╔══██║██║   ██║╚════██║   ██║   
-██║     ██║  ██║╚██████╔╝███████║   ██║   
-╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   
-                                          
-";
 
 const HEADER: &'static str = r"
  MASTER CCNT(3), DIGICREA(1), Université Jean Monnet, Saint-Etienne, Oct-Nov 2025 
@@ -48,7 +37,7 @@ fn main() -> io::Result<()> {
 #[derive(Default)]
 pub struct App {
       index: usize,
-    screens: Vec<Box<dyn WidgetRef>>,
+    screens: Vec<Box<dyn Screen>>,
        exit: bool,
 }
 

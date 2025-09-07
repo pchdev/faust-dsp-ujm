@@ -6,6 +6,8 @@ use ratatui::{
     }, widgets::{Paragraph, Widget, WidgetRef}
 };
 
+use crate::screens::Screen;
+
 
 const TOC: &'static str = r"
 
@@ -18,11 +20,8 @@ const TOC: &'static str = r"
 const TOC_PH: &'static str = r"
 
 1. Agenda
-
 2. Sound
-
 3. Signal
-
 4. etc. 
 ";
 
@@ -55,5 +54,13 @@ impl WidgetRef for TableOfContents {
         ;
         subtitle.render(lv[0], buf);
         txt.render(lh[1], buf);
+    }
+}
+
+impl Screen for TableOfContents {
+    fn on_key_event(&mut self, k: crossterm::event::KeyEvent) {
+        match k.code {
+            _ => ()
+        }       
     }
 }

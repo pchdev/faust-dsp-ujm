@@ -1,4 +1,5 @@
 
+use crossterm::event::KeyCode;
 use ratatui::{
     buffer::Buffer, layout::{
         Constraint, Flex, Layout, Rect
@@ -6,6 +7,8 @@ use ratatui::{
         Line, Text
     }, widgets::{Widget, WidgetRef}
 };
+
+use crate::screens::Screen;
 
 /// Got from: https://patorjk.com/software/taag/
 /// Font is 'ANSI Shadow'
@@ -17,14 +20,6 @@ const FAUST: &'static str = r"
 ██║     ██║  ██║╚██████╔╝███████║   ██║   
 ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   
                                           
-";
-
-const HEADER: &'static str = r"
- MASTER CCNT(3), DIGICREA(1), Université Jean Monnet, Saint-Etienne, Oct-Nov 2025 
-";
-
-const FOOTER: &'static str = r"
- Pierre Cochard - Emeraude Team - Inria, INSA-Lyon, CITI Laboratory 
 ";
 
 #[derive(Debug, Default)]
@@ -52,5 +47,19 @@ impl WidgetRef for Title {
             .areas(lv)
         ;
         txt.render(lh, buf);
+    }
+}
+
+impl Screen for Title {
+    fn on_key_event(&mut self, k: crossterm::event::KeyEvent) {
+        match k.code {
+            KeyCode::Down => {
+
+            }
+            KeyCode::Enter => {
+                
+            } 
+            _ => ()
+        }
     }
 }
