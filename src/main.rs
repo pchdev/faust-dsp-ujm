@@ -1,3 +1,5 @@
+mod screens;
+
 use std::{io, ops::Index};
 use color_eyre::owo_colors::OwoColorize;
 use crossterm::event::{
@@ -10,9 +12,11 @@ use ratatui::{
     style::{Modifier, Style, Stylize},
     symbols::border,
     text::{Line, Span, Text},
-    widgets::{Block, Padding, Paragraph, Widget},
+    widgets::{Block, Padding, Paragraph, Table, Widget, WidgetRef},
     DefaultTerminal, Frame
 };
+
+use crate::screens::{title::Title, toc::TableOfContents};
 
 /// Got from: https://patorjk.com/software/taag/
 /// Font is 'ANSI Shadow'
@@ -36,7 +40,7 @@ const FOOTER: &'static str = r"
 
 fn main() -> io::Result<()> {
     let mut term = ratatui::init();
-    let res = App::default().run(&mut term);
+    let res = App::new().run(&mut term);
     ratatui::restore();
     return res;
 }
@@ -44,47 +48,18 @@ fn main() -> io::Result<()> {
 #[derive(Default)]
 pub struct App {
       index: usize,
-    screens: Vec<Box<dyn Widget>>,
+    screens: Vec<Box<dyn WidgetRef>>,
        exit: bool,
-}
-
-#[derive(Debug, Default)]
-pub struct ScreenTitle {
-    dummy: u32
-}
-
-impl Widget for ScreenTitle {
-    fn render(self, area: Rect, buf: &mut Buffer)
-    where 
-        Self: Sized 
-    {
-        let mut txt = Text::from(FAUST);
-        txt.push_line("");
-        txt.push_line(Line::from(
-            "Digital Audio Processing and Synthesis")
-            .bold()
-        );
-        let [lv] = Layout::vertical([
-                Constraint::Length(txt.height() as u16),
-            ])
-            .flex(Flex::Center)
-            .areas(area)
-        ;
-        let [lh] = Layout::horizontal([
-                Constraint::Length(txt.width() as u16)
-            ])
-            .flex(Flex::Center)
-            .areas(lv)
-        ;
-        txt.render(lh, buf);
-    }
 }
 
 impl App {
     pub fn new() -> Self {
         let mut app = App::default();
         app.screens.push(
-            Box::new(ScreenTitle::default()),
+            Box::new(Title::default()),
+        );
+        app.screens.push(
+            Box::new(TableOfContents::default())
         );
         app
     }
@@ -111,8 +86,16 @@ impl App {
             KeyCode::Down  |
             KeyCode::Enter => {
                 // Next item:
-
-
+                if self.index < self.screens.len() -1 {
+                    self.index += 1;
+                } 
+            }
+            KeyCode::Left |
+            KeyCode::Up |
+            KeyCode::Backspace => {
+                if self.index > 0 {
+                    self.index -= 1;
+                }
             }
             KeyCode::Char('q') |
             KeyCode::Esc => {
@@ -140,8 +123,9 @@ impl App {
         // Get the inner area of the block, 
         // and put a vertical layout into it:
         let inner = block.inner(frame.area());
-        let widget = self.screens[self.index];
+        let widget = &self.screens[self.index];
         frame.render_widget(&block, frame.area());
-        widget.render(inner, frame.buffer_mut());
+        widget.render_ref(inner, frame.buffer_mut());
+        // widget.render(inner, frame.buffer_mut());
     }
 }
