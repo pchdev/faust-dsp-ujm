@@ -2,10 +2,10 @@ use crossterm::event::KeyEvent;
 use ratatui::widgets::WidgetRef;
 
 
-pub mod calendar;
+pub mod agenda;
 pub mod signal;
 pub mod sound;
-pub mod title;
+pub mod splash;
 pub mod toc;
 
 pub(crate) trait Screen : WidgetRef {

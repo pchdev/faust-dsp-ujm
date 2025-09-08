@@ -1,12 +1,20 @@
 
-use crossterm::event::KeyCode;
+use crossterm::event::{KeyCode, KeyEvent};
 use ratatui::{
     buffer::Buffer, layout::{
-        Constraint, Flex, Layout, Rect
+        Constraint, 
+        Flex, 
+        Layout, 
+        Rect
     }, style::Stylize, text::{
         Line, Text
-    }, widgets::{Widget, WidgetRef}
+    }, 
+    widgets::{
+        Widget, 
+        WidgetRef
+    }
 };
+use ratatui_macros::{horizontal, vertical, line};
 
 use crate::screens::Screen;
 
@@ -23,26 +31,24 @@ const FAUST: &'static str = r"
 ";
 
 #[derive(Debug, Default)]
-pub struct Title;
+pub struct Splash {
+    frame: usize
+}
 
-impl WidgetRef for Title {
+impl WidgetRef for Splash {
     fn render_ref(&self, area: Rect, buf: &mut Buffer)
     {
         let mut txt = Text::from(FAUST);
         txt.push_line("");
-        txt.push_line(Line::from(
-            "Digital Audio Processing and Synthesis")
+        txt.push_line(
+            line!["Digital Audio Processing and Synthesis"]
             .bold()
         );
-        let [lv] = Layout::vertical([
-                Constraint::Length(txt.height() as u16),
-            ])
+        let [lv] = vertical![==txt.height() as u16]
             .flex(Flex::Center)
             .areas(area)
         ;
-        let [lh] = Layout::horizontal([
-                Constraint::Length(txt.width() as u16)
-            ])
+        let [lh] = horizontal![==txt.width() as u16]
             .flex(Flex::Center)
             .areas(lv)
         ;
@@ -50,8 +56,8 @@ impl WidgetRef for Title {
     }
 }
 
-impl Screen for Title {
-    fn on_key_event(&mut self, k: crossterm::event::KeyEvent) {
+impl Screen for Splash {
+    fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::Down => {
 
