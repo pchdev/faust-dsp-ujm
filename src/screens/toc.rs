@@ -1,15 +1,14 @@
-use crossterm::event::KeyEvent;
+use crossterm::event::{KeyCode, KeyEvent};
 use ratatui::{
     buffer::Buffer, layout::{
         Constraint, Flex, Layout, Rect
     }, style::{palette::tailwind::SLATE, Style, Stylize}, symbols, text::{
         Line, Text
-    }, widgets::{Block, Borders, HighlightSpacing, List, ListItem, Paragraph, Widget, WidgetRef}
+    }, widgets::{Block, Borders, HighlightSpacing, List, ListItem, ListState, Paragraph, StatefulWidget, StatefulWidgetRef, Table, Widget, WidgetRef}
 };
 use ratatui_macros::{horizontal, vertical};
 
 use crate::screens::Screen;
-
 
 const TOC: &'static str = r"
 
@@ -17,62 +16,65 @@ const TOC: &'static str = r"
 ╺┳╸┏━┓┏┓ ╻  ┏━╸   ┏━┓┏━╸   ┏━╸┏━┓┏┓╻╺┳╸┏━╸┏┓╻╺┳╸┏━┓
  ┃ ┣━┫┣┻┓┃  ┣╸    ┃ ┃┣╸    ┃  ┃ ┃┃┗┫ ┃ ┣╸ ┃┗┫ ┃ ┗━┓
  ╹ ╹ ╹┗━┛┗━╸┗━╸   ┗━┛╹     ┗━╸┗━┛╹ ╹ ╹ ┗━╸╹ ╹ ╹ ┗━┛
+ __________________________________________________
 ";
 
-const TOC_PH: &'static str = r"
-
-1. AGENDA
-2. SOUND
-3. SIGNAL
-4. etc. 
-";
 
 #[derive(Debug, Default)]
-pub struct TableOfContents;
+pub struct TableOfContents {
+    state: ListState
+}
 
 impl WidgetRef for TableOfContents {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
-        let lv = vertical![==25%, ==75%]
+        let mut state = self.state.clone();
+        let lv = vertical![==30%, ==70%]
             .flex(Flex::Center)
             .split(area)
         ;
-        let lh = horizontal![==25%, ==75%]
+        let lh = horizontal![==33%, ==33%, ==33%]
             .flex(Flex::Center)
             .split(lv[1])
         ;
-        let mut subtitle = Paragraph::new(TOC)
+        let subtitle = Paragraph::new(TOC)
             .centered()
         ;
-        let mut items = vec![
-            ListItem::new("Agenda"),
-            ListItem::new("Sound"),
-            ListItem::new("Signal"),
+        let items = vec![
+            ListItem::new("1. Agenda Overview"),
+            ListItem::new("2. Sound"),
+            ListItem::new("3. Audio Signal"),
+            ListItem::new("4. From Analog to Digital"),
+            ListItem::new("5. Sampling"),
+            ListItem::new("6. Quantization"),
+            ListItem::new("7. Digital Audio Formats"),
+            ListItem::new("8. Digital Audio Processing and Synthesis"),
+            ListItem::new("9. Faust"),            
         ];
-        let mut list = List::new(items)
-            .block(
-                Block::new()
-                    .title(Line::raw("Test").centered())
-                    .borders(Borders::TOP)
-                    .border_set(symbols::border::EMPTY)
-                    .border_style(Style::new())
-                    // .bg(SLATE.c950)
-            )
+        let list = List::new(items)
             // .highlight_style()
-            .highlight_symbol(">")
+            .highlight_symbol("> ")
+            .highlight_style(Style::new()
+                .white()
+                .on_dark_gray()
+                .bold()
+            )
             .highlight_spacing(HighlightSpacing::Always)
         ;
-        let mut txt = Paragraph::new(TOC_PH)
-            // .centered()
-            .bold()
-        ;
         subtitle.render(lv[0], buf);
-        list.render(lh[1], buf);
+        StatefulWidget::render(list, lh[1], buf, &mut state);
     }
 }
 
 impl Screen for TableOfContents {
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
+            KeyCode::Down | KeyCode::Right  => {
+                self.state.select_next();
+            }
+            KeyCode::Up | KeyCode::Left => {
+                self.state.select_previous();
+
+            }
             _ => ()
         }       
     }

@@ -21,8 +21,6 @@ use crate::screens::{
     agenda::Agenda, splash::{Splash}, toc::TableOfContents, Screen
 };
 
-
-
 fn main() -> io::Result<()> {
     let mut term = ratatui::init();
     let res = App::new().run(&mut term);
@@ -66,46 +64,41 @@ impl App {
     }
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
-            KeyCode::Right | 
-            KeyCode::Down  |
-            KeyCode::Enter => {
-                // Next item:
+            // Next screen:
+            KeyCode::Char(' ') => {
                 if self.index < self.screens.len() -1 {
                    self.index += 1;
                 } 
             }
-            KeyCode::Left |
-            KeyCode::Up |
+            // Previous screen:
             KeyCode::Backspace => {
                 if self.index > 0 {
                    self.index -= 1;
                 }
             }
-            KeyCode::Char('q') |
+            // Quit app:
             KeyCode::Esc => {
                 self.exit();
             }
-            _ => ()
+            // Otherwise, dispatch to current screen:
+            _ => {
+                let screen = &mut self.screens[self.index];
+                screen.on_key_event(k);
+            }
         }
     }
-    fn exit(&mut self) {
-        self.exit = true;
+    fn animate(&self, frame: &mut Frame) {
+        // Let's have a 'dissolve', and a fade-in/fade-out animation
     }
-//     const HEADER: &'static str = r"
-//  MASTER CCNT(3), DIGICREA(1), Université Jean Monnet, Saint-Etienne, Oct-Nov 2025 
-// ";
 
-// const FOOTER: &'static str = r"
-//  Pierre Cochard - Emeraude Team - Inria, INSA-Lyon, CITI Laboratory 
-// ";
     fn draw(&self, frame: &mut Frame) {
         // The main frame block:
         let block = Block::bordered()
             .title(
                 line![
-                    " Master ", "CCNT".bold(),"(3), ",
+                    " Master CCNT".bold(),"(3), ",
                     "DIGICREA".bold(), "(1), ",
-                    "Université Jean Monnet".italic(), ", ",
+                    "UJM".italic(), " - ",
                     "Saint-Etienne".italic(), ", ",
                     "Oct-Nov 2025 ".italic()
                 ]
@@ -114,44 +107,34 @@ impl App {
             .title_bottom(
                 line![
                     " Pierre Cochard - ",
-                    "Emeraude team".bold(), " - ",
+                    "Emeraude".bold(), " - ",
                     "Inria".italic(), ", ",
                     "INSA-Lyon".italic(), ", ",
-                    "CITI Laboratory ".italic()
+                    "CITI Lab ".italic()
                 ]
-                .centered()
+                .left_aligned()
             )
-            .border_set(border::DOUBLE)
+            .title_bottom(
+                line![
+                    "[esc] Quit ", 
+                    "[bsp] Prev ", 
+                    "[spc] Next "
+                ]
+                .white().on_black()
+                .right_aligned()
+            )
+            .border_set(border::ROUNDED)
             .black()
             .on_white()
         ;
         // Get the block's inner area:
         let inner = block.inner(frame.area());
-        // Add a vertical layout, leave a small space for navigating slides:
-        let lv = vertical![==90%, ==10%]
-            .flex(Flex::Center)
-            .split(inner)
-        ;
-        let widget = &self.screens[self.index];
+        let screen = &self.screens[self.index];
         frame.render_widget(&block, frame.area());
-        widget.render_ref(lv[0], frame.buffer_mut());
-        
-        let lh = horizontal![==33%, ==33%, ==33%]
-            .split(lv[1])
-        ;
-        let p = Text::raw("← Prev")
-            .white().on_black()
-            // .centered()
-        ;
-
-        let [lv2] = vertical![==p.height() as u16]
-            .flex(Flex::Center)
-            .areas(lh[1]);     
-        let [lh2] = horizontal![==p.width() as u16]
-            .flex(Flex::Center)
-            .areas(lv2);
-        // let text = Text::raw("← Prev").centered()
-        p.render(lh2, frame.buffer_mut());
-        // widget.render(inner, frame.buffer_mut());
+        screen.render_ref(inner, frame.buffer_mut());
+    
+    }
+    fn exit(&mut self) {
+        self.exit = true;
     }
 }

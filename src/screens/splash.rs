@@ -16,19 +16,21 @@ use ratatui::{
 };
 use ratatui_macros::{horizontal, vertical, line};
 
+use indoc::indoc;
+
 use crate::screens::Screen;
 
 /// Got from: https://patorjk.com/software/taag/
 /// Font is 'ANSI Shadow'
-const FAUST: &'static str = r"
-███████╗ █████╗ ██╗   ██╗███████╗████████╗
-██╔════╝██╔══██╗██║   ██║██╔════╝╚══██╔══╝
-█████╗  ███████║██║   ██║███████╗   ██║   
-██╔══╝  ██╔══██║██║   ██║╚════██║   ██║   
-██║     ██║  ██║╚██████╔╝███████║   ██║   
-╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   
-                                          
-";
+const FAUST: &'static str = indoc!{"
+    ███████╗ █████╗ ██╗   ██╗███████╗████████╗
+    ██╔════╝██╔══██╗██║   ██║██╔════╝╚══██╔══╝
+    █████╗  ███████║██║   ██║███████╗   ██║   
+    ██╔══╝  ██╔══██║██║   ██║╚════██║   ██║   
+    ██║     ██║  ██║╚██████╔╝███████║   ██║   
+    ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   
+
+"};
 
 #[derive(Debug, Default)]
 pub struct Splash {
@@ -41,7 +43,7 @@ impl WidgetRef for Splash {
         let mut txt = Text::from(FAUST);
         txt.push_line("");
         txt.push_line(
-            line!["Digital Audio Processing and Synthesis"]
+            line![" Digital Audio Processing and Synthesis"]
             .bold()
         );
         let [lv] = vertical![==txt.height() as u16]
