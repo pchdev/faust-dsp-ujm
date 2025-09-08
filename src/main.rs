@@ -18,7 +18,7 @@ use ratatui::{
 use ratatui_macros::{line, horizontal, vertical};
 
 use crate::screens::{
-    agenda::Agenda, splash::{Splash}, toc::TableOfContents, Screen
+    agenda::Agenda, sound::Sound, splash::Splash, toc::TableOfContents, Screen
 };
 
 fn main() -> io::Result<()> {
@@ -42,6 +42,7 @@ impl App {
             Box::new(Splash::default()),
             Box::new(TableOfContents::default()),
             Box::new(Agenda::default()),
+            Box::new(Sound::default())
         ];
         app
     }
@@ -106,7 +107,7 @@ impl App {
             )
             .title_bottom(
                 line![
-                    " Pierre Cochard - ",
+                    " @pchdev - ",
                     "Emeraude".bold(), " - ",
                     "Inria".italic(), ", ",
                     "INSA-Lyon".italic(), ", ",

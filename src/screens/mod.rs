@@ -1,7 +1,7 @@
 use crossterm::event::KeyEvent;
 use ratatui::widgets::WidgetRef;
 
-
+pub mod myself;
 pub mod agenda;
 pub mod signal;
 pub mod sound;

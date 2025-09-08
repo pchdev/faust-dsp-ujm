@@ -5,14 +5,13 @@ Slides cours Faust
 ## 1. Splash screen
 
 - [ ] Ajouter animation fade in / fade out
-- [ ] Ajouter boutons pour passer à la slide suivante / précédente
-- [ ] Header + Footer: passer en span avec des couleurs et/ou du bold/italic
-
-
+- [ ] Ajouter animation "dissolve"
+- [x] Header + Footer: passer en span avec des couleurs et/ou du bold/italic
 
 ## 2. Table of Contents
 
-- [ ] Items plus gros, avec un menu pour les sélectionner
+- [x] Items plus gros, avec un menu pour les sélectionner
+- [ ] Eventuellement, ajouter un petit résumé pour chaque sous-partie
 
 
 
@@ -29,3 +28,4 @@ Slides cours Faust
   - [ ] Ripple
   - [ ] Particle displacement
   - [ ] Waveform (utiliser widget oscilloscope?)
+- [ ] Faire un petit moteur de son
