@@ -10,8 +10,7 @@ use ratatui::{
         Line, Text
     }, 
     widgets::{
-        Widget, 
-        WidgetRef
+        StatefulWidgetRef, Widget, WidgetRef
     }
 };
 use ratatui_macros::{horizontal, vertical, line};
@@ -33,13 +32,18 @@ const FAUST: &'static str = indoc!{"
 "};
 
 #[derive(Debug, Default)]
-pub struct Splash {
-    frame: usize
+pub struct Splash;
+
+enum State {
+    Start,
+    Dissolve(usize)
 }
 
-impl WidgetRef for Splash {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer)
-    {
+impl StatefulWidgetRef for Splash 
+{
+    type State = usize;
+    
+    fn render_ref(&self, area: Rect, buf: &mut Buffer, _: &mut usize) {
         let mut txt = Text::from(FAUST);
         txt.push_line("");
         txt.push_line(

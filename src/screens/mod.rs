@@ -1,5 +1,5 @@
 use crossterm::event::KeyEvent;
-use ratatui::widgets::WidgetRef;
+use ratatui::widgets::{StatefulWidgetRef, Widget, WidgetRef};
 
 pub mod myself;
 pub mod agenda;
@@ -8,6 +8,6 @@ pub mod sound;
 pub mod splash;
 pub mod toc;
 
-pub(crate) trait Screen : WidgetRef {
+pub(crate) trait Screen : StatefulWidgetRef {
     fn on_key_event(&mut self, k: KeyEvent);
 }

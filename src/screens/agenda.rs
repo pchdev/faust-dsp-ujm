@@ -10,7 +10,7 @@ use ratatui::{
         Line, Text
     }, 
     widgets::{
-        calendar::{CalendarEventStore, Monthly}, Block, Widget, WidgetRef
+        calendar::{CalendarEventStore, Monthly}, Block, StatefulWidgetRef, Widget, WidgetRef
     }
 };
 use time::OffsetDateTime;
@@ -18,11 +18,13 @@ use time::OffsetDateTime;
 use crate::screens::Screen;
 
 #[derive(Debug, Default)]
-pub struct Agenda {
-}
+pub struct Agenda;
 
-impl WidgetRef for Agenda {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {
+enum State {}
+
+impl StatefulWidgetRef for Agenda {
+    type State = usize;
+    fn render_ref(&self, area: Rect, buf: &mut Buffer, state: &mut usize) {
         let date = OffsetDateTime::now_utc().date();
         Monthly::new(date, CalendarEventStore::today(
                 Style::new().red().bold())

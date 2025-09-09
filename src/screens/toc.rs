@@ -1,8 +1,10 @@
+use std::usize;
+
 use crossterm::event::{KeyCode, KeyEvent};
 use ratatui::{
     buffer::Buffer, layout::{
-        Constraint, Flex, Layout, Rect
-    }, style::{palette::tailwind::SLATE, Style, Stylize}, symbols, text::{
+        Flex, Rect
+    }, style::{Style, Stylize}, text::{
         Line, Text
     }, widgets::{
         Block, Borders, 
@@ -10,7 +12,7 @@ use ratatui::{
         List, ListItem, ListState, 
         Paragraph, 
         StatefulWidget, StatefulWidgetRef, 
-        Table, Widget, WidgetRef
+        Widget, WidgetRef
     }
 };
 use ratatui_macros::{horizontal, vertical};
@@ -32,8 +34,11 @@ pub struct TableOfContents {
     state: ListState
 }
 
-impl WidgetRef for TableOfContents {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {
+impl StatefulWidgetRef for TableOfContents 
+{
+    type State = usize;
+
+    fn render_ref(&self, area: Rect, buf: &mut Buffer, state: &mut usize) {
         let mut state = self.state.clone();
         let lv = vertical![==30%, ==70%]
             .flex(Flex::Center)

@@ -1,4 +1,5 @@
 mod screens;
+mod widgets;
 
 use std::{io, ops::Index};
 use color_eyre::owo_colors::OwoColorize;
@@ -31,7 +32,7 @@ fn main() -> io::Result<()> {
 #[derive(Default)]
 pub struct App {
       index: usize,
-    screens: Vec<Box<dyn Screen>>,
+    screens: Vec<Box<dyn Screen<State = usize>>>,
        exit: bool,
 }
 
@@ -132,7 +133,7 @@ impl App {
         let inner = block.inner(frame.area());
         let screen = &self.screens[self.index];
         frame.render_widget(&block, frame.area());
-        screen.render_ref(inner, frame.buffer_mut());
+        screen.render_ref(inner, frame.buffer_mut(), &mut 0);
     
     }
     fn exit(&mut self) {

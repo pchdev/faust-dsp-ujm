@@ -1,43 +1,63 @@
 
+use crossterm::event::KeyEvent;
+use num_derive::FromPrimitive;
+use ratatui::{
+    buffer::Buffer, 
+    prelude::Rect, 
+    widgets::{
+        StatefulWidgetRef, 
+        WidgetRef
+    }
+};
 
+use crate::{
+    screens::Screen, 
+    widgets::ripple::{Ripple}
+};
 
-use ratatui::{buffer::Buffer, prelude::Rect, symbols, widgets::{canvas::{Canvas, Circle}, WidgetRef}};
-
-use crate::screens::Screen;
 
 #[derive(Debug, Default)]
-pub struct Sound;
+enum State {
+    #[default]
+    Start,
+    Ripple(Ripple),
+    Displacement,
+    Waveform
+}
 
-/* 
-◌
-◍
-●
-◯
-*/ 
+impl TryFrom<usize> for State {
+    type Error = ();
+    fn try_from(v: usize) -> Result<Self, Self::Error> {
+        match v {
+            0 => Ok(Self::Start),
+            1 => Ok(Self::Ripple(Ripple::default())),
+            2 => Ok(Self::Displacement),
+            3 => Ok(Self::Waveform),
+            _ => Err(())
+        }
+    }
+}
 
+#[derive(Debug, Default)]
+pub struct Sound {
+    state: State
+}
 
-impl WidgetRef for Sound {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {
-        let circle = Circle {
-            x: 250.0,
-            y: 250.0,
-            radius: 100.0,
-            color: ratatui::style::Color::Red
-        };
-        Canvas::default()
-            .marker(symbols::Marker::Dot)
-            .paint(|ctx| {
-                ctx.draw(&circle)
-            })
-            .x_bounds([00.0, 500.0 as f64])
-            .y_bounds([00.0, 500.0 as f64])
-            .render_ref(area, buf)
-        ;
+impl StatefulWidgetRef for Sound {
+    type State = usize;
+    fn render_ref(&self, area: Rect, buf: &mut Buffer, state: &mut usize) {        
+        match State::try_from(*state).unwrap() {
+            State::Ripple(f) => {
+                f.render_ref(area, buf, state);
+            }
+            _ => ()
+        }
+        *state += 1;
     }
 }
 
 impl Screen for Sound {
-    fn on_key_event(&mut self, k: crossterm::event::KeyEvent) {
+    fn on_key_event(&mut self, k: KeyEvent) {
         
     }
 }
