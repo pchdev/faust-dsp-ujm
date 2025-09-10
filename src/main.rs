@@ -1,25 +1,25 @@
 mod screens;
 mod widgets;
 
-use std::{io, ops::Index, time::{Duration, Instant}};
-use color_eyre::owo_colors::OwoColorize;
+use std::{io, time::{Duration, Instant}};
 use crossterm::{event::{
     self, Event, KeyCode, KeyEvent, KeyEventKind
 }};
 
 use ratatui::{
-    buffer::Buffer,
-    layout::{Constraint, Flex, Layout, Rect},
-    style::{Modifier, Style, Stylize},
+    style::Stylize,
     symbols::border,
-    text::{Line, Span, Text},
-    widgets::{block::Position, Block, Padding, Paragraph, Table, Widget, WidgetRef},
+    widgets::Block,
     DefaultTerminal, Frame
 };
-use ratatui_macros::{line, horizontal, vertical};
+use ratatui_macros::line;
 
 use crate::screens::{
-    agenda::Agenda, sound::Sound, splash::Splash, toc::TableOfContents, Screen
+    agenda::Agenda, 
+    sound::Sound, 
+    splash::Splash, 
+    toc::TableOfContents, 
+    Screen
 };
 
 fn main() -> io::Result<()> {
@@ -49,7 +49,7 @@ impl App {
     }
 
     pub fn run(&mut self, term: &mut DefaultTerminal) -> io::Result<()> {
-        let tick_rate = Duration::from_millis(16);
+        let tick_rate = Duration::from_millis(5);
         let mut last_tick = Instant::now();
         let mut tick_count = 0usize;
         while !self.exit {
@@ -140,8 +140,8 @@ impl App {
         let screen = &self.screens[self.index];
         frame.render_widget(&block, frame.area());
         screen.render_ref(inner, frame.buffer_mut());
-    
     }
+
     fn exit(&mut self) {
         self.exit = true;
     }

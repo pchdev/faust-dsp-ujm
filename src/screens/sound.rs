@@ -2,17 +2,24 @@
 use crossterm::event::{KeyCode, KeyEvent};
 use num_derive::FromPrimitive;
 use ratatui::{
-    buffer::Buffer, 
-    prelude::Rect, 
-    widgets::{
-        StatefulWidgetRef, Widget, WidgetRef
+    buffer::Buffer, layout::Flex, prelude::Rect, widgets::{
+        Paragraph, StatefulWidgetRef, Widget, WidgetRef
     }
 };
+use ratatui_macros::{horizontal, vertical};
 
 use crate::{
     screens::Screen, 
     widgets::ripple::{Ripple}
 };
+
+use indoc::indoc;
+
+const SOUND: &'static str = indoc!{"
+┏━┓┏━┓╻ ╻┏┓╻╺┳┓
+┗━┓┃ ┃┃ ┃┃┗┫ ┃┃
+┗━┛┗━┛┗━┛╹ ╹╺┻┛
+"};
 
 #[derive(Debug, Default)]
 enum State {
@@ -42,11 +49,21 @@ pub struct Sound {
 }
 
 impl WidgetRef for Sound {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {        
+    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
+        let [lhl, lhr] = horizontal![==50%, ==50%]
+            .flex(Flex::Center)
+            .areas(area);     
+        let lhlv = vertical![==5%, ==20%, ==75%]
+            .flex(Flex::Center)
+            .split(lhl)
+        ;
+        let title = Paragraph::new(SOUND)
+            .centered();
+        title.render(lhlv[1], buf);
         match &self.state {
             State::Ripple(r) => {
                 let mut running = true;
-                r.render_ref(area, buf, &mut running);
+                r.render_ref(lhr, buf, &mut running);
             }
             _ => ()
         }
@@ -57,7 +74,13 @@ impl Screen for Sound {
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::Enter => {
-                self.state = State::Ripple(Ripple::default());
+                self.state = State::Ripple(
+                    Ripple { 
+                        tick: 0,
+                        frequency: 1,
+                        amplitude: 200
+                    }
+                );
             }
             _ => ()
         }
@@ -65,7 +88,7 @@ impl Screen for Sound {
     fn on_tick(&mut self, t: usize) {
         match &mut self.state {
             State::Ripple(r) => {
-                r.tick = t;
+                r.on_tick(t);
             }
             _ => ()
         }

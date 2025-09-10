@@ -13,7 +13,19 @@ use ratatui::{
 
 #[derive(Debug, Default)]
 pub struct Ripple {
-    pub tick: usize
+    pub tick: usize,
+    pub frequency: usize,
+    pub amplitude: usize
+}
+
+impl Ripple {
+    pub(crate) fn on_tick(&mut self, tick: usize) {
+        // TODO: frequency
+        self.tick += 1;
+        if self.tick >= self.amplitude {
+           self.tick -= self.amplitude;
+        }
+    }
 }
 
 impl StatefulWidgetRef for Ripple {
@@ -35,6 +47,9 @@ impl StatefulWidgetRef for Ripple {
                     radius: self.tick as f64,
                     color: Color::Black
                 });
+                // TODO: other ripple circles
+                // + fade out as reaching max amplitude
+                // + sound?
             })            
             .x_bounds([00.0, 500.0 as f64])
             .y_bounds([00.0, 500.0 as f64])
