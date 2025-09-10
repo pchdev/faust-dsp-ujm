@@ -34,11 +34,8 @@ pub struct TableOfContents {
     state: ListState
 }
 
-impl StatefulWidgetRef for TableOfContents 
-{
-    type State = usize;
-
-    fn render_ref(&self, area: Rect, buf: &mut Buffer, state: &mut usize) {
+impl WidgetRef for TableOfContents {
+    fn render_ref(&self, area: Rect, buf: &mut Buffer) {
         let mut state = self.state.clone();
         let lv = vertical![==30%, ==70%]
             .flex(Flex::Center)

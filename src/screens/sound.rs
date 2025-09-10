@@ -1,12 +1,11 @@
 
-use crossterm::event::KeyEvent;
+use crossterm::event::{KeyCode, KeyEvent};
 use num_derive::FromPrimitive;
 use ratatui::{
     buffer::Buffer, 
     prelude::Rect, 
     widgets::{
-        StatefulWidgetRef, 
-        WidgetRef
+        StatefulWidgetRef, Widget, WidgetRef
     }
 };
 
@@ -14,7 +13,6 @@ use crate::{
     screens::Screen, 
     widgets::ripple::{Ripple}
 };
-
 
 #[derive(Debug, Default)]
 enum State {
@@ -43,21 +41,33 @@ pub struct Sound {
     state: State
 }
 
-impl StatefulWidgetRef for Sound {
-    type State = usize;
-    fn render_ref(&self, area: Rect, buf: &mut Buffer, state: &mut usize) {        
-        match State::try_from(*state).unwrap() {
-            State::Ripple(f) => {
-                f.render_ref(area, buf, state);
+impl WidgetRef for Sound {
+    fn render_ref(&self, area: Rect, buf: &mut Buffer) {        
+        match &self.state {
+            State::Ripple(r) => {
+                let mut running = true;
+                r.render_ref(area, buf, &mut running);
             }
             _ => ()
         }
-        *state += 1;
     }
 }
 
 impl Screen for Sound {
     fn on_key_event(&mut self, k: KeyEvent) {
-        
+        match k.code {
+            KeyCode::Enter => {
+                self.state = State::Ripple(Ripple::default());
+            }
+            _ => ()
+        }
+    }
+    fn on_tick(&mut self, t: usize) {
+        match &mut self.state {
+            State::Ripple(r) => {
+                r.tick = t;
+            }
+            _ => ()
+        }
     }
 }

@@ -39,11 +39,8 @@ enum State {
     Dissolve(usize)
 }
 
-impl StatefulWidgetRef for Splash 
-{
-    type State = usize;
-    
-    fn render_ref(&self, area: Rect, buf: &mut Buffer, _: &mut usize) {
+impl WidgetRef for Splash {   
+    fn render_ref(&self, area: Rect, buf: &mut Buffer) {
         let mut txt = Text::from(FAUST);
         txt.push_line("");
         txt.push_line(

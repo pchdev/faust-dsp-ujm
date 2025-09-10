@@ -8,6 +8,7 @@ pub mod sound;
 pub mod splash;
 pub mod toc;
 
-pub(crate) trait Screen : StatefulWidgetRef {
-    fn on_key_event(&mut self, k: KeyEvent);
+pub(crate) trait Screen : WidgetRef {
+    fn on_key_event(&mut self, k: KeyEvent) {}
+    fn on_tick(&mut self, t: usize) {}
 }

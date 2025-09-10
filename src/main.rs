@@ -1,7 +1,7 @@
 mod screens;
 mod widgets;
 
-use std::{io, ops::Index};
+use std::{io, ops::Index, time::{Duration, Instant}};
 use color_eyre::owo_colors::OwoColorize;
 use crossterm::{event::{
     self, Event, KeyCode, KeyEvent, KeyEventKind
@@ -32,7 +32,7 @@ fn main() -> io::Result<()> {
 #[derive(Default)]
 pub struct App {
       index: usize,
-    screens: Vec<Box<dyn Screen<State = usize>>>,
+    screens: Vec<Box<dyn Screen>>,
        exit: bool,
 }
 
@@ -49,19 +49,28 @@ impl App {
     }
 
     pub fn run(&mut self, term: &mut DefaultTerminal) -> io::Result<()> {
+        let tick_rate = Duration::from_millis(16);
+        let mut last_tick = Instant::now();
+        let mut tick_count = 0usize;
         while !self.exit {
             term.draw(|frame| self.draw(frame))?;
-            self.on_event()?;
-        }
-        Ok(())
-    }
-    fn on_event(&mut self) -> io::Result<()> {
-        match event::read()? {
-            Event::Key(k) if k.kind == KeyEventKind::Press => {
-                self.on_key_event(k)
+            let timeout = tick_rate.saturating_sub(last_tick.elapsed());
+            if event::poll(timeout)? {
+                match event::read()? {
+                    Event::Key(k) if k.kind == KeyEventKind::Press => {
+                        self.on_key_event(k)
+                    }
+                    _ => ()
+                }
             }
-            _ => ()
+            if last_tick.elapsed() >= tick_rate {
+                let screen = &mut self.screens[self.index];
+                screen.on_tick(tick_count);
+                last_tick = Instant::now();
+                tick_count += 1;
+            }
         }
+
         Ok(())
     }
     fn on_key_event(&mut self, k: KeyEvent) {
@@ -102,8 +111,7 @@ impl App {
                     "DIGICREA".bold(), "(1), ",
                     "UJM".italic(), " - ",
                     "Saint-Etienne".italic(), ", ",
-                    "Oct-Nov 2025 ".italic()
-                ]
+                    "Oct-Nov 2025 ".italic()]
                 .centered()
             )
             .title_bottom(
@@ -112,16 +120,14 @@ impl App {
                     "Emeraude".bold(), " - ",
                     "Inria".italic(), ", ",
                     "INSA-Lyon".italic(), ", ",
-                    "CITI Lab ".italic()
-                ]
+                    "CITI Lab ".italic()]
                 .left_aligned()
             )
             .title_bottom(
                 line![
                     "[esc] Quit ", 
                     "[bsp] Prev ", 
-                    "[spc] Next "
-                ]
+                    "[spc] Next "]
                 .white().on_black()
                 .right_aligned()
             )
@@ -133,7 +139,7 @@ impl App {
         let inner = block.inner(frame.area());
         let screen = &self.screens[self.index];
         frame.render_widget(&block, frame.area());
-        screen.render_ref(inner, frame.buffer_mut(), &mut 0);
+        screen.render_ref(inner, frame.buffer_mut());
     
     }
     fn exit(&mut self) {
