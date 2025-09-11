@@ -41,7 +41,6 @@ impl App {
         let mut app = App::default();
         app.screens = vec![
             Box::new(Splash::default()),
-            Box::new(TableOfContents::default()),
             Box::new(Agenda::default()),
             Box::new(Sound::default())
         ];
