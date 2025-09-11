@@ -31,24 +31,32 @@ impl Ripple {
 impl StatefulWidgetRef for Ripple {
     type State = bool;
     fn render_ref(&self, area: Rect, buf: &mut Buffer, running: &mut bool) {
+        let ncircles = self.amplitude / 25;
         Canvas::default()
             .marker(symbols::Marker::Braille)
             .background_color(Color::White)
             .paint(|ctx| {
                 ctx.draw(&Circle {
-                    x: 250.0,
-                    y: 250.0,
+                    x: self.amplitude as f64,
+                    y: self.amplitude as f64,
                     radius: 4.0,
                     color: Color::Black
                 });
-                ctx.draw(&Circle {
-                    x: 250.0,
-                    y: 250.0,
-                    radius: self.tick as f64,
-                    color: Color::Black
-                });
+                for n in 0..ncircles {
+                    let pos = n*25;
+                    let delayed = if self.tick < pos { 0 } else { 
+                        self.tick - pos
+                    };
+                    let c = delayed as u8;
+                    let color = Color::Rgb(c, c, c);
+                    ctx.draw(&Circle {
+                        x: self.amplitude as f64,
+                        y: self.amplitude as f64,
+                        radius: delayed as f64,
+                        color: color
+                    });
+                }
                 // TODO: other ripple circles
-                // + fade out as reaching max amplitude
                 // + sound?
             })            
             .x_bounds([00.0, 500.0 as f64])

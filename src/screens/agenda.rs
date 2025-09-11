@@ -182,7 +182,7 @@ impl WidgetRef for Agenda {
                         ListItem::new("• Quantization"),
                         ListItem::new("• Digital Audio Formats"),
                         ListItem::new("• Digital Audio Processing and Synthesis"),
-                        ListItem::new("• Faust"),            
+                        ListItem::new("• The Faust programming language"),            
                     ];
                     let list = List::new(items)
                         .highlight_symbol("> ")

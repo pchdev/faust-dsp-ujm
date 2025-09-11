@@ -3,10 +3,10 @@ use crossterm::event::{KeyCode, KeyEvent};
 use num_derive::FromPrimitive;
 use ratatui::{
     buffer::Buffer, layout::Flex, prelude::Rect, widgets::{
-        Paragraph, StatefulWidgetRef, Widget, WidgetRef
+        Block, BorderType, Borders, Paragraph, StatefulWidgetRef, Widget, WidgetRef, Wrap
     }
 };
-use ratatui_macros::{horizontal, vertical};
+use ratatui_macros::{horizontal, text, line, vertical};
 
 use crate::{
     screens::Screen, 
@@ -55,11 +55,23 @@ impl WidgetRef for Sound {
             .areas(area);     
         let lhlv = vertical![==5%, ==20%, ==75%]
             .flex(Flex::Center)
+            .horizontal_margin(5)
             .split(lhl)
+        ;
+        let lhrb = Block::bordered()
+            .borders(Borders::LEFT)
+            .border_type(BorderType::Plain)
+            .render(lhr, buf)
         ;
         let title = Paragraph::new(SOUND)
             .centered();
         title.render(lhlv[1], buf);
+        let p = Paragraph::new(
+            "• Sound is a pressure wave that propagates through a medium (gas, liquid or solid), making its particles oscillate around their origin."
+            )
+            .wrap(Wrap {trim: true})
+        ;
+        p.render(lhlv[2], buf);
         match &self.state {
             State::Ripple(r) => {
                 let mut running = true;
@@ -78,7 +90,7 @@ impl Screen for Sound {
                     Ripple { 
                         tick: 0,
                         frequency: 1,
-                        amplitude: 200
+                        amplitude: 250
                     }
                 );
             }

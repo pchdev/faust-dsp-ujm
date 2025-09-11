@@ -48,7 +48,7 @@ impl App {
     }
 
     pub fn run(&mut self, term: &mut DefaultTerminal) -> io::Result<()> {
-        let tick_rate = Duration::from_millis(5);
+        let tick_rate = Duration::from_millis(10);
         let mut last_tick = Instant::now();
         let mut tick_count = 0usize;
         while !self.exit {
