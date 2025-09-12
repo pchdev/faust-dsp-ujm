@@ -2,8 +2,8 @@
 use crossterm::event::{KeyCode, KeyEvent};
 use num_derive::FromPrimitive;
 use ratatui::{
-    buffer::Buffer, layout::Flex, prelude::Rect, widgets::{
-        Block, BorderType, Borders, Paragraph, StatefulWidgetRef, Widget, WidgetRef, Wrap
+    buffer::Buffer, layout::Flex, prelude::Rect, style::{Style, Stylize}, text::Text, widgets::{
+        Block, BorderType, Borders, HighlightSpacing, List, ListItem, ListState, Padding, Paragraph, StatefulWidget, StatefulWidgetRef, Widget, WidgetRef, Wrap
     }
 };
 use ratatui_macros::{horizontal, text, line, vertical};
@@ -45,7 +45,8 @@ impl TryFrom<usize> for State {
 
 #[derive(Debug, Default)]
 pub struct Sound {
-    state: State
+     state: State,
+    lstate: ListState
 }
 
 impl WidgetRef for Sound {
@@ -66,12 +67,17 @@ impl WidgetRef for Sound {
         let title = Paragraph::new(SOUND)
             .centered();
         title.render(lhlv[1], buf);
-        let p = Paragraph::new(
-            "• Sound is a pressure wave that propagates through a medium (gas, liquid or solid), making its particles oscillate around their origin."
+        let mut state = self.lstate.clone();
+        let txt = indoc! {
+            "- Sound is a **pressure wave** that propagates through a **medium** (*gas*, *liquid* or *solid*)"
+        };
+        let t = Paragraph::new(
+                tui_markdown::from_str(txt)
             )
-            .wrap(Wrap {trim: true})
+            .wrap(Wrap {trim: true })
         ;
-        p.render(lhlv[2], buf);
+        t.render(lhlv[2], buf);
+
         match &self.state {
             State::Ripple(r) => {
                 let mut running = true;
@@ -85,14 +91,26 @@ impl WidgetRef for Sound {
 impl Screen for Sound {
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
+            KeyCode::Down => {
+                self.lstate.select_next();
+            }
+            KeyCode::Up => {
+                self.lstate.select_previous();
+            }
             KeyCode::Enter => {
-                self.state = State::Ripple(
-                    Ripple { 
-                        tick: 0,
-                        frequency: 1,
-                        amplitude: 250
+                match self.lstate.selected() {
+                    Some(0) => {
+                        self.state = State::Ripple(
+                            Ripple { 
+                                tick: 0,
+                                frequency: 1,
+                                amplitude: 250
+                            }
+                        );
                     }
-                );
+                    _ => ()
+                }
+
             }
             _ => ()
         }
