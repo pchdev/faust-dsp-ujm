@@ -30,13 +30,45 @@ enum State {
     Waveform
 }
 
-#[derive(Debug, Default)]
-pub struct Sound {
+#[derive(Debug)]
+pub struct Sound<'a> {
      state: State,
-    lstate: ListState
+    lstate: ListState,
+    paragraphs: Vec<Paragraph<'a>>
 }
 
-impl WidgetRef for Sound {
+
+macro_rules!  add_paragraph {
+    ($obj:expr, $str:literal) => {
+        $obj.paragraphs.push(
+                Paragraph::new(tui_markdown::from_str(indoc!{ $str }
+            )).wrap(Wrap {trim: true })
+        )
+    };
+}
+
+impl<'a> Default for Sound<'a> {
+    
+    fn default() -> Self {
+        let mut s = Sound {
+            state: State::default(),
+            lstate: ListState::default(),
+            paragraphs: vec![]
+        };
+        add_paragraph!(s, 
+            "• Sound is a ***pressure wave*** that propagates \
+            through a **medium** (*gas*, *liquid* or *solid*)."
+        );
+        add_paragraph!(s, 
+            "• The propagation is carried by the **oscillation** of the medium's particles around \
+            their point of origin."
+        );
+        return s;
+        
+    }
+}
+
+impl<'a> WidgetRef for Sound<'a> {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
         let [lhl, lhr] = horizontal![==50%, ==50%]
             .flex(Flex::Center)
@@ -55,34 +87,23 @@ impl WidgetRef for Sound {
             .centered()
             .render(lhlv[1], buf)
         ;
-        let txt1 = tui_markdown::from_str(indoc! {
-            "• Sound is a ***pressure wave*** that propagates \
-            through a **medium** (*gas*, *liquid* or *solid*)."
-        });
-        let txt2 = tui_markdown::from_str(indoc! {
-            "• The propagation is carried by the **oscillation** of the medium's particles around \
-            their point of origin."
-        });
-        let mut t1 = Paragraph::new(txt1).wrap(Wrap {trim: true });
-        let mut t2 = Paragraph::new(txt2).wrap(Wrap {trim: true });
-        match self.lstate.selected() {
-            Some(0) => {
-                t1 = t1.black().on_gray()
+        let mut constraints: Vec<Constraint> = vec![];
+        let mut paragraphs: Vec<Paragraph> = vec![];
+        for (n, paragraph) in self.paragraphs.iter().enumerate() {
+            let mut ph = paragraph.clone();
+            if self.lstate.selected().is_some_and(|s| n == s) {
+                ph = ph.black().on_gray();
             }
-            Some(1) => {
-                t2 = t2.black().on_gray()
-            }
-            _ => ()
+            let lc = ph.line_count(lhlv[2].width) + 1;
+            constraints.push(
+                Constraint::Length(lc.try_into().unwrap())
+            );
+            paragraphs.push(ph);
         }
-        let t1c = t1.line_count(lhlv[2].width) + 1;
-        let t2c = t2.line_count(lhlv[2].width) + 1;
-        let lp = Layout::vertical([
-                Constraint::Length(t1c.try_into().unwrap()),
-                Constraint::Length(t2c.try_into().unwrap()),
-            ])
-            .split(lhlv[2])
-        ;
-
+        let lp = Layout::vertical(constraints).split(lhlv[2]);
+        for (n, paragraph) in paragraphs.iter().enumerate() {
+            paragraph.render(lp[n], buf);
+        }
         match &self.state {
             State::Ripple(r) => {
                 r.render_ref(lhr, buf);
@@ -92,12 +113,10 @@ impl WidgetRef for Sound {
             }
             _ => ()
         }
-        t1.render(lp[0], buf);
-        t2.render(lp[1], buf);
     }
 }
 
-impl Screen for Sound {
+impl<'a> Screen for Sound<'a> {
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::Down => {
@@ -122,7 +141,7 @@ impl Screen for Sound {
                             Particles {
                                 tick: 0,
                                 frequency: 1,
-                                amplitude: 300
+                                amplitude: 400
                             }
                         )
                     }
