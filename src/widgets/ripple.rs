@@ -28,10 +28,9 @@ impl Ripple {
     }
 }
 
-impl StatefulWidgetRef for Ripple {
-    type State = bool;
-    fn render_ref(&self, area: Rect, buf: &mut Buffer, running: &mut bool) {
-        let ncircles = 2;
+impl WidgetRef for Ripple {
+    fn render_ref(&self, area: Rect, buf: &mut Buffer) {
+        let ncircles = 3;
         Canvas::default()
             .marker(symbols::Marker::Braille)
             .background_color(Color::White)

@@ -10,7 +10,7 @@ use ratatui_macros::{horizontal, text, line, vertical};
 
 use crate::{
     screens::Screen, 
-    widgets::ripple::{Ripple}
+    widgets::{particles::Particles, ripple::Ripple}
 };
 
 use indoc::indoc;
@@ -26,7 +26,7 @@ enum State {
     #[default]
     Start,
     Ripple(Ripple),
-    Displacement,
+    Particles(Particles),
     Waveform
 }
 
@@ -57,11 +57,11 @@ impl WidgetRef for Sound {
         ;
         let txt1 = tui_markdown::from_str(indoc! {
             "• Sound is a ***pressure wave*** that propagates \
-            through a **medium** (*gas*, *liquid* or *solid*) at the ***speed of sound.***"
+            through a **medium** (*gas*, *liquid* or *solid*)."
         });
         let txt2 = tui_markdown::from_str(indoc! {
-            "• During its propagation, the medium's particles \
-            ***oscillate*** (move back & forth) ***periodically*** around their point of origin."
+            "• The propagation is carried by the **oscillation** of the medium's particles around \
+            their point of origin."
         });
         let mut t1 = Paragraph::new(txt1).wrap(Wrap {trim: true });
         let mut t2 = Paragraph::new(txt2).wrap(Wrap {trim: true });
@@ -85,8 +85,10 @@ impl WidgetRef for Sound {
 
         match &self.state {
             State::Ripple(r) => {
-                let mut running = true;
-                r.render_ref(lhr, buf, &mut running);
+                r.render_ref(lhr, buf);
+            }
+            State::Particles(p) => {
+                p.render_ref(lhr, buf);
             }
             _ => ()
         }
@@ -115,6 +117,15 @@ impl Screen for Sound {
                             }
                         );
                     }
+                    Some(1) => {
+                        self.state = State::Particles(
+                            Particles {
+                                tick: 0,
+                                frequency: 1,
+                                amplitude: 300
+                            }
+                        )
+                    }
                     _ => ()
                 }
 
@@ -126,6 +137,9 @@ impl Screen for Sound {
         match &mut self.state {
             State::Ripple(r) => {
                 r.on_tick(t);
+            }
+            State::Particles(p) => {
+                p.on_tick(t);
             }
             _ => ()
         }

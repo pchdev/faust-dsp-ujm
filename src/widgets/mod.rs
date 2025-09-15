@@ -1,3 +1,3 @@
 pub mod ripple;
-pub mod displacement;
+pub mod particles;
 pub mod waveform;
