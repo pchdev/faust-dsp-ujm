@@ -10,7 +10,7 @@ use ratatui_macros::{horizontal, text, line, vertical};
 
 use crate::{
     screens::Screen, 
-    widgets::{particles::Particles, ripple::Ripple}
+    widgets::{particles::Particles, ripple::Ripple, waveform::Waveform}
 };
 
 use indoc::indoc;
@@ -27,7 +27,7 @@ enum State {
     Start,
     Ripple(Ripple),
     Particles(Particles),
-    Waveform
+    Waveform(Waveform)
 }
 
 #[derive(Debug)]
@@ -41,7 +41,7 @@ pub struct Sound<'a> {
 macro_rules!  add_paragraph {
     ($obj:expr, $str:literal) => {
         $obj.paragraphs.push(
-                Paragraph::new(tui_markdown::from_str(indoc!{ $str }
+                Paragraph::new(tui_markdown::from_str( indoc!{$str}
             )).wrap(Wrap {trim: true })
         )
     };
@@ -60,8 +60,28 @@ impl<'a> Default for Sound<'a> {
             through a **medium** (*gas*, *liquid* or *solid*)."
         );
         add_paragraph!(s, 
-            "• The propagation is carried by the **oscillation** of the medium's particles around \
-            their point of origin."
+            "• The propagation is carried by the **periodic oscillation** (*vibration*) of \
+            the medium's particles around their point of origin."
+        );
+        add_paragraph!(s,
+            "• Once the wave reaches our ears, our ear-drum starts to vibrate, transmitting a signal \
+            to the brain."
+        );
+        add_paragraph!(s,
+            "• **Properties and measurement**:
+            - **Amplitude**: in *Pascals* (*Pa*) or *Decibels* (*dB*)
+            - **Frequency**: in *Hertz* (Hz, kHz, MHz)
+            - **Spectrum**: or *Timbre*
+            "
+        );
+        add_paragraph!(s,
+            "• **Speed**:
+                - **Air**: ~340 m/s
+                - **Water**: ~1,480 m/s
+                - **Steel**: ~5,960 m/s
+                - **Solid atomic hydrogen**: ~36,000 m/s
+                - **Speed of light**: 299,792,458 m/s
+            "
         );
         return s;
         
@@ -111,6 +131,9 @@ impl<'a> WidgetRef for Sound<'a> {
             State::Particles(p) => {
                 p.render_ref(lhr, buf);
             }
+            State::Waveform(p) => {
+                p.render_ref(lhr, buf);
+            }
             _ => ()
         }
     }
@@ -145,6 +168,15 @@ impl<'a> Screen for Sound<'a> {
                             }
                         )
                     }
+                    Some(2) => {
+                        self.state = State::Waveform(
+                            Waveform { 
+                                tick: 0, 
+                                frequency: 1, 
+                                amplitude: 400 
+                            }
+                        )
+                    }
                     _ => ()
                 }
 
@@ -159,6 +191,9 @@ impl<'a> Screen for Sound<'a> {
             }
             State::Particles(p) => {
                 p.on_tick(t);
+            }
+            State::Waveform(w) => {
+                w.on_tick(t);
             }
             _ => ()
         }
