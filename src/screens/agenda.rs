@@ -6,7 +6,6 @@ use ratatui::{
         Flex, Rect
     }, 
     style::{Style, Stylize}, 
-    text::{self, Text},
     widgets::{
         calendar::{
             CalendarEventStore, 
@@ -20,7 +19,7 @@ use ratatui::{
         StatefulWidget, Widget, WidgetRef
     }
 };
-use ratatui_macros::{text, line, span, horizontal, vertical};
+use ratatui_macros::{text, line, horizontal, vertical};
 use time::{Date, Month, OffsetDateTime};
 use time::ext::NumericalDuration;
 use indoc::indoc;

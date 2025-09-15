@@ -31,7 +31,7 @@ impl Ripple {
 impl StatefulWidgetRef for Ripple {
     type State = bool;
     fn render_ref(&self, area: Rect, buf: &mut Buffer, running: &mut bool) {
-        let ncircles = self.amplitude / 25;
+        let ncircles = 2;
         Canvas::default()
             .marker(symbols::Marker::Braille)
             .background_color(Color::White)
@@ -59,8 +59,8 @@ impl StatefulWidgetRef for Ripple {
                 // TODO: other ripple circles
                 // + sound?
             })            
-            .x_bounds([00.0, 500.0 as f64])
-            .y_bounds([00.0, 500.0 as f64])
+            .x_bounds([00.0, 400.0 as f64])
+            .y_bounds([00.0, 400.0 as f64])
             .render_ref(area, buf)
         ;        
     }

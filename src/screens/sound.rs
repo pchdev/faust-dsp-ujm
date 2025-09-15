@@ -2,7 +2,7 @@
 use crossterm::event::{KeyCode, KeyEvent};
 use num_derive::FromPrimitive;
 use ratatui::{
-    buffer::Buffer, layout::Flex, prelude::Rect, style::{Style, Stylize}, text::Text, widgets::{
+    buffer::Buffer, layout::{Constraint, Flex, Layout}, prelude::Rect, style::{Style, Stylize}, text::Text, widgets::{
         Block, BorderType, Borders, HighlightSpacing, List, ListItem, ListState, Padding, Paragraph, StatefulWidget, StatefulWidgetRef, Widget, WidgetRef, Wrap
     }
 };
@@ -30,19 +30,6 @@ enum State {
     Waveform
 }
 
-impl TryFrom<usize> for State {
-    type Error = ();
-    fn try_from(v: usize) -> Result<Self, Self::Error> {
-        match v {
-            0 => Ok(Self::Start),
-            1 => Ok(Self::Ripple(Ripple::default())),
-            2 => Ok(Self::Displacement),
-            3 => Ok(Self::Waveform),
-            _ => Err(())
-        }
-    }
-}
-
 #[derive(Debug, Default)]
 pub struct Sound {
      state: State,
@@ -59,24 +46,42 @@ impl WidgetRef for Sound {
             .horizontal_margin(5)
             .split(lhl)
         ;
-        let lhrb = Block::bordered()
+        Block::bordered()
             .borders(Borders::LEFT)
             .border_type(BorderType::Plain)
             .render(lhr, buf)
         ;
-        let title = Paragraph::new(SOUND)
-            .centered();
-        title.render(lhlv[1], buf);
-        let mut state = self.lstate.clone();
-        let txt = indoc! {
-            "- Sound is a **pressure wave** that propagates through a **medium** (*gas*, *liquid* or *solid*)"
-        };
-        let t = Paragraph::new(
-                tui_markdown::from_str(txt)
-            )
-            .wrap(Wrap {trim: true })
+        Paragraph::new(SOUND)
+            .centered()
+            .render(lhlv[1], buf)
         ;
-        t.render(lhlv[2], buf);
+        let txt1 = tui_markdown::from_str(indoc! {
+            "• Sound is a ***pressure wave*** that propagates \
+            through a **medium** (*gas*, *liquid* or *solid*) at the ***speed of sound.***"
+        });
+        let txt2 = tui_markdown::from_str(indoc! {
+            "• During its propagation, the medium's particles \
+            ***oscillate*** (move back & forth) ***periodically*** around their point of origin."
+        });
+        let mut t1 = Paragraph::new(txt1).wrap(Wrap {trim: true });
+        let mut t2 = Paragraph::new(txt2).wrap(Wrap {trim: true });
+        match self.lstate.selected() {
+            Some(0) => {
+                t1 = t1.black().on_gray()
+            }
+            Some(1) => {
+                t2 = t2.black().on_gray()
+            }
+            _ => ()
+        }
+        let t1c = t1.line_count(lhlv[2].width) + 1;
+        let t2c = t2.line_count(lhlv[2].width) + 1;
+        let lp = Layout::vertical([
+                Constraint::Length(t1c.try_into().unwrap()),
+                Constraint::Length(t2c.try_into().unwrap()),
+            ])
+            .split(lhlv[2])
+        ;
 
         match &self.state {
             State::Ripple(r) => {
@@ -85,6 +90,8 @@ impl WidgetRef for Sound {
             }
             _ => ()
         }
+        t1.render(lp[0], buf);
+        t2.render(lp[1], buf);
     }
 }
 
@@ -104,7 +111,7 @@ impl Screen for Sound {
                             Ripple { 
                                 tick: 0,
                                 frequency: 1,
-                                amplitude: 250
+                                amplitude: 200
                             }
                         );
                     }
