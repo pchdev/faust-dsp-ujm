@@ -64,25 +64,24 @@ impl<'a> Default for Sound<'a> {
             the medium's particles around their point of origin."
         );
         add_paragraph!(s,
-            "• Once the wave reaches our ears, our ear-drum starts to vibrate, transmitting a signal \
-            to the brain."
-        );
-        add_paragraph!(s,
             "• **Properties and measurement**:
+            - **Speed**: ~340 m/s in air
             - **Amplitude**: in *Pascals* (*Pa*) or *Decibels* (*dB*)
+            - **Period**: the time between two oscillations
+            - **Wavelength**: the distance between two oscillations
             - **Frequency**: in *Hertz* (Hz, kHz, MHz)
             - **Spectrum**: or *Timbre*
             "
         );
-        add_paragraph!(s,
-            "• **Speed**:
-                - **Air**: ~340 m/s
-                - **Water**: ~1,480 m/s
-                - **Steel**: ~5,960 m/s
-                - **Solid atomic hydrogen**: ~36,000 m/s
-                - **Speed of light**: 299,792,458 m/s
-            "
-        );
+        // add_paragraph!(s,
+        //     "• **Speed**:
+        //         - **Air**: ~340 m/s
+        //         - **Water**: ~1,480 m/s
+        //         - **Steel**: ~5,960 m/s
+        //         - **Solid atomic hydrogen**: ~36,000 m/s
+        //         - **Speed of light**: 299,792,458 m/s
+        //     "
+        // );
         return s;
         
     }
@@ -173,7 +172,8 @@ impl<'a> Screen for Sound<'a> {
                             Waveform { 
                                 tick: 0, 
                                 frequency: 1, 
-                                amplitude: 400 
+                                amplitude: 400,
+                                coords: [(0.0, 0.0); 400]
                             }
                         )
                     }
