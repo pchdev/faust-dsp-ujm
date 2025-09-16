@@ -58,15 +58,18 @@ impl<'a> Default for Sound<'a> {
         };
         add_paragraph!(s, 
             "• Sound is a ***pressure wave*** that propagates \
-            through a **medium** (*gas*, *liquid* or *solid*)."
+            through a **medium** (*gas*, *liquid* or *solid*).
+            "
         );
         add_paragraph!(s, 
             "• Propagation is carried by the **periodic oscillation** (*vibration*) of \
-            the medium's particles around their point of origin."
+            the medium's particles around their point of origin.
+            "
         );
         add_paragraph!(s, 
             "• We **measure** sound and its properties by analyzing the periodic oscillation of \
-            an object (usually the membrane of a microphone):"
+            an object (usually the membrane of a microphone):            
+            "
         );
         add_paragraph!(s,"- **Speed**: ~343 m/s in air");
         add_paragraph!(s,"- **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)");
@@ -85,7 +88,6 @@ impl<'a> Default for Sound<'a> {
         //     "
         // );
         return s;
-        
     }
 }
 
@@ -110,18 +112,21 @@ impl<'a> WidgetRef for Sound<'a> {
         ;
         let mut constraints: Vec<Constraint> = vec![];
         let mut paragraphs: Vec<Paragraph> = vec![];
+        // let t = Text::from("hello");
         for (n, paragraph) in self.paragraphs.iter().enumerate() {
             let mut ph = paragraph.clone();
             if self.lstate.selected().is_some_and(|s| n == s) {
                 ph = ph.black().on_gray();
             }
-            let lc = ph.line_count(lhlv[2].width) + 1;
+            let lc = ph.line_count(lhlv[2].width);
             constraints.push(
                 Constraint::Length(lc.try_into().unwrap())
             );
             paragraphs.push(ph);
         }
-        let lp = Layout::vertical(constraints).split(lhlv[2]);
+        let lp = Layout::vertical(constraints)
+            .spacing(1)
+            .split(lhlv[2]);
         for (n, paragraph) in paragraphs.iter().enumerate() {
             paragraph.render(lp[n], buf);
         }
