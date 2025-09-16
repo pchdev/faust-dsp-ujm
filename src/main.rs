@@ -18,7 +18,6 @@ use crate::screens::{
     agenda::Agenda, 
     sound::Sound, 
     splash::Splash, 
-    toc::TableOfContents, 
     Screen
 };
 

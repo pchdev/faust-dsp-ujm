@@ -34,6 +34,7 @@ enum State {
 pub struct Sound<'a> {
      state: State,
     lstate: ListState,
+      item: usize,
     paragraphs: Vec<Paragraph<'a>>
 }
 
@@ -48,11 +49,11 @@ macro_rules!  add_paragraph {
 }
 
 impl<'a> Default for Sound<'a> {
-    
     fn default() -> Self {
         let mut s = Sound {
             state: State::default(),
             lstate: ListState::default(),
+            item: 0,
             paragraphs: vec![]
         };
         add_paragraph!(s, 
@@ -60,19 +61,20 @@ impl<'a> Default for Sound<'a> {
             through a **medium** (*gas*, *liquid* or *solid*)."
         );
         add_paragraph!(s, 
-            "• The propagation is carried by the **periodic oscillation** (*vibration*) of \
+            "• Propagation is carried by the **periodic oscillation** (*vibration*) of \
             the medium's particles around their point of origin."
         );
-        add_paragraph!(s,
-            "• **Properties and measurement**:
-            - **Speed**: ~340 m/s in air
-            - **Amplitude**: in *Pascals* (*Pa*) or *Decibels* (*dB*)
-            - **Period**: the time between two oscillations
-            - **Wavelength**: the distance between two oscillations
-            - **Frequency**: in *Hertz* (Hz, kHz, MHz)
-            - **Spectrum**: or *Timbre*
-            "
+        add_paragraph!(s, 
+            "• We **measure** sound and its properties by analyzing the periodic oscillation of \
+            an object (usually the membrane of a microphone):"
         );
+        add_paragraph!(s,"- **Speed**: ~343 m/s in air");
+        add_paragraph!(s,"- **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)");
+        add_paragraph!(s,"- **Period**: the time between two oscillations");
+        add_paragraph!(s,"- **Wavelength**: the distance between two oscillations");
+        add_paragraph!(s,"- **Frequency**: n° of oscillations per second, in *Hertz* (***Hz***, ***kHz***, ***MHz***)");
+        add_paragraph!(s,"- **Spectrum**: or *Timbre*");
+
         // add_paragraph!(s,
         //     "• **Speed**:
         //         - **Air**: ~340 m/s
@@ -149,10 +151,9 @@ impl<'a> Screen for Sound<'a> {
             }
             KeyCode::Enter => {
                 match self.lstate.selected() {
-                    Some(0) => {
+                    Some(0) | Some(3) => {
                         self.state = State::Ripple(
-                            Ripple { 
-                                tick: 0,
+                            Ripple { tick: 0,
                                 frequency: 1,
                                 amplitude: 200
                             }
@@ -160,7 +161,7 @@ impl<'a> Screen for Sound<'a> {
                     }
                     Some(1) => {
                         self.state = State::Particles(
-                            Particles {
+                            Particles { 
                                 tick: 0,
                                 frequency: 1,
                                 amplitude: 400
@@ -171,8 +172,18 @@ impl<'a> Screen for Sound<'a> {
                         self.state = State::Waveform(
                             Waveform { 
                                 tick: 0, 
-                                frequency: 1, 
-                                amplitude: 400,
+                                frequency: 100, 
+                                amplitude: 25,
+                                coords: [(0.0, 0.0); 400]
+                            }
+                        )
+                    }
+                    Some(4) => {
+                        self.state = State::Waveform(
+                            Waveform { 
+                                tick: 0, 
+                                frequency: 100, 
+                                amplitude: 25,
                                 coords: [(0.0, 0.0); 400]
                             }
                         )

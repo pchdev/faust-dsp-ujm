@@ -28,9 +28,12 @@ impl Waveform {
     pub(crate) fn on_tick(&mut self, tick: usize) {
         self.tick += 1;
         // Update coordinates:
+        if self.tick % 200 == 0 {
+            // self.amplitude += std::ran
+        }
         for n in 0..self.coords.len() {
-            let x = (n as f64 + tick as f64) / 100.0;
-            let y = (x * PI * 2.0).sin() * 25.0 + 200.0;
+            let x = (n as f64 + tick as f64) / self.frequency as f64;
+            let y = (x * PI * 2.0).sin() * self.amplitude as f64 + 200.0;
             self.coords[n] = (n as f64 + 5.5, y);
         }
     }
