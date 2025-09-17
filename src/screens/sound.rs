@@ -1,19 +1,48 @@
 
 use crossterm::event::{KeyCode, KeyEvent};
-use num_derive::FromPrimitive;
-use ratatui::{
-    buffer::Buffer, layout::{Constraint, Flex, Layout}, prelude::Rect, style::{Style, Stylize}, text::Text, widgets::{
-        Block, BorderType, Borders, HighlightSpacing, List, ListItem, ListState, Padding, Paragraph, StatefulWidget, StatefulWidgetRef, Widget, WidgetRef, Wrap
-    }
-};
-use ratatui_macros::{horizontal, text, line, vertical};
 
-use crate::{
-    screens::Screen, 
-    widgets::{particles::Particles, ripple::Ripple, waveform::Waveform}
+use ratatui::{
+    buffer::Buffer, 
+    layout::{
+        Constraint, 
+        Flex, 
+        Layout
+    }, 
+    prelude::Rect, 
+    style::{
+        Style, 
+        Stylize
+    }, 
+    widgets::{
+        Block, 
+        BorderType, 
+        Borders, 
+        HighlightSpacing, 
+        List, 
+        ListItem, 
+        ListState, 
+        Paragraph, 
+        StatefulWidget, 
+        Widget, WidgetRef, 
+        Wrap
+    }
 };
 
 use indoc::indoc;
+
+use ratatui_macros::{
+    horizontal, 
+    vertical
+};
+
+use crate::{
+    screens::Screen, 
+    widgets::{
+        particles::Particles, 
+        ripple::Ripple, 
+        waveform::Waveform
+    }
+};
 
 const SOUND: &'static str = indoc!{"
 ┏━┓┏━┓╻ ╻┏┓╻╺┳┓
@@ -22,39 +51,60 @@ const SOUND: &'static str = indoc!{"
 "};
 
 #[derive(Debug, Default)]
-enum State {
+enum Animation {
     #[default]
-    Start,
+    None,
     Ripple(Ripple),
     Particles(Particles),
     Waveform(Waveform)
 }
 
 #[derive(Debug)]
-pub struct Sound<'a> {
-     state: State,
-    lstate: ListState,
-      item: usize,
-    paragraphs: Vec<Paragraph<'a>>
+enum Content<'a> {
+    Paragraph(Paragraph<'a>),
+    List(Vec<String>, ListState)
 }
 
+#[derive(Debug)]
+pub struct Sound<'a> {
+         rhs: Animation,
+      select: usize,
+    contents: Vec<Content<'a>>
+}
 
 macro_rules!  add_paragraph {
     ($obj:expr, $str:literal) => {
-        $obj.paragraphs.push(
-                Paragraph::new(tui_markdown::from_str( indoc!{$str}
-            )).wrap(Wrap {trim: true })
+        $obj.contents.push(
+                Content::Paragraph(
+                    Paragraph::new(
+                        tui_markdown::from_str(
+                            indoc!{$str}
+                        )
+                    ).wrap(Wrap {trim: true }
+                )
+            )
         )
     };
+}
+
+impl<'a> Sound<'a> {
+    fn add_list(&mut self, list: Vec<&'static str>) {
+        let mut items = vec![];
+        for i in list {
+            items.push(String::from(i));
+        }
+        self.contents.push(
+            Content::List(items, ListState::default())
+        );
+    }
 }
 
 impl<'a> Default for Sound<'a> {
     fn default() -> Self {
         let mut s = Sound {
-            state: State::default(),
-            lstate: ListState::default(),
-            item: 0,
-            paragraphs: vec![]
+            rhs: Animation::default(),
+            select: 0,
+            contents: vec![]
         };
         add_paragraph!(s, 
             "• Sound is a ***pressure wave*** that propagates \
@@ -68,16 +118,17 @@ impl<'a> Default for Sound<'a> {
         );
         add_paragraph!(s, 
             "• We **measure** sound and its properties by analyzing the periodic oscillation of \
-            an object (usually the membrane of a microphone):            
+            an object (usually the *membrane* of a *microphone*):            
             "
         );
-        add_paragraph!(s,"- **Speed**: ~343 m/s in air");
-        add_paragraph!(s,"- **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)");
-        add_paragraph!(s,"- **Period**: the time between two oscillations");
-        add_paragraph!(s,"- **Wavelength**: the distance between two oscillations");
-        add_paragraph!(s,"- **Frequency**: n° of oscillations per second, in *Hertz* (***Hz***, ***kHz***, ***MHz***)");
-        add_paragraph!(s,"- **Spectrum**: or *Timbre*");
-
+        s.add_list(vec![
+              "- **Speed**: ~343 m/s in air",
+              "- **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)",
+              "- **Period**: the time between two oscillations",
+              "- **Wavelength**: the distance between two oscillations",
+              "- **Frequency**: n° of oscillations per second, in *Hertz* (***Hz***, ***kHz***, ***MHz***)",
+              "- **Spectrum**: or *Timbre*"
+        ]);
         // add_paragraph!(s,
         //     "• **Speed**:
         //         - **Air**: ~340 m/s
@@ -110,34 +161,75 @@ impl<'a> WidgetRef for Sound<'a> {
             .centered()
             .render(lhlv[1], buf)
         ;
-        let mut constraints: Vec<Constraint> = vec![];
-        let mut paragraphs: Vec<Paragraph> = vec![];
-        // let t = Text::from("hello");
-        for (n, paragraph) in self.paragraphs.iter().enumerate() {
-            let mut ph = paragraph.clone();
-            if self.lstate.selected().is_some_and(|s| n == s) {
-                ph = ph.black().on_gray();
+        // Compute layout constraints:
+        let mut constraints = vec![];
+        for content in self.contents.iter() {
+            match content {
+                Content::Paragraph(ph) => {
+                    let lc = ph.line_count(lhlv[2].width);
+                    constraints.push(
+                        Constraint::Length(lc.try_into().unwrap())
+                    );
+                }
+                Content::List(list, ..) => {
+                    constraints.push(
+                        Constraint::Length(list.len() as u16)
+                    )
+                }
             }
-            let lc = ph.line_count(lhlv[2].width);
-            constraints.push(
-                Constraint::Length(lc.try_into().unwrap())
-            );
-            paragraphs.push(ph);
         }
+        // Build the layout:
         let lp = Layout::vertical(constraints)
             .spacing(1)
-            .split(lhlv[2]);
-        for (n, paragraph) in paragraphs.iter().enumerate() {
-            paragraph.render(lp[n], buf);
+            .split(lhlv[2])
+        ;
+
+        // Render everything:
+        for (n, content) in self.contents.iter().enumerate() {
+            match content {
+                Content::Paragraph(ph) => {
+                    if self.select == n {
+                        // If paragraph is selected:
+                        let p = ph.clone().black().on_gray();
+                        p.render(lp[n], buf);
+                    } else {
+                        ph.render(lp[n], buf);
+                    }                    
+                }
+                Content::List(svec, state) => {
+                    let mut ivec = vec![];
+                    let mut s = state.clone();
+                    let select: isize = self.select as isize - n as isize;
+                    if select < 0 {
+                        s.select(None);
+                    } else {
+                        s.select(Some(select as usize));
+                    }
+                    // s.select(Some(self.select-n));
+                    for str in svec {
+                        ivec.push(ListItem::new(
+                            tui_markdown::from_str(
+                                str.as_str()
+                            )
+                        ));
+                    }   
+                    let l = List::new(ivec)
+                        .highlight_symbol("> ")
+                        .highlight_style(Style::new().black().on_gray())
+                        .highlight_spacing(HighlightSpacing::Always)
+                    ;
+                    StatefulWidget::render(l, lp[n], buf, &mut s);
+                }
+            }
         }
-        match &self.state {
-            State::Ripple(r) => {
+        match &self.rhs {
+            Animation::Ripple(r) => {
                 r.render_ref(lhr, buf);
             }
-            State::Particles(p) => {
+            Animation::Particles(p) => {
                 p.render_ref(lhr, buf);
             }
-            State::Waveform(p) => {
+            Animation::Waveform(p) => {
                 p.render_ref(lhr, buf);
             }
             _ => ()
@@ -149,23 +241,25 @@ impl<'a> Screen for Sound<'a> {
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::Down => {
-                self.lstate.select_next();
+                self.select += 1;
             }
             KeyCode::Up => {
-                self.lstate.select_previous();
+                if self.select > 0 {
+                   self.select -= 1;
+                }
             }
             KeyCode::Enter => {
-                match self.lstate.selected() {
-                    Some(0) | Some(3) => {
-                        self.state = State::Ripple(
+                match self.select {
+                    0  => {
+                        self.rhs = Animation::Ripple(
                             Ripple { tick: 0,
                                 frequency: 1,
                                 amplitude: 200
                             }
                         );
                     }
-                    Some(1) => {
-                        self.state = State::Particles(
+                    1 => {
+                        self.rhs = Animation::Particles(
                             Particles { 
                                 tick: 0,
                                 frequency: 1,
@@ -173,8 +267,8 @@ impl<'a> Screen for Sound<'a> {
                             }
                         )
                     }
-                    Some(2) => {
-                        self.state = State::Waveform(
+                    2 => {
+                        self.rhs = Animation::Waveform(
                             Waveform { 
                                 tick: 0, 
                                 frequency: 100, 
@@ -183,8 +277,8 @@ impl<'a> Screen for Sound<'a> {
                             }
                         )
                     }
-                    Some(4) => {
-                        self.state = State::Waveform(
+                    4 => {
+                        self.rhs = Animation::Waveform(
                             Waveform { 
                                 tick: 0, 
                                 frequency: 100, 
@@ -201,14 +295,14 @@ impl<'a> Screen for Sound<'a> {
         }
     }
     fn on_tick(&mut self, t: usize) {
-        match &mut self.state {
-            State::Ripple(r) => {
+        match &mut self.rhs {
+            Animation::Ripple(r) => {
                 r.on_tick(t);
             }
-            State::Particles(p) => {
+            Animation::Particles(p) => {
                 p.on_tick(t);
             }
-            State::Waveform(w) => {
+            Animation::Waveform(w) => {
                 w.on_tick(t);
             }
             _ => ()
