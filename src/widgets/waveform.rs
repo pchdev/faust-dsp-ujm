@@ -1,36 +1,38 @@
 
 use std::{
     f64::consts::PI, 
-    thread, 
     time::Duration
 };
 
-use crossterm::event::KeyEvent;
-
+use rand::Rng;
 use ratatui::{
     buffer::Buffer, 
     prelude::Rect, 
-    style::{
-        Color, 
-        Style
-    }, 
+    style::{Color}, 
     symbols, 
     widgets::{
         canvas::{
-            Canvas, Circle, Line, Points
+            Canvas, Line, Points
         }, 
-        StatefulWidgetRef, 
         WidgetRef
     }
 };
 
+const RESOLUTION: usize = 400usize;
+
 impl Waveform {
+    pub(crate) fn new(frequency: usize, amplitude: usize) -> Self {
+        Waveform {
+            tick: 0,
+            frequency,
+            amplitude,
+            coords: [(0.0, 0.0); RESOLUTION]
+
+        }
+    }
     pub(crate) fn on_tick(&mut self, tick: usize) {
         self.tick += 1;
         // Update coordinates:
-        if self.tick % 200 == 0 {
-            // self.amplitude += std::ran
-        }
         for n in 0..self.coords.len() {
             let x = (n as f64 + tick as f64) / self.frequency as f64;
             let y = (x * PI * 2.0).sin() * self.amplitude as f64 + 200.0;
@@ -44,7 +46,7 @@ pub struct Waveform {
     pub tick: usize,
     pub frequency: usize,
     pub amplitude: usize, 
-    pub coords: [(f64, f64); 400],
+    pub coords: [(f64, f64); RESOLUTION],
 }
 
 impl WidgetRef for Waveform {

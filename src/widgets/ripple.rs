@@ -19,12 +19,18 @@ pub struct Ripple {
 }
 
 impl Ripple {
+    pub(crate) fn new(amplitude: usize) -> Self {
+        Ripple {
+            tick: 0,
+            frequency: 1,
+            amplitude
+        }
+    }
     pub(crate) fn on_tick(&mut self, tick: usize) {
         // TODO: frequency
         if tick % 2 == 0 {
             self.tick += 1;
         }
-        
         if self.tick >= self.amplitude {
            self.tick -= self.amplitude;
         }

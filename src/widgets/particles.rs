@@ -19,6 +19,14 @@ pub struct Particles {
 }
 
 impl Particles {
+    pub(crate) fn new(amplitude: usize) -> Self {
+        Particles { 
+            tick: 0,
+            frequency: 1,
+            amplitude
+        }
+    }
+
     pub(crate) fn on_tick(&mut self, tick: usize) {
         // TODO: frequency
         self.tick += 1;

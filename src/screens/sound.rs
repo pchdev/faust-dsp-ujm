@@ -72,22 +72,16 @@ pub struct Sound<'a> {
     contents: Vec<Content<'a>>
 }
 
-macro_rules!  add_paragraph {
-    ($obj:expr, $str:literal) => {
-        $obj.contents.push(
-                Content::Paragraph(
-                    Paragraph::new(
-                        tui_markdown::from_str(
-                            indoc!{$str}
-                        )
-                    ).wrap(Wrap {trim: true }
-                )
-            )
-        )
-    };
-}
-
 impl<'a> Sound<'a> {
+    fn add_paragraph(&mut self, txt: &'static str) {
+        self.contents.push(
+            Content::Paragraph(
+                Paragraph::new(
+                    tui_markdown::from_str(txt)
+                ).wrap(Wrap {trim: true})
+            )
+        );
+    }
     fn add_list(&mut self, list: Vec<&'static str>) {
         let mut items = vec![];
         for i in list {
@@ -106,38 +100,36 @@ impl<'a> Default for Sound<'a> {
             select: 0,
             contents: vec![]
         };
-        add_paragraph!(s, 
+        s.add_paragraph(indoc! { 
             "• Sound is a ***pressure wave*** that propagates \
             through a **medium** (*gas*, *liquid* or *solid*).
             "
-        );
-        add_paragraph!(s, 
+        });
+        s.add_paragraph(indoc! { 
             "• Propagation is carried by the **periodic oscillation** (*vibration*) of \
             the medium's particles around their point of origin.
             "
-        );
-        add_paragraph!(s, 
+        });
+        s.add_paragraph(indoc! { 
             "• We **measure** sound and its properties by analyzing the periodic oscillation of \
             an object (usually the *membrane* of a *microphone*):            
             "
-        );
+        });
         s.add_list(vec![
               "- **Speed**: ~343 m/s in air",
               "- **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)",
               "- **Period**: the time between two oscillations",
               "- **Wavelength**: the distance between two oscillations",
-              "- **Frequency**: n° of oscillations per second, in *Hertz* (***Hz***, ***kHz***, ***MHz***)",
+              "- **Frequency**: cycles/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)",
               "- **Spectrum**: or *Timbre*"
         ]);
-        // add_paragraph!(s,
-        //     "• **Speed**:
-        //         - **Air**: ~340 m/s
-        //         - **Water**: ~1,480 m/s
-        //         - **Steel**: ~5,960 m/s
-        //         - **Solid atomic hydrogen**: ~36,000 m/s
-        //         - **Speed of light**: 299,792,458 m/s
-        //     "
-        // );
+        // • Speed:
+        //  - Air: ~340 m/s
+        //  - Water: ~1,480 m/s
+        //  - Steel: ~5,960 m/s
+        //  - Solid atomic hydrogen: ~36,000 m/s
+        //  - Speed of light: 299,792,458 m/s
+
         return s;
     }
 }
@@ -183,7 +175,6 @@ impl<'a> WidgetRef for Sound<'a> {
             .spacing(1)
             .split(lhlv[2])
         ;
-
         // Render everything:
         for (n, content) in self.contents.iter().enumerate() {
             match content {
@@ -199,13 +190,12 @@ impl<'a> WidgetRef for Sound<'a> {
                 Content::List(svec, state) => {
                     let mut ivec = vec![];
                     let mut s = state.clone();
-                    let select: isize = self.select as isize - n as isize;
+                    let select = self.select as isize - n as isize;
                     if select < 0 {
                         s.select(None);
                     } else {
                         s.select(Some(select as usize));
                     }
-                    // s.select(Some(self.select-n));
                     for str in svec {
                         ivec.push(ListItem::new(
                             tui_markdown::from_str(
@@ -252,40 +242,33 @@ impl<'a> Screen for Sound<'a> {
                 match self.select {
                     0  => {
                         self.rhs = Animation::Ripple(
-                            Ripple { tick: 0,
-                                frequency: 1,
-                                amplitude: 200
-                            }
+                            Ripple::new(200)
                         );
                     }
                     1 => {
                         self.rhs = Animation::Particles(
-                            Particles { 
-                                tick: 0,
-                                frequency: 1,
-                                amplitude: 400
-                            }
+                            Particles::new(400)
                         )
                     }
                     2 => {
                         self.rhs = Animation::Waveform(
-                            Waveform { 
-                                tick: 0, 
-                                frequency: 100, 
-                                amplitude: 25,
-                                coords: [(0.0, 0.0); 400]
-                            }
-                        )
+                            Waveform::new(100, 25)
+                        );
+                    }
+                    3  => {
+                        self.rhs = Animation::Ripple(
+                            Ripple::new(200)
+                        );
                     }
                     4 => {
                         self.rhs = Animation::Waveform(
-                            Waveform { 
-                                tick: 0, 
-                                frequency: 100, 
-                                amplitude: 25,
-                                coords: [(0.0, 0.0); 400]
-                            }
-                        )
+                            Waveform::new(100, 25)
+                        );
+                    }
+                    5  => {
+                        self.rhs = Animation::Ripple(
+                            Ripple::new(200)
+                        );
                     }
                     _ => ()
                 }

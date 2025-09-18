@@ -1,11 +1,143 @@
 use crossterm::event::KeyEvent;
-use ratatui::widgets::{StatefulWidgetRef, Widget, WidgetRef};
+use ratatui::{buffer::Buffer, layout::{Constraint, Flex, Layout, Rect}, style::{Style, Stylize}, widgets::{HighlightSpacing, List, ListItem, ListState, Paragraph, StatefulWidget, StatefulWidgetRef, Widget, WidgetRef, Wrap}};
+use ratatui_macros::vertical;
 
 pub mod myself;
 pub mod agenda;
 pub mod signal;
 pub mod sound;
 pub mod splash;
+
+
+pub(crate) enum ScreenLayout {
+    Title(Rect),
+    Plain(Rect), // Single area with title
+    SideBySide(Rect, Rect)
+}
+
+
+
+#[derive(Debug)]
+pub(crate) enum Content<'a> {
+    Paragraph(Paragraph<'a>),
+    List(Vec<String>, ListState)
+}
+
+
+
+
+#[derive(Debug, Default)]
+pub(crate) struct ContentArea<'a> {
+      select: usize,
+       title: Option<String>,
+    contents: Vec<Content<'a>>
+}
+
+impl<'a> ContentArea<'a> {
+    pub(crate) fn add_paragraph(&mut self, txt: &'static str) {
+        self.contents.push(
+            Content::Paragraph(
+                Paragraph::new(
+                    tui_markdown::from_str(txt)
+                ).wrap(Wrap {trim: true})
+            )
+        );
+    }
+    pub(crate) fn add_list(&mut self, list: Vec<&'static str>) {
+        let mut items = vec![];
+        for i in list {
+            items.push(String::from(i));
+        }
+        self.contents.push(
+            Content::List(items, ListState::default())
+        );
+    }
+}
+
+impl<'a> WidgetRef for ContentArea<'a> {
+    fn render_ref(&self, area: Rect, buf: &mut Buffer) {
+        let lv = vertical![
+             ==5%, // some spacing before title
+            ==20%, // title 
+            ==75%  // contents
+        ]
+            .flex(Flex::Center)
+            .horizontal_margin(5)
+            .split(area)
+        ;
+        // Render title:
+        match &self.title {
+            Some(t) => {
+                Paragraph::new(t.as_str())
+                    .centered()
+                    .render(lv[1], buf)
+                ;
+            }
+            None => ()
+        }
+        // Compute layout constraints:
+        let mut constraints = vec![];
+        for content in self.contents.iter() {
+            match content {
+                Content::Paragraph(ph) => {
+                    let lc = ph.line_count(lv[2].width);
+                    constraints.push(
+                        Constraint::Length(lc.try_into().unwrap())
+                    );
+                }
+                Content::List(list, ..) => {
+                    constraints.push(
+                        Constraint::Length(list.len() as u16)
+                    )
+                }
+            }
+        }
+        // Build the layout:
+        let lp = Layout::vertical(constraints)
+            .spacing(1)
+            .split(lv[2])
+        ;
+        // Render everything:
+        for (n, content) in self.contents.iter().enumerate() {
+            match content {
+                Content::Paragraph(ph) => {
+                    if self.select == n {
+                        // If paragraph is selected:
+                        let p = ph.clone().black().on_gray();
+                        p.render(lp[n], buf);
+                    } else {
+                        ph.render(lp[n], buf);
+                    }                    
+                }
+                Content::List(svec, state) => {
+                    let mut ivec = vec![];
+                    let mut s = state.clone();
+                    let select = self.select as isize - n as isize;
+                    if select < 0 {
+                        s.select(None);
+                    } else {
+                        s.select(Some(select as usize));
+                    }
+                    for str in svec {
+                        ivec.push(ListItem::new(
+                            tui_markdown::from_str(
+                                str.as_str()
+                            )
+                        ));
+                    }   
+                    let l = List::new(ivec)
+                        .highlight_symbol("> ")
+                        .highlight_style(Style::new().black().on_gray())
+                        .highlight_spacing(HighlightSpacing::Always)
+                    ;
+                    StatefulWidget::render(l, lp[n], buf, &mut s);
+                }
+            }
+        }
+    }
+}
+
+
 
 pub(crate) trait Screen : WidgetRef {
     fn on_key_event(&mut self, k: KeyEvent) {}
