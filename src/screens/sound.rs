@@ -4,27 +4,16 @@ use crossterm::event::{KeyCode, KeyEvent};
 use ratatui::{
     buffer::Buffer, 
     layout::{
-        Constraint, 
         Flex, 
-        Layout
     }, 
     prelude::Rect, 
-    style::{
-        Style, 
-        Stylize
-    }, 
     widgets::{
         Block, 
         BorderType, 
         Borders, 
-        HighlightSpacing, 
-        List, 
-        ListItem, 
         ListState, 
         Paragraph, 
-        StatefulWidget, 
         Widget, WidgetRef, 
-        Wrap
     }
 };
 
@@ -32,11 +21,10 @@ use indoc::indoc;
 
 use ratatui_macros::{
     horizontal, 
-    vertical
 };
 
 use crate::{
-    screens::Screen, 
+    screens::{ContentArea, Screen}, 
     widgets::{
         particles::Particles, 
         ripple::Ripple, 
@@ -44,7 +32,7 @@ use crate::{
     }
 };
 
-const SOUND: &'static str = indoc!{"
+const TITLE: &'static str = indoc!{"
 ┏━┓┏━┓╻ ╻┏┓╻╺┳┓
 ┗━┓┃ ┃┃ ┃┃┗┫ ┃┃
 ┗━┛┗━┛┗━┛╹ ╹╺┻┛
@@ -65,72 +53,47 @@ enum Content<'a> {
     List(Vec<String>, ListState)
 }
 
-#[derive(Debug)]
 pub struct Sound<'a> {
-         rhs: Animation,
-      select: usize,
-    contents: Vec<Content<'a>>
-}
-
-impl<'a> Sound<'a> {
-    fn add_paragraph(&mut self, txt: &'static str) {
-        self.contents.push(
-            Content::Paragraph(
-                Paragraph::new(
-                    tui_markdown::from_str(txt)
-                ).wrap(Wrap {trim: true})
-            )
-        );
-    }
-    fn add_list(&mut self, list: Vec<&'static str>) {
-        let mut items = vec![];
-        for i in list {
-            items.push(String::from(i));
-        }
-        self.contents.push(
-            Content::List(items, ListState::default())
-        );
-    }
+    lhs: ContentArea<'a>, 
+    rhs: Animation,
 }
 
 impl<'a> Default for Sound<'a> {
     fn default() -> Self {
-        let mut s = Sound {
-            rhs: Animation::default(),
-            select: 0,
-            contents: vec![]
-        };
-        s.add_paragraph(indoc! { 
-            "• Sound is a ***pressure wave*** that propagates \
-            through a **medium** (*gas*, *liquid* or *solid*).
-            "
-        });
-        s.add_paragraph(indoc! { 
-            "• Propagation is carried by the **periodic oscillation** (*vibration*) of \
-            the medium's particles around their point of origin.
-            "
-        });
-        s.add_paragraph(indoc! { 
-            "• We **measure** sound and its properties by analyzing the periodic oscillation of \
-            an object (usually the *membrane* of a *microphone*):            
-            "
-        });
-        s.add_list(vec![
-              "- **Speed**: ~343 m/s in air",
-              "- **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)",
-              "- **Period**: the time between two oscillations",
-              "- **Wavelength**: the distance between two oscillations",
-              "- **Frequency**: cycles/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)",
-              "- **Spectrum**: or *Timbre*"
-        ]);
+        Sound {
+            lhs: ContentArea::default()
+                .add_title(TITLE)
+                .add_paragraph(indoc! {
+                    "• Sound is a ***pressure wave*** that propagates \
+                    through a **medium** (*gas*, *liquid* or *solid*).
+                    "
+                })
+                .add_paragraph(indoc! {
+                    "• Propagation is carried by the **periodic oscillation** (*vibration*) of \
+                    the medium's particles around their point of origin.
+                    "
+                })
+                .add_paragraph(indoc! {
+                    "• We **measure** sound and its properties by analyzing the periodic oscillation of \
+                    an object (usually the *membrane* of a *microphone*):            
+                    "
+                })
+                .add_list(vec! {
+                    "- **Speed**: ~343 m/s in air",
+                    "- **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)",
+                    "- **Period**: the time between two oscillations",
+                    "- **Wavelength**: the distance between two oscillations",
+                    "- **Frequency**: cycles/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)",
+                    "- **Spectrum**, or *Timbre*, superposition of all "
+                }),
+            rhs: Animation::default(),            
+        }
         // • Speed:
         //  - Air: ~340 m/s
         //  - Water: ~1,480 m/s
         //  - Steel: ~5,960 m/s
         //  - Solid atomic hydrogen: ~36,000 m/s
         //  - Speed of light: 299,792,458 m/s
-
-        return s;
     }
 }
 
@@ -138,80 +101,14 @@ impl<'a> WidgetRef for Sound<'a> {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
         let [lhl, lhr] = horizontal![==50%, ==50%]
             .flex(Flex::Center)
-            .areas(area);     
-        let lhlv = vertical![==5%, ==20%, ==75%]
-            .flex(Flex::Center)
-            .horizontal_margin(5)
-            .split(lhl)
+            .areas(area)
         ;
         Block::bordered()
             .borders(Borders::LEFT)
             .border_type(BorderType::Plain)
             .render(lhr, buf)
         ;
-        Paragraph::new(SOUND)
-            .centered()
-            .render(lhlv[1], buf)
-        ;
-        // Compute layout constraints:
-        let mut constraints = vec![];
-        for content in self.contents.iter() {
-            match content {
-                Content::Paragraph(ph) => {
-                    let lc = ph.line_count(lhlv[2].width);
-                    constraints.push(
-                        Constraint::Length(lc.try_into().unwrap())
-                    );
-                }
-                Content::List(list, ..) => {
-                    constraints.push(
-                        Constraint::Length(list.len() as u16)
-                    )
-                }
-            }
-        }
-        // Build the layout:
-        let lp = Layout::vertical(constraints)
-            .spacing(1)
-            .split(lhlv[2])
-        ;
-        // Render everything:
-        for (n, content) in self.contents.iter().enumerate() {
-            match content {
-                Content::Paragraph(ph) => {
-                    if self.select == n {
-                        // If paragraph is selected:
-                        let p = ph.clone().black().on_gray();
-                        p.render(lp[n], buf);
-                    } else {
-                        ph.render(lp[n], buf);
-                    }                    
-                }
-                Content::List(svec, state) => {
-                    let mut ivec = vec![];
-                    let mut s = state.clone();
-                    let select = self.select as isize - n as isize;
-                    if select < 0 {
-                        s.select(None);
-                    } else {
-                        s.select(Some(select as usize));
-                    }
-                    for str in svec {
-                        ivec.push(ListItem::new(
-                            tui_markdown::from_str(
-                                str.as_str()
-                            )
-                        ));
-                    }   
-                    let l = List::new(ivec)
-                        .highlight_symbol("> ")
-                        .highlight_style(Style::new().black().on_gray())
-                        .highlight_spacing(HighlightSpacing::Always)
-                    ;
-                    StatefulWidget::render(l, lp[n], buf, &mut s);
-                }
-            }
-        }
+        self.lhs.render_ref(lhl, buf);
         match &self.rhs {
             Animation::Ripple(r) => {
                 r.render_ref(lhr, buf);
@@ -230,16 +127,11 @@ impl<'a> WidgetRef for Sound<'a> {
 impl<'a> Screen for Sound<'a> {
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
-            KeyCode::Down => {
-                self.select += 1;
-            }
-            KeyCode::Up => {
-                if self.select > 0 {
-                   self.select -= 1;
-                }
+            KeyCode::Down | KeyCode::Up => {
+                self.lhs.on_key_event(k);
             }
             KeyCode::Enter => {
-                match self.select {
+                match self.lhs.select {
                     0  => {
                         self.rhs = Animation::Ripple(
                             Ripple::new(200)

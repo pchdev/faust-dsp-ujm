@@ -1,6 +1,27 @@
-use crossterm::event::KeyEvent;
-use ratatui::{buffer::Buffer, layout::{Constraint, Flex, Layout, Rect}, style::{Style, Stylize}, widgets::{HighlightSpacing, List, ListItem, ListState, Paragraph, StatefulWidget, StatefulWidgetRef, Widget, WidgetRef, Wrap}};
-use ratatui_macros::vertical;
+use crossterm::event::{KeyCode, KeyEvent};
+use ratatui::{
+    buffer::Buffer, 
+    layout::{
+        Constraint, 
+        Flex, 
+        self, 
+        Rect
+    }, 
+    style::{
+        Style, 
+        Stylize
+    }, 
+    widgets::{
+        HighlightSpacing, 
+        List, ListItem, ListState, 
+        Paragraph, 
+        StatefulWidget, 
+        Widget, WidgetRef, 
+        Wrap
+    }
+};
+
+use ratatui_macros::{horizontal, vertical};
 
 pub mod myself;
 pub mod agenda;
@@ -8,25 +29,13 @@ pub mod signal;
 pub mod sound;
 pub mod splash;
 
-
-pub(crate) enum ScreenLayout {
-    Title(Rect),
-    Plain(Rect), // Single area with title
-    SideBySide(Rect, Rect)
-}
-
-
-
-#[derive(Debug)]
 pub(crate) enum Content<'a> {
     Paragraph(Paragraph<'a>),
-    List(Vec<String>, ListState)
+    List(Vec<String>, ListState),
+    Widget(Box<dyn WidgetRef>)
 }
 
-
-
-
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub(crate) struct ContentArea<'a> {
       select: usize,
        title: Option<String>,
@@ -34,7 +43,11 @@ pub(crate) struct ContentArea<'a> {
 }
 
 impl<'a> ContentArea<'a> {
-    pub(crate) fn add_paragraph(&mut self, txt: &'static str) {
+    pub(crate) fn add_title(mut self, title: &'static str) -> Self {
+        self.title = Some(String::from(title));
+        return self;
+    }
+    pub(crate) fn add_paragraph(mut self, txt: &'static str) -> Self {
         self.contents.push(
             Content::Paragraph(
                 Paragraph::new(
@@ -42,8 +55,9 @@ impl<'a> ContentArea<'a> {
                 ).wrap(Wrap {trim: true})
             )
         );
+        return self;
     }
-    pub(crate) fn add_list(&mut self, list: Vec<&'static str>) {
+    pub(crate) fn add_list(mut self, list: Vec<&'static str>) -> Self {
         let mut items = vec![];
         for i in list {
             items.push(String::from(i));
@@ -51,6 +65,20 @@ impl<'a> ContentArea<'a> {
         self.contents.push(
             Content::List(items, ListState::default())
         );
+        return self;
+    }
+    pub(crate) fn on_key_event(&mut self, k: KeyEvent) {
+        match k.code {
+            KeyCode::Down => {
+                self.select += 1;
+            }
+            KeyCode::Up => {
+                if self.select > 0 {
+                   self.select -= 1;
+                }
+            }
+            _ => ()
+        }
     }
 }
 
@@ -90,10 +118,12 @@ impl<'a> WidgetRef for ContentArea<'a> {
                         Constraint::Length(list.len() as u16)
                     )
                 }
+                Content::Widget(w) => {
+                }
             }
         }
         // Build the layout:
-        let lp = Layout::vertical(constraints)
+        let lp = layout::Layout::vertical(constraints)
             .spacing(1)
             .split(lv[2])
         ;
@@ -126,18 +156,19 @@ impl<'a> WidgetRef for ContentArea<'a> {
                         ));
                     }   
                     let l = List::new(ivec)
-                        .highlight_symbol("> ")
+                        .highlight_symbol(">> ")
                         .highlight_style(Style::new().black().on_gray())
                         .highlight_spacing(HighlightSpacing::Always)
                     ;
                     StatefulWidget::render(l, lp[n], buf, &mut s);
                 }
+                Content::Widget(w) => {
+
+                }
             }
         }
     }
 }
-
-
 
 pub(crate) trait Screen : WidgetRef {
     fn on_key_event(&mut self, k: KeyEvent) {}
