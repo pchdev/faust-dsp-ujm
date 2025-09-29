@@ -77,7 +77,18 @@ impl<'a> Default for Sound<'a> {
                 .add_paragraph(indoc! {
                     "• Our *perception* of sound is made from the translation of the vibrations reaching our ***eardrum*** to \
                     a *signal of nerve impulses*, transmitted and interpreted by **the brain**"
-                }),
+                })
+                .add_paragraph(indoc! {
+                    "• Human ears can typically identify sounds ***from 20 Hz to 20 kHz***."
+                })
+                .add_list(vec![
+                    "• **Bat**: 2000 to 110,000 Hz",
+                    "• **Porpoise**: 75 to 150,000 Hz",
+                    "• **Cat**: 45 to 64,000 Hz",
+                    "• **Dog**: 67 to 45,000 Hz",
+                    "• **Chicken**: 125 to 2,000 Hz"
+                ])
+                ,
             rhs: Animation::default(),            
         }
         // • Speed:

@@ -65,14 +65,30 @@ impl<'a> Default for Digital<'a> {
             lhs: ContentArea::default()
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
-                    "• To digitize an analog signal means implies discretizing it. \
-                    This is made by two processes: sampling & quantization.
+                    "• To ***digitize*** a continuous signal means implies discretizing it. \
+                    This is made possible by two processes: ***sampling*** & ***quantization***.
                     "
                 })
                 .add_paragraph(indoc! {
-                    "• Sampling means taking a sample of a signal at a certain frequency/rate (sample rate)
+                    "• ***Sampling*** means taking a sample of a signal at a certain frequency/rate (***sample rate***).
                     "
                 })
+                .add_list(vec![
+                    "• **Audio CD**: 44.1 kHz",
+                    "• **Pro Audio**: 48/96 kHz",
+                    "• **MP3**: ?"
+                ])
+                .add_paragraph(indoc! {
+                    "• Once we take a sample at a given time, we need to determine the scale of its value. \
+                    This is called ***Quantization***. \
+                    The larger the scale is, the lesser quantization noise (quality vs. storage tradeoff).
+                    "
+                })
+                .add_list(vec![
+                    "• **Audio CD**: 16-bits (range of 65,536 values)",
+                    "• **Pro Audio**: 24-bits (~16 million)",
+                    "• **DSP**: 32-bits floating-point"
+                ])
                 ,
             rhs: Animation::default(),            
         }

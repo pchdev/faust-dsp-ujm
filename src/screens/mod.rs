@@ -93,8 +93,8 @@ impl<'a> WidgetRef for ContentArea<'a> {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
         let lv = vertical![
              ==5%, // some spacing before title
-            ==20%, // title 
-            ==75%  // contents
+            ==15%, // title 
+            ==80%  // contents
         ]
             .flex(Flex::Center)
             .horizontal_margin(5)

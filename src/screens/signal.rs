@@ -75,7 +75,7 @@ impl<'a> Default for Signal<'a> {
                     "
                 })
                 .add_paragraph(indoc! {
-                    "The vibration of a microphone's membrane is, for instance, usually converted to ***continuous electrical current***, \
+                    "• The vibration of a microphone's membrane is, for instance, usually converted to ***continuous electrical current***, \
                     and can be then analyzed using an **oscilloscope**. In this case, the signal is said to be ***\"analog\"***.
                     "
                 })
