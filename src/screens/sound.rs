@@ -73,18 +73,20 @@ impl<'a> Default for Sound<'a> {
                     the medium's *particles* around their point of origin.
                     "
                 })
+                .add_paragraph(indoc! {
+                    "• A sound has the following properties:"
+                })
                 .add_list(vec! {
-                    "- **Speed**: ~343 m/s in air",
+                    "- **Speed**: ~343 m/s in **air**",
                     "- **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)",
                     "- **Period**: the time between two oscillations",
                     "- **Wavelength**: the distance between two oscillations",
                     "- **Frequency**: oscillations/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)",
-                    "- **Spectrum**, or *Timbre*, superposition of all "
+                    "- **Spectrum**, or *Timbre*"
                 })
                 .add_paragraph(indoc! {
-                    "• Sound waves reach our **eardrum**, making it vibrate, and then transmitted \
-                    to the **inner ear**, the **cochlea**, and to the brain as a *signal* of ***nerve impulses***.
-                    "
+                    "• Our *perception* of sound is made from the translation of the vibrations reaching our ***eardrum*** to \
+                    a continuous *signal of nerve impulses* transmitted and interpreted by **the brain**"
                 }),
             rhs: Animation::default(),            
         }
