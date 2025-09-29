@@ -25,6 +25,16 @@ pub mod agenda;
 pub mod signal;
 pub mod sound;
 pub mod splash;
+pub mod digital;
+
+
+macro_rules! leafy {
+    ($str:expr) => {
+        concat!("𖥸   ", indoc!($str))
+    };
+}
+
+pub(crate) use leafy;
 
 pub(crate) enum Content<'a> {
     Paragraph(Paragraph<'a>),
@@ -164,7 +174,7 @@ impl<'a> WidgetRef for ContentArea<'a> {
                     };
                     let l = List::new(ivec)
                         .style(style)
-                        .highlight_symbol(">> ")
+                        .highlight_symbol("⤷ ")
                         .highlight_style(Style::new().black().on_gray())
                         .highlight_spacing(HighlightSpacing::Always)
                     ;

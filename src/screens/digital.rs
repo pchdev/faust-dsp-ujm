@@ -34,9 +34,9 @@ use crate::{
 
 /// Font is 'Future':
 const TITLE: &'static str = indoc!{"
-┏━┓╻┏━╸┏┓╻┏━┓╻  
-┗━┓┃┃╺┓┃┗┫┣━┫┃  
-┗━┛╹┗━┛╹ ╹╹ ╹┗━╸
+╺┳┓╻┏━╸╻╺┳╸┏━┓╻     ┏━┓╻┏━╸┏┓╻┏━┓╻  
+ ┃┃┃┃╺┓┃ ┃ ┣━┫┃     ┗━┓┃┃╺┓┃┗┫┣━┫┃  
+╺┻┛╹┗━┛╹ ╹ ╹ ╹┗━╸   ┗━┛╹┗━┛╹ ╹╹ ╹┗━╸
 "};
 
 #[derive(Debug, Default)]
@@ -54,48 +54,32 @@ enum Content<'a> {
     List(Vec<String>, ListState)
 }
 
-pub struct Signal<'a> {
+pub struct Digital<'a> {
     lhs: ContentArea<'a>, 
     rhs: Animation,
 }
 
-impl<'a> Default for Signal<'a> {
+impl<'a> Default for Digital<'a> {
     fn default() -> Self {
-        Signal {
+        Digital {
             lhs: ContentArea::default()
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
-                    "• A ***signal*** describes the evolution of data *over time*. \
-                    In our case, the periodic oscillation of an entity (like the *membrane* of a ***microphone***).
+                    "• To digitize an analog signal means implies discretizing it. \
+                    This is made by two processes: sampling & quantization.
                     "
                 })
                 .add_paragraph(indoc! {
-                    "• Just like *nerve impulses* carried to the brain, the analyzed data usually needs to be first converted \
-                    to another *physical unit*, or *domain* (***transduction***) in order to adapt to measurement tools.
+                    "• Sampling means taking a sample of a signal at a certain frequency/rate (sample rate)
                     "
                 })
-                .add_paragraph(indoc! {
-                    "The vibration of a microphone's membrane is, for instance, usually converted to ***continuous electrical current***, \
-                    and can be then analyzed using an **oscilloscope**. In this case, the signal is said to be ***\"analog\"***.
-                    "
-                })
-                .add_paragraph(leafy! {
-                    "With an oscilloscope, we can measure the **amplitude** of a signal at a given *point in time* (***time-domain***), \
-                    through the visualisation of a ***waveform***."
-                })   
-                // TODO: add spectrogram animation?             
-                .add_paragraph(leafy! {
-                    "On the other hand, it is difficult to extract precise information about *frequency* and *spectrum*. \
-                    For this purpose, it's far more efficient to switch to the ***frequency domain***, which requires the analog signal to \
-                    be turned into a ***digital signal***..."
-                })                
                 ,
             rhs: Animation::default(),            
         }
     }
 }
 
-impl<'a> WidgetRef for Signal<'a> {
+impl<'a> WidgetRef for Digital<'a> {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
         let [lhl, lhr] = horizontal![==50%, ==50%]
             .flex(Flex::Center)
@@ -122,7 +106,7 @@ impl<'a> WidgetRef for Signal<'a> {
     }
 }
 
-impl<'a> Screen for Signal<'a> {
+impl<'a> Screen for Digital<'a> {
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::Down | KeyCode::Up => {

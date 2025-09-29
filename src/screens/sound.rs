@@ -22,7 +22,7 @@ use ratatui_macros::{
 };
 
 use crate::{
-    screens::{ContentArea, Screen}, 
+    screens::{ContentArea, Screen, leafy}, 
     widgets::{
         particles::Particles, 
         ripple::Ripple, 
@@ -53,13 +53,13 @@ impl<'a> Default for Sound<'a> {
         Sound {
             lhs: ContentArea::default()
                 .add_title(TITLE)
-                .add_paragraph(indoc! {
-                    "• Sound is a ***pressure wave*** that propagates \
+                .add_paragraph(leafy!(
+                    "Sound is a ***pressure wave*** that propagates \
                     through a **medium** (*gas*, *liquid* or *solid*).
                     "
-                })
-                .add_paragraph(indoc! {
-                    "• Propagation is carried by the **periodic oscillation** (*vibration*) of \
+                ))
+                .add_paragraph(leafy! {
+                    "Propagation is carried by the **periodic oscillation** (*vibration*) of \
                     the medium's *particles* around their point of origin.
                     "
                 })
@@ -67,16 +67,16 @@ impl<'a> Default for Sound<'a> {
                     "• A sound has the following **properties**:"
                 })
                 .add_list(vec! {
-                    "- **Speed**: ~343 m/s in **air**",
-                    "- **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)",
-                    "- **Period**: the time between two oscillations",
-                    "- **Wavelength**: the distance between two oscillations",
-                    "- **Frequency**: oscillations/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)",
-                    "- **Spectrum**, or *Timbre*"
+                    "• **Speed**: ~343 m/s in **air**",
+                    "• **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)",
+                    "• **Period**: the time between two oscillations",
+                    "• **Wavelength**: the distance between two oscillations",
+                    "• **Frequency**: oscillations/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)",
+                    "• **Spectrum**, or *Timbre*"
                 })
                 .add_paragraph(indoc! {
                     "• Our *perception* of sound is made from the translation of the vibrations reaching our ***eardrum*** to \
-                    a continuous *signal of nerve impulses* transmitted and interpreted by **the brain**"
+                    a *signal of nerve impulses*, transmitted and interpreted by **the brain**"
                 }),
             rhs: Animation::default(),            
         }
