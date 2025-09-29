@@ -1,15 +1,12 @@
+use color_eyre::owo_colors::{OwoColorize, Rgb};
 use crossterm::event::{KeyCode, KeyEvent};
 use ratatui::{
     buffer::Buffer, 
     layout::{
-        Constraint, 
-        Flex, 
-        self, 
-        Rect
+        self, Constraint, Flex, Rect
     }, 
     style::{
-        Style, 
-        Stylize
+        Color, Style, Stylize
     }, 
     widgets::{
         HighlightSpacing, 
@@ -136,8 +133,11 @@ impl<'a> WidgetRef for ContentArea<'a> {
                         // If paragraph is selected:
                         let p = ph.clone().black().on_gray();
                         p.render(lp[n], buf);
-                    } else {
+                    } else if self.select > i {
                         ph.render(lp[n], buf);
+                    } else {
+                        let p = ph.clone().gray().on_white();
+                        p.render(lp[n], buf);
                     }               
                     i += 1;     
                 }
@@ -157,7 +157,13 @@ impl<'a> WidgetRef for ContentArea<'a> {
                             )
                         ));
                     }   
+                    let style = if select < 0 {
+                        Style::new().gray().on_white()
+                    } else {
+                        Style::new()
+                    };
                     let l = List::new(ivec)
+                        .style(style)
                         .highlight_symbol(">> ")
                         .highlight_style(Style::new().black().on_gray())
                         .highlight_spacing(HighlightSpacing::Always)

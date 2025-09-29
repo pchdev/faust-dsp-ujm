@@ -11,8 +11,6 @@ use ratatui::{
         Block, 
         BorderType, 
         Borders, 
-        ListState, 
-        Paragraph, 
         Widget, WidgetRef, 
     }
 };
@@ -28,7 +26,6 @@ use crate::{
     widgets::{
         particles::Particles, 
         ripple::Ripple, 
-        waveform::Waveform
     }
 };
 
@@ -44,13 +41,6 @@ enum Animation {
     None,
     Ripple(Ripple),
     Particles(Particles),
-    Waveform(Waveform)
-}
-
-#[derive(Debug)]
-enum Content<'a> {
-    Paragraph(Paragraph<'a>),
-    List(Vec<String>, ListState)
 }
 
 pub struct Sound<'a> {
@@ -74,7 +64,7 @@ impl<'a> Default for Sound<'a> {
                     "
                 })
                 .add_paragraph(indoc! {
-                    "• A sound has the following properties:"
+                    "• A sound has the following **properties**:"
                 })
                 .add_list(vec! {
                     "- **Speed**: ~343 m/s in **air**",
@@ -118,9 +108,6 @@ impl<'a> WidgetRef for Sound<'a> {
             Animation::Particles(p) => {
                 p.render_ref(lhr, buf);
             }
-            Animation::Waveform(p) => {
-                p.render_ref(lhr, buf);
-            }
             _ => ()
         }
     }
@@ -144,21 +131,13 @@ impl<'a> Screen for Sound<'a> {
                             Particles::new(400)
                         )
                     }
-                    2 => {
-                        self.rhs = Animation::Waveform(
-                            Waveform::new(100, 25)
-                        );
-                    }
+                    2 => {}
                     3  => {
                         self.rhs = Animation::Ripple(
                             Ripple::new(200)
                         );
                     }
-                    4 => {
-                        self.rhs = Animation::Waveform(
-                            Waveform::new(100, 25)
-                        );
-                    }
+                    4 => {}
                     5  => {
                         self.rhs = Animation::Ripple(
                             Ripple::new(200)
@@ -178,9 +157,6 @@ impl<'a> Screen for Sound<'a> {
             }
             Animation::Particles(p) => {
                 p.on_tick(t);
-            }
-            Animation::Waveform(w) => {
-                w.on_tick(t);
             }
             _ => ()
         }
