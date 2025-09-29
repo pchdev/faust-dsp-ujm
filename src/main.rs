@@ -15,10 +15,7 @@ use ratatui::{
 use ratatui_macros::line;
 
 use crate::screens::{
-    agenda::Agenda, 
-    sound::Sound, 
-    splash::Splash, 
-    Screen
+    agenda::Agenda, signal::Signal, sound::Sound, splash::Splash, Screen
 };
 
 fn main() -> io::Result<()> {
@@ -41,7 +38,8 @@ impl App {
         app.screens = vec![
             Box::new(Splash::default()),
             Box::new(Agenda::default()),
-            Box::new(Sound::default())
+            Box::new(Sound::default()),
+            Box::new(Signal::default()),
         ];
         app
     }

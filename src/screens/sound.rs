@@ -70,12 +70,7 @@ impl<'a> Default for Sound<'a> {
                 })
                 .add_paragraph(indoc! {
                     "• Propagation is carried by the **periodic oscillation** (*vibration*) of \
-                    the medium's particles around their point of origin.
-                    "
-                })
-                .add_paragraph(indoc! {
-                    "• We **measure** sound and its properties by analyzing the periodic oscillation of \
-                    an object (usually the *membrane* of a *microphone*):            
+                    the medium's *particles* around their point of origin.
                     "
                 })
                 .add_list(vec! {
@@ -83,8 +78,13 @@ impl<'a> Default for Sound<'a> {
                     "- **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)",
                     "- **Period**: the time between two oscillations",
                     "- **Wavelength**: the distance between two oscillations",
-                    "- **Frequency**: cycles/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)",
+                    "- **Frequency**: oscillations/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)",
                     "- **Spectrum**, or *Timbre*, superposition of all "
+                })
+                .add_paragraph(indoc! {
+                    "• Sound waves reach our **eardrum**, making it vibrate, and then transmitted \
+                    to the **inner ear**, the **cochlea**, and to the brain as a *signal* of ***nerve impulses***.
+                    "
                 }),
             rhs: Animation::default(),            
         }

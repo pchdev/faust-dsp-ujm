@@ -21,7 +21,7 @@ use ratatui::{
     }
 };
 
-use ratatui_macros::{horizontal, vertical};
+use ratatui_macros::vertical;
 
 pub mod myself;
 pub mod agenda;
@@ -128,22 +128,24 @@ impl<'a> WidgetRef for ContentArea<'a> {
             .split(lv[2])
         ;
         // Render everything:
+        let mut i = 0;
         for (n, content) in self.contents.iter().enumerate() {
             match content {
                 Content::Paragraph(ph) => {
-                    if self.select == n {
+                    if self.select == i {
                         // If paragraph is selected:
                         let p = ph.clone().black().on_gray();
                         p.render(lp[n], buf);
                     } else {
                         ph.render(lp[n], buf);
-                    }                    
+                    }               
+                    i += 1;     
                 }
                 Content::List(svec, state) => {
                     let mut ivec = vec![];
                     let mut s = state.clone();
                     let select = self.select as isize - n as isize;
-                    if select < 0 {
+                    if select < 0 || select >= svec.len() as isize {
                         s.select(None);
                     } else {
                         s.select(Some(select as usize));
@@ -161,6 +163,7 @@ impl<'a> WidgetRef for ContentArea<'a> {
                         .highlight_spacing(HighlightSpacing::Always)
                     ;
                     StatefulWidget::render(l, lp[n], buf, &mut s);
+                    i += svec.len();
                 }
                 Content::Widget(w) => {
 
