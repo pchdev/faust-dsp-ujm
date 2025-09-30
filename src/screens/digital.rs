@@ -65,8 +65,9 @@ impl<'a> Default for Digital<'a> {
             lhs: ContentArea::default()
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
-                    "• To ***digitize*** a continuous signal means implies discretizing it. \
-                    This is made possible by two processes: ***sampling*** & ***quantization***.
+                    "• To ***digitize*** a continuous signal means implies *discretizing* it. \
+                    This is made possible by the *Analog-to-Digital Conversion* (**ADC**) process, \
+                    which implies two key elements: ***sampling*** and ***quantization***
                     "
                 })
                 .add_paragraph(indoc! {
@@ -74,21 +75,31 @@ impl<'a> Default for Digital<'a> {
                     "
                 })
                 .add_list(vec![
-                    "• **Audio CD**: 44.1 kHz",
-                    "• **Pro Audio**: 48/96 kHz",
-                    "• **MP3**: ?"
+                    "• **Audio CD**: *44.1 kHz*",
+                    "• **Pro Audio**: *48/96 kHz*",
+                    "• **MP3**: *320/256/128/96/64* **kbps**"
                 ])
+                .add_paragraph(leafy!(
+                    "• Because of ***aliasing***, the *sampling rate* must be **at least two times superior** to \
+                    the **highest frequency** we want to represent (*Nyquist-Shannon*)"
+                ))
                 .add_paragraph(indoc! {
-                    "• Once we take a sample at a given time, we need to determine the scale of its value. \
-                    This is called ***Quantization***. \
-                    The larger the scale is, the lesser quantization noise (quality vs. storage tradeoff).
+                    "• Once we take a sample at a given time, we need to determine the ***scale of its value***. \
+                    This is called ***Quantization***.
+                    Increasing the scale implies reducing the ***quantization noise*** \
+                    (*quality vs. storage tradeoff*).
                     "
                 })
                 .add_list(vec![
-                    "• **Audio CD**: 16-bits (range of 65,536 values)",
-                    "• **Pro Audio**: 24-bits (~16 million)",
-                    "• **DSP**: 32-bits floating-point"
+                    "• **Audio CD**: 16-bits (range of 65,536 values, 98 dB SNR)",
+                    "• **Pro Audio**: 24-bits (~16,7 million, 146 dB SNR)",
+                    "• **DSP**: 32-bits floating-point (~4,3 billion, 194 dB SNR)"
                 ])
+                .add_paragraph(
+                    "• Finally, sending a digital signal to audio speakers involves the inverse process of an **ADC**: \
+                    *Digital-to-Analog Conversion* (**DAC**).
+                    "
+                )
                 ,
             rhs: Animation::default(),            
         }

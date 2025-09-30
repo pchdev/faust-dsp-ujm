@@ -30,7 +30,7 @@ pub mod digital;
 
 macro_rules! leafy {
     ($str:expr) => {
-        concat!("𖥸   ", indoc!($str))
+        concat!("**↲**  ", indoc!($str))
     };
 }
 
