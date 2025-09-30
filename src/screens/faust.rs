@@ -34,9 +34,9 @@ use crate::{
 
 /// Font is 'Future':
 const TITLE: &'static str = indoc!{"
-╺┳┓╻┏━╸╻╺┳╸┏━┓╻     ┏━┓╻┏━╸┏┓╻┏━┓╻  
- ┃┃┃┃╺┓┃ ┃ ┣━┫┃     ┗━┓┃┃╺┓┃┗┫┣━┫┃  
-╺┻┛╹┗━┛╹ ╹ ╹ ╹┗━╸   ┗━┛╹┗━┛╹ ╹╹ ╹┗━╸
+┏━╸┏┓╻╺┳╸┏━╸┏━┓   ┏━╸┏━┓╻ ╻┏━┓╺┳╸
+┣╸ ┃┗┫ ┃ ┣╸ ┣┳┛   ┣╸ ┣━┫┃ ┃┗━┓ ┃ 
+┗━╸╹ ╹ ╹ ┗━╸╹┗╸   ╹  ╹ ╹┗━┛┗━┛ ╹ 
 "};
 
 #[derive(Debug, Default)]
@@ -54,59 +54,39 @@ enum Content<'a> {
     List(Vec<String>, ListState)
 }
 
-pub struct Digital<'a> {
+pub struct Faust<'a> {
     lhs: ContentArea<'a>, 
     rhs: Animation,
 }
 
-impl<'a> Default for Digital<'a> {
+impl<'a> Default for Faust<'a> {
     fn default() -> Self {
-        Digital {
+        Faust {
             lhs: ContentArea::default()
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
-                    "• To ***digitize*** a continuous signal means implies *discretizing* it. \
-                    This is made possible by an *Analog-to-Digital Conversion* (**ADC**) process, \
-                    which implies two key elements: ***sampling*** and ***quantization.***
-                    "
+                    "• **Faust** is a programming language made specifically made for ***audio DSP and synthesis***. \
+                    It has been created by Yann Orlarey, Dominique Fober & Stéphane Letz at GRAME in 2002."
                 })
-                .add_paragraph(leafy! {
-                    "***Sampling*** means taking a sample of a signal at a certain frequency/rate (***sample rate***).
-                    "
+                .add_list(vec! [
+                    "• *Functional* paradigm",
+                    "• Declarative, math-like syntax",
+                ])
+                .add_paragraph(indoc! {
+                    "• Compiles to many targets and architectures:",
                 })
                 .add_list(vec![
-                    "• **Audio CD**: *44.1 kHz*",
-                    "• **Pro Audio**: *48/96 kHz*",
-                    "• **MP3**: *320/256/128/96/64* **kbps**"
+                    "• **Plugins**: VST, CLAP, AudioUnit",
+                    "• **OS**: Linux, macOS, Windows, Android, iOS",
+                    "• **Code**: C/C++, Rust, WASM, Java..."
                 ])
-                .add_paragraph(leafy!(
-                    "• Because of ***aliasing***, the *sampling rate* must be **at least two times superior** to \
-                    the **highest frequency** we want to represent (*Nyquist-Shannon*)."
-                ))
-                .add_paragraph(leafy! {
-                    "• Once we take a sample at a given time, we need to determine the ***scale of its value***. \
-                    This is called ***Quantization***.
-                    Increasing the scale implies reducing the ***quantization noise*** \
-                    (*quality vs. storage tradeoff*).
-                    "
-                })
-                .add_list(vec![
-                    "• **Audio CD**: 16-bits (range of 65,536 values, 98 dB SNR)",
-                    "• **Pro Audio**: 24-bits (~16,7 million, 146 dB SNR)",
-                    "• **DSP**: 32-bits floating-point (~4,3 billion, 194 dB SNR)"
-                ])
-                .add_paragraph(
-                    "• Finally, sending a digital signal to audio speakers involves the inverse process of an **ADC**: \
-                    *Digital-to-Analog Conversion* (**DAC**).
-                    "
-                )
                 ,
             rhs: Animation::default(),            
         }
     }
 }
 
-impl<'a> WidgetRef for Digital<'a> {
+impl<'a> WidgetRef for Faust<'a> {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
         let [lhl, lhr] = horizontal![==50%, ==50%]
             .flex(Flex::Center)
@@ -133,7 +113,7 @@ impl<'a> WidgetRef for Digital<'a> {
     }
 }
 
-impl<'a> Screen for Digital<'a> {
+impl<'a> Screen for Faust<'a> {
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::Down | KeyCode::Up => {

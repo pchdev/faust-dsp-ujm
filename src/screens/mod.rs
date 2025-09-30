@@ -26,11 +26,12 @@ pub mod signal;
 pub mod sound;
 pub mod splash;
 pub mod digital;
+pub mod faust;
 
 
 macro_rules! leafy {
     ($str:expr) => {
-        concat!("**↲**  ", indoc!($str))
+        concat!("**[↲]**  ", indoc!($str))
     };
 }
 
@@ -136,6 +137,7 @@ impl<'a> WidgetRef for ContentArea<'a> {
         ;
         // Render everything:
         let mut i = 0;
+        let mut nlist = 0;
         for (n, content) in self.contents.iter().enumerate() {
             match content {
                 Content::Paragraph(ph) => {
@@ -154,7 +156,7 @@ impl<'a> WidgetRef for ContentArea<'a> {
                 Content::List(svec, state) => {
                     let mut ivec = vec![];
                     let mut s = state.clone();
-                    let select = self.select as isize - n as isize;
+                    let select = self.select as isize - i as isize;
                     if select < 0 || select >= svec.len() as isize {
                         s.select(None);
                     } else {
