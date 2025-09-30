@@ -65,7 +65,7 @@ impl<'a> Default for Faust<'a> {
             lhs: ContentArea::default()
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
-                    "• **Faust** is a programming language made specifically made for ***audio DSP and synthesis***. \
+                    "• **Faust** is a programming language specifically made for ***audio DSP and synthesis***. \
                     It has been created by Yann Orlarey, Dominique Fober & Stéphane Letz at GRAME in 2002."
                 })
                 .add_list(vec! [
@@ -73,13 +73,21 @@ impl<'a> Default for Faust<'a> {
                     "• Declarative, math-like syntax",
                 ])
                 .add_paragraph(indoc! {
-                    "• Compiles to many targets and architectures:",
+                    "• Compiles to **many targets** and **architectures**:",
                 })
                 .add_list(vec![
                     "• **Plugins**: VST, CLAP, AudioUnit",
+                    "• **Software**: Max, Pd, SuperCollider, Csound",
                     "• **OS**: Linux, macOS, Windows, Android, iOS",
+                    "• **Embedded**: Bela, Teensy, Daisy, ESP32, FPGA",
                     "• **Code**: C/C++, Rust, WASM, Java..."
                 ])
+                .add_paragraph(leafy! {
+                    "Tutorials & documentation available at: ***https://faust.grame.fr***"
+                })
+                .add_paragraph(leafy! {
+                    "Dedicated online IDE: ***https://faustide.grame.fr***"
+                })
                 ,
             rhs: Animation::default(),            
         }
