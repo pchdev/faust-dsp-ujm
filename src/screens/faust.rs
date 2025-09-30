@@ -25,11 +25,7 @@ use ratatui_macros::{
 
 use crate::{
     screens::{ContentArea, Screen, leafy}, 
-    widgets::{
-        particles::Particles, 
-        ripple::Ripple, 
-        waveform::Waveform
-    }
+    widgets::{faustblock::FaustWidget}
 };
 
 /// Font is 'Future':
@@ -39,13 +35,11 @@ const TITLE: &'static str = indoc!{"
 ┗━╸╹ ╹ ╹ ┗━╸╹┗╸   ╹  ╹ ╹┗━┛┗━┛ ╹ 
 "};
 
-#[derive(Debug, Default)]
+#[derive(Default)]
 enum Animation {
     #[default]
     None,
-    Ripple(Ripple),
-    Particles(Particles),
-    Waveform(Waveform)
+    CodeBlock(FaustWidget)
 }
 
 #[derive(Debug)]
@@ -65,7 +59,8 @@ impl<'a> Default for Faust<'a> {
             lhs: ContentArea::default()
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
-                    "• **Faust** is a programming language specifically made for ***audio DSP and synthesis***. \
+                    "• **Faust** (*Functional Audio Stream*) is a programming language \
+                    specifically made for ***audio DSP and synthesis***. \
                     It has been created by Yann Orlarey, Dominique Fober & Stéphane Letz at GRAME in 2002."
                 })
                 .add_list(vec! [
@@ -89,7 +84,7 @@ impl<'a> Default for Faust<'a> {
                     "Dedicated online IDE: ***https://faustide.grame.fr***"
                 })
                 ,
-            rhs: Animation::default(),            
+            rhs: Animation::CodeBlock(FaustWidget::default()),            
         }
     }
 }
@@ -107,14 +102,8 @@ impl<'a> WidgetRef for Faust<'a> {
         ;
         self.lhs.render_ref(lhl, buf);
         match &self.rhs {
-            Animation::Ripple(r) => {
-                r.render_ref(lhr, buf);
-            }
-            Animation::Particles(p) => {
-                p.render_ref(lhr, buf);
-            }
-            Animation::Waveform(p) => {
-                p.render_ref(lhr, buf);
+            Animation::CodeBlock(f) => {
+                f.render_ref(lhr, buf);
             }
             _ => ()
         }
@@ -129,11 +118,6 @@ impl<'a> Screen for Faust<'a> {
             }
             KeyCode::Enter => {
                 match self.lhs.select {
-                    2..=3=> {
-                        self.rhs = Animation::Waveform(
-                            Waveform::new(100, 25)
-                        );
-                    }
                     _ => ()
                 }
             }
@@ -142,15 +126,6 @@ impl<'a> Screen for Faust<'a> {
     }
     fn on_tick(&mut self, t: usize) {
         match &mut self.rhs {
-            Animation::Ripple(r) => {
-                r.on_tick(t);
-            }
-            Animation::Particles(p) => {
-                p.on_tick(t);
-            }
-            Animation::Waveform(w) => {
-                w.on_tick(t);
-            }
             _ => ()
         }
     }

@@ -84,8 +84,8 @@ impl<'a> Default for Digital<'a> {
                     the **highest frequency** we want to represent (*Nyquist-Shannon*)."
                 ))
                 .add_paragraph(leafy! {
-                    "• Once we take a sample at a given time, we need to determine the ***scale of its value***. \
-                    This is called ***Quantization***.
+                    "• Once we take a sample at a given time, we need to determine the ***scale of its value***, \
+                    this is called ***quantization***.
                     Increasing the scale implies reducing the ***quantization noise*** \
                     (*quality vs. storage tradeoff*).
                     "
@@ -93,7 +93,7 @@ impl<'a> Default for Digital<'a> {
                 .add_list(vec![
                     "• **Audio CD**: 16-bits (range of 65,536 values, 98 dB SNR)",
                     "• **Pro Audio**: 24-bits (~16,7 million, 146 dB SNR)",
-                    "• **DSP**: 32-bits floating-point (~4,3 billion, 194 dB SNR)"
+                    "• **DSP**: 32/64-bits floating-point (~4,3 billion, 194 dB SNR)"
                 ])
                 .add_paragraph(
                     "• Finally, sending a digital signal to audio speakers involves the inverse process of an **ADC**: \
