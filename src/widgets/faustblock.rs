@@ -57,7 +57,7 @@ impl WidgetRef for FaustEditor {
                             .borders(Borders::ALL)
                             .border_type(BorderType::Rounded)
                             .title(" faust ".bold())
-                            .title_alignment(Alignment::Center)
+                            .title_alignment(Alignment::Right)
                     )
                     .base(Style::default().black().on_white())
                     .cursor_style(Style::default().black().on_gray())
@@ -146,6 +146,8 @@ impl WidgetRef for FaustWidget {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
         let [t0, t1] = vertical![==2%, ==98%]
             .flex(Flex::Center)
+            .vertical_margin(1)
+            .horizontal_margin(1)
             .areas(area)
         ;
         Tabs::new(

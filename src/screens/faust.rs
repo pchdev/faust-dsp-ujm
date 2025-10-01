@@ -61,7 +61,7 @@ impl<'a> Default for Faust<'a> {
                 .add_paragraph(indoc! {
                     "• **Faust** (*Functional Audio Stream*) is a programming language \
                     specifically made for ***audio DSP and synthesis***. \
-                    It has been created by Yann Orlarey, Dominique Fober & Stéphane Letz at GRAME in 2002."
+                    It was created by Yann Orlarey, Dominique Fober & Stéphane Letz at GRAME in 2002."
                 })
                 .add_list(vec! [
                     "• *Functional* paradigm",

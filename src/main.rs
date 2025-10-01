@@ -2,9 +2,9 @@ mod screens;
 mod widgets;
 
 use std::{io, time::{Duration, Instant}};
-use crossterm::{event::{
-    self, Event, KeyCode, KeyEvent, KeyEventKind
-}};
+use crossterm::event::{
+    self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers
+};
 
 use ratatui::{
     style::Stylize,
@@ -78,28 +78,33 @@ impl App {
         Ok(())
     }
     fn on_key_event(&mut self, k: KeyEvent) {
-        match k.code {
-            // Next screen:
-            KeyCode::Char(' ') => {
-                if self.index < self.screens.len() -1 {
-                   self.index += 1;
-                } 
-            }
-            // Previous screen:
-            KeyCode::Backspace => {
-                if self.index > 0 {
-                   self.index -= 1;
+        if k.modifiers.contains(KeyModifiers::CONTROL) {
+                match k.code {
+                // Next screen:
+                KeyCode::Char(' ') => {
+                    if self.index < self.screens.len() -1 {
+                       self.index += 1;
+                    } 
+                }
+                // Previous screen:
+                KeyCode::Backspace => {
+                    if self.index > 0 {
+                       self.index -= 1;
+                    }
+                }
+                // Quit app:
+                KeyCode::Char('q') => {
+                    self.exit();
+                }
+                // Otherwise, dispatch to current screen:
+                _ => {
+                    let screen = &mut self.screens[self.index];
+                    screen.on_key_event(k);
                 }
             }
-            // Quit app:
-            KeyCode::Esc => {
-                self.exit();
-            }
-            // Otherwise, dispatch to current screen:
-            _ => {
+        } else {
                 let screen = &mut self.screens[self.index];
                 screen.on_key_event(k);
-            }
         }
     }
     fn animate(&self, frame: &mut Frame) {
