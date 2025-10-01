@@ -68,7 +68,7 @@ impl WidgetRef for Particles {
             }
         }
         Canvas::default()
-            .marker(symbols::Marker::Dot)
+            .marker(symbols::Marker::Braille)
             .background_color(Color::White)
             .paint(|ctx| {
                 for row in coords {

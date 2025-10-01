@@ -10,12 +10,13 @@ use edtui::{
 };
 use ratatui::{
     buffer::Buffer, 
-    layout::{Alignment, Rect}, 
+    layout::{Alignment, Flex, Rect}, 
     style::{Style, Stylize}, 
     text::Line, 
     widgets::{Block, BorderType, Borders, Tabs, Widget, WidgetRef}
 };
 
+use ratatui_macros::vertical;
 use strum::{Display, EnumIter, FromRepr, IntoEnumIterator};
 
 #[derive(Clone)]
@@ -115,27 +116,6 @@ impl TabSelect {
     }
 }
 
-impl Widget for TabSelect {
-    fn render(self, area: Rect, buf: &mut Buffer) {
-        match self {
-            Self::Editor(e) => {
-            }
-            Self::Control => {
-            
-            }
-            Self::Graph => {
-
-            }
-            Self::Waveform => {
-
-            }
-            Self::Spectrum => {
-                
-            }
-        }
-    }
-}
-
 pub(crate) struct FaustWidget {
     select: TabSelect
 }
@@ -150,17 +130,39 @@ impl Default for FaustWidget {
     }
 }
 
+impl FaustWidget {
+    /// Propagate key event to underlying widget:
+    pub(crate) fn on_key_event(&mut self, k: KeyEvent) {
+        match &mut self.select {
+            TabSelect::Editor(e) => {
+                e.on_key_event(k);
+            }
+            _ => ()
+        }
+    }
+}
+
 impl WidgetRef for FaustWidget {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
-        let tabs = Tabs::new(
+        let [t0, t1] = vertical![==2%, ==98%]
+            .flex(Flex::Center)
+            .areas(area)
+        ;
+        Tabs::new(
                 TabSelect::iter().map(TabSelect::title)
             )
-            .highlight_style(Style::default())
+            .highlight_style(Style::default().white().on_black())
             .select(0usize)
             .padding("", "")
             .divider(" ")
-            .render(area, buf)
+            .render(t0, buf)
         ;
+        match &self.select {
+            TabSelect::Editor(e) => {
+                e.render_ref(t1, buf);
+            }
+            _ => ()
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 
-use crossterm::event::{KeyCode, KeyEvent};
+use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 use ratatui::{
     buffer::Buffer, 
@@ -84,7 +84,7 @@ impl<'a> Default for Faust<'a> {
                     "Dedicated online IDE: ***https://faustide.grame.fr***"
                 })
                 ,
-            rhs: Animation::CodeBlock(FaustWidget::default()),            
+            rhs: Animation::None,            
         }
     }
 }
@@ -112,18 +112,37 @@ impl<'a> WidgetRef for Faust<'a> {
 
 impl<'a> Screen for Faust<'a> {
     fn on_key_event(&mut self, k: KeyEvent) {
-        match k.code {
-            KeyCode::Down | KeyCode::Up => {
-                self.lhs.on_key_event(k);
-            }
-            KeyCode::Enter => {
-                match self.lhs.select {
-                    _ => ()
+        match &mut self.rhs {
+            Animation::None => {
+                match k.code {
+                    // Ctrl+Right: switch to right panel
+                    KeyCode::Right => {
+                        if k.modifiers.contains(KeyModifiers::CONTROL) {
+                            self.rhs = Animation::CodeBlock(
+                                FaustWidget::default()
+                            );
+                        }
+                    }
+                    _ => {
+                        self.lhs.on_key_event(k);
+                    }
                 }
             }
-            _ => ()
+            Animation::CodeBlock(cb) => {
+                match k.code {
+                    KeyCode::Left => {
+                        if k.modifiers.contains(KeyModifiers::CONTROL) {
+                            self.rhs = Animation::None
+                        }
+                    }
+                    _ => {
+                        cb.on_key_event(k);
+                    }
+                }
+            }
         }
     }
+
     fn on_tick(&mut self, t: usize) {
         match &mut self.rhs {
             _ => ()
