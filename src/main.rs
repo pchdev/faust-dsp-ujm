@@ -1,7 +1,7 @@
 mod screens;
 mod widgets;
 
-use std::{io, time::{Duration, Instant}};
+use std::{any::Any, io, time::{Duration, Instant}};
 use crossterm::event::{
     self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers
 };
@@ -79,7 +79,7 @@ impl App {
     }
     fn on_key_event(&mut self, k: KeyEvent) {
         if k.modifiers.contains(KeyModifiers::CONTROL) {
-                match k.code {
+            match k.code {
                 // Next screen:
                 KeyCode::Char(' ') => {
                     if self.index < self.screens.len() -1 {
@@ -87,7 +87,7 @@ impl App {
                     } 
                 }
                 // Previous screen:
-                KeyCode::Backspace => {
+                KeyCode::Char('h') => {
                     if self.index > 0 {
                        self.index -= 1;
                     }

@@ -49,8 +49,10 @@ enum Content<'a> {
 }
 
 pub struct Faust<'a> {
-    lhs: ContentArea<'a>, 
-    rhs: Animation,
+      lhs: ContentArea<'a>, 
+      rhs: Animation,
+    rhs_focus: bool,
+     rhs_init: bool,
 }
 
 impl<'a> Default for Faust<'a> {
@@ -85,6 +87,8 @@ impl<'a> Default for Faust<'a> {
                 })
                 ,
             rhs: Animation::None,            
+            rhs_focus: false,
+            rhs_init: false,
         }
     }
 }
@@ -112,15 +116,63 @@ impl<'a> WidgetRef for Faust<'a> {
 
 impl<'a> Screen for Faust<'a> {
     fn on_key_event(&mut self, k: KeyEvent) {
+        match k.code {
+            KeyCode::Right => {
+                if k.modifiers.contains(KeyModifiers::CONTROL)
+                && k.modifiers.contains(KeyModifiers::SHIFT) {
+                    if self.rhs_init == false {
+                        self.rhs = Animation::CodeBlock(
+                            FaustWidget::default()
+                        );
+                    }
+                    self.rhs_focus = true;
+                } else {
+                    match &mut self.rhs {
+                        Animation::None => {
+                            self.lhs.on_key_event(k);
+                        }
+                        Animation::CodeBlock(cb) => {
+                            if self.rhs_focus {
+                                cb.on_key_event(k);
+                            } else {
+                                self.lhs.on_key_event(k);
+                            }
+                        }
+                    }
+                }
+            }
+            KeyCode::Left => {
+                if k.modifiers.contains(KeyModifiers::CONTROL)
+                && k.modifiers.contains(KeyModifiers::SHIFT) {
+                    self.rhs_focus = false;
+                } else {
+                    // match &mut self.rhs {
+                        
+                    // }
+                    // if self.rhs_focus {
+                    //     cb.on_key_event(k);
+                    // } else {
+                    //     self.lhs.on_key_event(k);
+                    // }                            
+                }
+            }
+            _ => {
+                
+            }
+        }
         match &mut self.rhs {
             Animation::None => {
                 match k.code {
                     // Ctrl+Right: switch to right panel
                     KeyCode::Right => {
-                        if k.modifiers.contains(KeyModifiers::CONTROL) {
-                            self.rhs = Animation::CodeBlock(
-                                FaustWidget::default()
-                            );
+                        if k.modifiers.contains(KeyModifiers::CONTROL) 
+                        && k.modifiers.contains(KeyModifiers::SHIFT) {
+                            if self.rhs_init == false {
+                                self.rhs = Animation::CodeBlock(
+                                    FaustWidget::default()
+                                );
+                            }
+                            self.rhs_focus = true;
                         }
                     }
                     _ => {
@@ -131,12 +183,24 @@ impl<'a> Screen for Faust<'a> {
             Animation::CodeBlock(cb) => {
                 match k.code {
                     KeyCode::Left => {
-                        if k.modifiers.contains(KeyModifiers::CONTROL) {
-                            self.rhs = Animation::None
+                        if k.modifiers.contains(KeyModifiers::CONTROL) 
+                        && k.modifiers.contains(KeyModifiers::SHIFT) {
+                            self.rhs_focus = false
+                        } else {
+                            if self.rhs_focus {
+                                cb.on_key_event(k);
+                            } else {
+                                self.lhs.on_key_event(k);
+                            }                            
                         }
                     }
                     _ => {
-                        cb.on_key_event(k);
+                        if self.rhs_focus {
+                            cb.on_key_event(k);
+                        } else {
+                            self.lhs.on_key_event(k);
+                        }
+                        
                     }
                 }
             }
