@@ -1,13 +1,16 @@
 
 use std::{thread, time::Duration};
+use crossterm::event::{KeyCode, KeyEvent};
 
-use crossterm::event::KeyEvent;
 use ratatui::{
-    buffer::Buffer, prelude::Rect, style::{Color, Style}, symbols, widgets::{
+    buffer::Buffer, prelude::Rect, style::{Color, Style}, 
+    symbols, 
+    widgets::{
         canvas::{
             Canvas, 
             Circle
-        }, StatefulWidgetRef, WidgetRef
+        }, 
+        WidgetRef
     }
 };
 
@@ -33,6 +36,14 @@ impl Ripple {
         }
         if self.tick >= self.amplitude {
            self.tick -= self.amplitude;
+        }
+    }
+    pub(crate) fn on_key_event(&mut self, k: KeyEvent) {
+        match k.code {
+            KeyCode::F(5) => {
+                
+            }
+            _ => ()
         }
     }
 }

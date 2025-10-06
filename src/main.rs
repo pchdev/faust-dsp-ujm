@@ -85,19 +85,19 @@ impl App {
     fn on_key_event(&mut self, k: KeyEvent) {
         if k.modifiers.contains(KeyModifiers::CONTROL) {
             match k.code {
-                // Next screen:
+                // Next screen (Ctrl + Esp):
                 KeyCode::Char(' ') => {
                     if self.index < self.screens.len() -1 {
                        self.index += 1;
                     } 
                 }
-                // Previous screen:
+                // Previous screen (Ctrl + Backspace):
                 KeyCode::Char('h') => {
                     if self.index > 0 {
                        self.index -= 1;
                     }
                 }
-                // Quit app:
+                // Quit app (Ctrl + q):
                 KeyCode::Char('q') => {
                     self.exit();
                 }
@@ -107,8 +107,10 @@ impl App {
                     screen.on_key_event(k);
                 }
             }
-        } else {
+        } else { 
+            // No modifier:
             if self.popup {
+                // Navigate popup:
                 match k.code {
                     KeyCode::Up => {
                         self.popup_state.select_previous();
@@ -127,6 +129,7 @@ impl App {
                     _ => ()
                 }
             } else {
+                // Open popup, or pass to underlying screen:
                 match k.code {
                     KeyCode::F(4) => {
                         // Open popup:
@@ -169,9 +172,12 @@ impl App {
             )
             .title_bottom(
                 line![
-                    "[esc] Quit ", 
-                    "[bsp] Prev ", 
-                    "[spc] Next "]
+                    "Ctrl + (", 
+                    "[q] Quit | ", 
+                    "[bsp] Prev | ", 
+                    "[spc] Next | ",
+                    "[F4] Jump)"
+                ]
                 .white().on_black()
                 .right_aligned()
             )

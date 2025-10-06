@@ -2,12 +2,7 @@
 use crossterm::event::{KeyCode, KeyEvent};
 
 use ratatui::{
-    buffer::Buffer, 
-    layout::{
-        Flex, 
-    }, 
-    prelude::Rect, 
-    widgets::{
+    buffer::Buffer, layout::Flex, prelude::Rect, style::{Modifier, Style, Stylize}, widgets::{
         Block, 
         BorderType, 
         Borders, 
@@ -43,9 +38,24 @@ enum Animation {
     Particles(Particles),
 }
 
+impl Animation {
+    pub(crate) fn on_key_event(&mut self, k: KeyEvent) {
+        match self {
+            Self::Ripple(r) => {
+                r.on_key_event(k);
+            }
+            Self::Particles(p) => {
+
+            }
+            _ => ()
+        }
+    }
+}
+
 pub struct Sound<'a> {
     lhs: ContentArea<'a>, 
     rhs: Animation,
+    rhs_focus: bool,
 }
 
 impl<'a> Default for Sound<'a> {
@@ -89,7 +99,8 @@ impl<'a> Default for Sound<'a> {
                     "• **Chicken**: 125 to 2,000 Hz"
                 ])
                 ,
-            rhs: Animation::default(),            
+            rhs: Animation::default(),       
+            rhs_focus: false,     
         }
         // • Speed:
         //  - Air: ~340 m/s
@@ -111,6 +122,14 @@ impl<'a> WidgetRef for Sound<'a> {
             .border_type(BorderType::Plain)
             .render(lhr, buf)
         ;
+        if self.rhs_focus {
+            Block::bordered()
+                .borders(Borders::ALL)
+                .border_type(BorderType::Double)
+                .style(Style::default().dark_gray())
+                .render(lhr, buf)
+            ;
+        }
         self.lhs.render_ref(lhl, buf);
         match &self.rhs {
             Animation::Ripple(r) => {
@@ -131,9 +150,14 @@ impl<'a> Screen for Sound<'a> {
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::Down | KeyCode::Up => {
-                self.lhs.on_key_event(k);
+                if self.rhs_focus {
+                    self.rhs.on_key_event(k)
+                } else {
+                    self.lhs.on_key_event(k);
+                }                
             }
             KeyCode::Enter => {
+                self.rhs_focus = true;
                 match self.lhs.select {
                     0  => {
                         self.rhs = Animation::Ripple(
@@ -159,7 +183,9 @@ impl<'a> Screen for Sound<'a> {
                     }
                     _ => ()
                 }
-
+            }
+            KeyCode::Backspace => {
+                self.rhs_focus = false;
             }
             _ => ()
         }
