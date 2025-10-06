@@ -192,6 +192,7 @@ impl<'a> WidgetRef for ContentArea<'a> {
 }
 
 pub(crate) trait Screen : WidgetRef {
+    fn title(&self) -> &'static str;
     fn on_key_event(&mut self, k: KeyEvent) {}
     fn on_tick(&mut self, t: usize) {}
 }

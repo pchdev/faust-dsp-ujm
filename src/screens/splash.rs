@@ -60,6 +60,9 @@ impl WidgetRef for Splash {
 }
 
 impl Screen for Splash {
+    fn title(&self) -> &'static str {
+        "Title"
+    }
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::Down => {

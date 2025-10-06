@@ -134,6 +134,9 @@ impl<'a> WidgetRef for Digital<'a> {
 }
 
 impl<'a> Screen for Digital<'a> {
+    fn title(&self) -> &'static str {
+        "Digital Audio Signal"
+    }
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::Down | KeyCode::Up => {

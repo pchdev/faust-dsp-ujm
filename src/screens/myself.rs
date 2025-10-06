@@ -122,6 +122,9 @@ impl<'a> WidgetRef for Myself<'a> {
 }
 
 impl<'a> Screen for Myself<'a> {
+    fn title(&self) -> &'static str {
+        "Hello!"
+    }
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::Down | KeyCode::Up => {

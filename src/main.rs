@@ -1,21 +1,29 @@
 mod screens;
 mod widgets;
 
-use std::{any::Any, io, time::{Duration, Instant}};
+use std::{io, time::{Duration, Instant}};
 use crossterm::event::{
     self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers
 };
 
 use ratatui::{
-    style::Stylize,
-    symbols::border,
-    widgets::Block,
+    layout::Flex, 
+    style::{Style, Stylize}, 
+    symbols::border, 
+    widgets::{Block, Borders, Clear, HighlightSpacing, List, ListItem, ListState, StatefulWidget}, 
     DefaultTerminal, Frame
 };
-use ratatui_macros::line;
+use ratatui_macros::{horizontal, line, vertical};
+use tui_widgets::popup::{Popup, SizedWrapper};
 
 use crate::screens::{
-    agenda::Agenda, digital::Digital, faust::Faust, myself::Myself, signal::Signal, sound::Sound, splash::Splash, Screen
+    agenda::Agenda, 
+    digital::Digital, 
+    faust::Faust, 
+    myself::Myself, 
+    signal::Signal, 
+    sound::Sound, 
+    splash::Splash, Screen
 };
 
 fn main() -> io::Result<()> {
@@ -29,6 +37,8 @@ fn main() -> io::Result<()> {
 pub struct App {
       index: usize,
     screens: Vec<Box<dyn Screen>>,
+      popup: bool,
+      popup_state: ListState,
        exit: bool,
 }
 
@@ -98,8 +108,38 @@ impl App {
                 }
             }
         } else {
-                let screen = &mut self.screens[self.index];
-                screen.on_key_event(k);
+            if self.popup {
+                match k.code {
+                    KeyCode::Up => {
+                        self.popup_state.select_previous();
+                    }
+                    KeyCode::Down => {
+                        self.popup_state.select_next();
+                    }
+                    KeyCode::Enter => {
+                        self.index = self.popup_state.selected().unwrap();
+                        self.popup = false;
+                    }
+                    KeyCode::F(4) | KeyCode::Esc => {
+                        self.popup = false;
+                        self.popup_state.select(Some(self.index));
+                    }
+                    _ => ()
+                }
+            } else {
+                match k.code {
+                    KeyCode::F(4) => {
+                        // Open popup:
+                        self.popup = true;
+                        self.popup_state.select(Some(self.index));
+                    }
+                    _ => {
+                        let screen = &mut self.screens[self.index];
+                        screen.on_key_event(k);
+                    }
+                }
+            }
+
         }
     }
     fn animate(&self, frame: &mut Frame) {
@@ -144,6 +184,41 @@ impl App {
         let screen = &self.screens[self.index];
         frame.render_widget(&block, frame.area());
         screen.render_ref(inner, frame.buffer_mut());
+        if self.popup {
+            let lv = vertical![==33%, ==33%, ==33%]
+                .flex(Flex::Center)
+                .split(frame.area())
+            ;
+            let lh = horizontal![==33%, ==33%, ==33%]
+                .flex(Flex::Center)
+                .split(lv[1])
+            ;
+            let items: Vec<ListItem> = self.screens.iter().enumerate()
+                .map(|(n,i)| 
+                    ListItem::new(format!("{}. {}", n+1, i.title()))
+                )
+                .collect()
+            ;
+            let l = List::new(items)
+                .style(Style::new().black().on_white())
+                .highlight_symbol("⤷ ")
+                .highlight_style(Style::new().black().on_gray().bold())
+                .highlight_spacing(HighlightSpacing::Always)
+            ;
+            let block = Block::bordered()
+                .title(line![" jump to screen: "].centered().bold())
+                .border_set(border::ROUNDED)
+                .black().on_white()
+            ;
+            let lvb = vertical![==10%, ==80%, ==10%]
+                .flex(Flex::Center)
+                .split(block.inner(lh[1]))
+            ; 
+            let mut state = self.popup_state.clone();
+            frame.render_widget(Clear, lh[1]);
+            frame.render_widget(&block, lh[1]);
+            l.render(lvb[1], frame.buffer_mut(), &mut state);
+        }
     }
 
     fn exit(&mut self) {

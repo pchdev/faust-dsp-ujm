@@ -76,7 +76,7 @@ impl<'a> Default for Sound<'a> {
                 })
                 .add_paragraph(indoc! {
                     "• Our ***perception*** of sound is made from the translation of the vibrations reaching our ***eardrums*** to \
-                    a *signal of nerve impulses*, transmitted and interpreted by **the brain**"
+                    a *signal of nerve impulses*, transmitted and interpreted by **the brain**."
                 })
                 .add_paragraph(indoc! {
                     "• Human ears can typically identify sounds ***from 20 Hz to 20 kHz***."
@@ -125,6 +125,9 @@ impl<'a> WidgetRef for Sound<'a> {
 }
 
 impl<'a> Screen for Sound<'a> {
+    fn title(&self) -> &'static str {
+        "Sound"
+    }
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::Down | KeyCode::Up => {

@@ -350,6 +350,9 @@ impl WidgetRef for Agenda {
 }
 
 impl Screen for Agenda {
+    fn title(&self) -> &'static str {
+        "Agenda"
+    }
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::Up => {

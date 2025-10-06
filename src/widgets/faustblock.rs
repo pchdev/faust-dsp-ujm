@@ -18,21 +18,34 @@ use ratatui::{
 
 use ratatui_macros::vertical;
 use strum::{Display, EnumIter, FromRepr, IntoEnumIterator};
+use indoc::indoc;
+
+use crate::screens::faust::Faust;
 
 #[derive(Clone)]
 pub struct FaustEditor {
     state: EditorState,
 }
 
+const DEFAULT_PROC: &'static str = "process = +;";
+
 impl Default for FaustEditor {
     fn default() -> Self {
         FaustEditor { 
             state: EditorState::new(
-                Lines::from(
-                    "process = +;"
-                )
+                Lines::from(DEFAULT_PROC)
             ),
          }
+    }
+}
+
+impl FaustEditor {
+    fn new<T: ToString>(str: T) -> Self {
+        FaustEditor { 
+            state: EditorState::new(
+                Lines::from(str.to_string().as_str())
+            ) 
+        }
     }
 }
 
@@ -131,6 +144,13 @@ impl Default for FaustWidget {
 }
 
 impl FaustWidget {
+    pub(crate) fn new<T: ToString>(str: T) -> Self {
+        FaustWidget { 
+            select: TabSelect::Editor(
+                FaustEditor::new(str)
+            ) 
+        }
+    }
     /// Propagate key event to underlying widget:
     pub(crate) fn on_key_event(&mut self, k: KeyEvent) {
         match &mut self.select {

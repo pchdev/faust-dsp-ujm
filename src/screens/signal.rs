@@ -71,7 +71,7 @@ impl<'a> Default for Signal<'a> {
                 })
                 .add_paragraph(indoc! {
                     "• Just like *nerve impulses* carried to the brain, the analyzed data usually needs to be first converted \
-                    to another *physical unit*, or *domain* (***transduction***) in order to adapt to measurement tools.
+                    to another *physical unit*, or *domain* (***transduction***) in order to adapt to measurement/processing tools.
                     "
                 })
                 .add_paragraph(indoc! {
@@ -127,6 +127,9 @@ impl<'a> WidgetRef for Signal<'a> {
 }
 
 impl<'a> Screen for Signal<'a> {
+    fn title(&self) -> &'static str {
+        "Signal"
+    }
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::Down | KeyCode::Up => {
