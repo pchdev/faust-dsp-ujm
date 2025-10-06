@@ -75,7 +75,7 @@ impl<'a> Default for Sound<'a> {
                     "• **Spectrum**, or *Timbre*"
                 })
                 .add_paragraph(indoc! {
-                    "• Our *perception* of sound is made from the translation of the vibrations reaching our ***eardrum*** to \
+                    "• Our ***perception*** of sound is made from the translation of the vibrations reaching our ***eardrums*** to \
                     a *signal of nerve impulses*, transmitted and interpreted by **the brain**"
                 })
                 .add_paragraph(indoc! {

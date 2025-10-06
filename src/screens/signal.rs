@@ -76,13 +76,17 @@ impl<'a> Default for Signal<'a> {
                 })
                 .add_paragraph(indoc! {
                     "• The vibration of a microphone's membrane is, for instance, usually converted to ***continuous electrical current***, \
-                    and can be then analyzed using an **oscilloscope**. In this case, the signal is said to be ***\"analog\"***.
+                    and can be then processed and/or analyzed. In this case, the signal is said to be ***\"analog\"***.
                     "
                 })
                 .add_paragraph(leafy! {
                     "With an oscilloscope, we can measure the **amplitude** of a signal at a given *point in time* (***time-domain***), \
                     through the visualisation of a ***waveform***."
                 })   
+                .add_paragraph(indoc! {
+                    "• An analog signal can already be processed as it is, with ***analog effects***: \
+                    *tape delay*, *distortion*, *chorus*, *reverberation (spring, plate)*, etc."
+                })
                 // TODO: add spectrogram animation?             
                 .add_paragraph(leafy! {
                     "On the other hand, it is difficult to extract precise information about *frequency* and *spectrum*. \

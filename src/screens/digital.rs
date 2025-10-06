@@ -65,7 +65,7 @@ impl<'a> Default for Digital<'a> {
             lhs: ContentArea::default()
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
-                    "• To ***digitize*** a continuous signal means implies *discretizing* it. \
+                    "• To ***digitize*** a continuous signal implies *discretizing* it. \
                     This is made possible by an *Analog-to-Digital Conversion* (**ADC**) process, \
                     which implies two key elements: ***sampling*** and ***quantization.***
                     "
