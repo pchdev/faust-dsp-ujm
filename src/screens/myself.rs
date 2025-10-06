@@ -1,88 +1,143 @@
-// use crossterm::event::{KeyCode, KeyEvent};
-// use ratatui::{
-//     buffer::Buffer, layout::{
-//         Constraint, Flex, Layout, Rect
-//     }, style::{palette::tailwind::SLATE, Style, Stylize}, symbols, text::{
-//         Line, Text
-//     }, widgets::{
-//         Block, Borders, 
-//         HighlightSpacing, 
-//         List, ListItem, ListState, 
-//         Paragraph, 
-//         StatefulWidget, StatefulWidgetRef, 
-//         Table, Widget, WidgetRef
-//     }
-// };
-// use ratatui_macros::{horizontal, vertical};
 
-// use crate::screens::Screen;
+use crossterm::event::{KeyCode, KeyEvent};
 
-// const TOC: &'static str = r"
+use ratatui::{
+    buffer::Buffer, 
+    layout::{
+        Flex, 
+    }, 
+    prelude::Rect, 
+    widgets::{
+        Block, 
+        BorderType, 
+        Borders, 
+        ListState, 
+        Paragraph, 
+        Widget, WidgetRef, 
+    }
+};
 
+use indoc::indoc;
 
-// ╺┳╸┏━┓┏┓ ╻  ┏━╸   ┏━┓┏━╸   ┏━╸┏━┓┏┓╻╺┳╸┏━╸┏┓╻╺┳╸┏━┓
-//  ┃ ┣━┫┣┻┓┃  ┣╸    ┃ ┃┣╸    ┃  ┃ ┃┃┗┫ ┃ ┣╸ ┃┗┫ ┃ ┗━┓
-//  ╹ ╹ ╹┗━┛┗━╸┗━╸   ┗━┛╹     ┗━╸┗━┛╹ ╹ ╹ ┗━╸╹ ╹ ╹ ┗━┛
-//  __________________________________________________
-// ";
+use ratatui_macros::{
+    horizontal, 
+};
 
+use crate::{
+    screens::{ContentArea, Screen, leafy}, 
+    widgets::{
+        particles::Particles, 
+        ripple::Ripple, 
+        waveform::Waveform
+    }
+};
 
-// #[derive(Debug, Default)]
-// pub struct TableOfContents {
-//     state: ListState
-// }
+/// Font is 'Future':
+const TITLE: &'static str = indoc!{"
+╻ ╻┏━╸╻  ╻  ┏━┓╻
+┣━┫┣╸ ┃  ┃  ┃ ┃╹
+╹ ╹┗━╸┗━╸┗━╸┗━┛╹
+"};
 
-// impl WidgetRef for TableOfContents {
-//     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
-//         let mut state = self.state.clone();
-//         let lv = vertical![==30%, ==70%]
-//             .flex(Flex::Center)
-//             .split(area)
-//         ;
-//         let lh = horizontal![==33%, ==33%, ==33%]
-//             .flex(Flex::Center)
-//             .split(lv[1])
-//         ;
-//         let subtitle = Paragraph::new(TOC)
-//             .centered()
-//         ;
-//         let items = vec![
-//             ListItem::new("1. Agenda Overview"),
-//             ListItem::new("2. Sound"),
-//             ListItem::new("3. Audio Signal"),
-//             ListItem::new("4. From Analog to Digital"),
-//             ListItem::new("5. Sampling"),
-//             ListItem::new("6. Quantization"),
-//             ListItem::new("7. Digital Audio Formats"),
-//             ListItem::new("8. Digital Audio Processing and Synthesis"),
-//             ListItem::new("9. Faust"),            
-//         ];
-//         let list = List::new(items)
-//             // .highlight_style()
-//             .highlight_symbol("> ")
-//             .highlight_style(Style::new()
-//                 .white()
-//                 .on_dark_gray()
-//                 .bold()
-//             )
-//             .highlight_spacing(HighlightSpacing::Always)
-//         ;
-//         subtitle.render(lv[0], buf);
-//         StatefulWidget::render(list, lh[1], buf, &mut state);
-//     }
-// }
+#[derive(Debug, Default)]
+enum Animation {
+    #[default]
+    None,
+}
 
-// impl Screen for TableOfContents {
-//     fn on_key_event(&mut self, k: KeyEvent) {
-//         match k.code {
-//             KeyCode::Down | KeyCode::Right  => {
-//                 self.state.select_next();
-//             }
-//             KeyCode::Up | KeyCode::Left => {
-//                 self.state.select_previous();
+#[derive(Debug)]
+enum Content<'a> {
+    Paragraph(Paragraph<'a>),
+    List(Vec<String>, ListState)
+}
 
-//             }
-//             _ => ()
-//         }       
-//     }
-// }
+pub struct Myself<'a> {
+    lhs: ContentArea<'a>, 
+    rhs: Animation,
+}
+
+impl<'a> Default for Myself<'a> {
+    fn default() -> Self {
+        Myself {
+            lhs: ContentArea::default()
+                .add_title(TITLE)
+                .add_paragraph(indoc! {
+                    "• My name is **Pierre**, nice to meet you!"
+                }) 
+                .add_paragraph(indoc! {
+                    "• **In your shoes**, *12 years ago* :-)"
+                }) 
+                .add_paragraph(indoc! {
+                    "• Got an internship at ***SCRIME-LaBRI*** in Bordeaux! \
+                    Worked for 3 years there after that, as a \
+                    *Computer Music Designer* (*RIM*). \
+                    Then worked as a \"*freelancer*\", on my own sound installation \
+                    and other projects."
+                }) 
+                .add_paragraph(indoc! {
+                    "• Then, ***COVID*** happened T_T. But got into a (*secret*) \
+                    project with ***GRAME*** (*Max2FaustTranslator*)."
+                }) 
+                .add_paragraph(leafy! {
+                    "• Now in *Inria/INSA* team ***Emeraude***, working as a *research engineer* in *Lyon*, alongside:"
+                }) 
+                .add_list(vec![
+                    "• Tanguy Risset (Big Boss)",
+                    "• Florent de Dinechin (My current Boss)",
+                    "• **Romain Michon**",
+                    "• Yann Orlarey",
+                    "• **Stéphane Letz**",
+                    "• and many more..."
+                ])
+                .add_paragraph(indoc! {
+                    "• Working on projects like ***Syfala*** (*Faust-to-FPGA toolchain*), \
+                    ***FloPoCo*** (*generator of arithmetic cores*) and of course ***Faust***."
+                })
+                .add_paragraph(indoc! {
+                    "• Not really a musician anymore, not really expert in **DSP** either (sorry)... \
+                    I like **code** (and *pixels*), and helping researchers."
+                })
+                ,
+            rhs: Animation::default(),            
+        }
+    }
+}
+
+impl<'a> WidgetRef for Myself<'a> {
+    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
+        let [lhl, lhr] = horizontal![==50%, ==50%]
+            .flex(Flex::Center)
+            .areas(area)
+        ;
+        Block::bordered()
+            .borders(Borders::LEFT)
+            .border_type(BorderType::Plain)
+            .render(lhr, buf)
+        ;
+        self.lhs.render_ref(lhl, buf);
+        match &self.rhs {
+            _ => ()
+        }
+    }
+}
+
+impl<'a> Screen for Myself<'a> {
+    fn on_key_event(&mut self, k: KeyEvent) {
+        match k.code {
+            KeyCode::Down | KeyCode::Up => {
+                self.lhs.on_key_event(k);
+            }
+            KeyCode::Enter => {
+                match self.lhs.select {
+                    _ => ()
+                }
+            }
+            _ => ()
+        }
+    }
+    fn on_tick(&mut self, t: usize) {
+        match &mut self.rhs {
+            _ => ()
+        }
+    }
+}

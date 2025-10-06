@@ -120,15 +120,6 @@ impl WidgetRef for Agenda {
         ;
         // November
         date = self.date.clone();
-        if date.month() == Month::November {
-            nov_dates.add(
-                date,
-                Style::default().white().on_dark_gray()
-            );
-        } else {
-            date = date.replace_day(1).unwrap();
-            date = date.replace_month(Month::November).unwrap();
-        }
         nov_dates.add(
             Date::from_calendar_date(2025, Month::November, 10).unwrap(),
             Style::default().blue().bold()
@@ -141,6 +132,15 @@ impl WidgetRef for Agenda {
             Date::from_calendar_date(2025, Month::November, 26).unwrap(),
             Style::default().blue().bold()
         );        
+        if date.month() == Month::November {
+            nov_dates.add(
+                date,
+                Style::default().white().on_dark_gray()
+            );
+        } else {
+            date = date.replace_day(1).unwrap();
+            date = date.replace_month(Month::November).unwrap();
+        }
         Monthly::new(date, nov_dates)
             .show_month_header(
                 Style::default().bold()
@@ -182,6 +182,155 @@ impl WidgetRef for Agenda {
                         ListItem::new("• Digital Audio Formats"),
                         ListItem::new("• Digital Audio Processing and Synthesis"),
                         ListItem::new("• The Faust programming language"),            
+                    ];
+                    let list = List::new(items)
+                        .highlight_symbol("> ")
+                        .highlight_style(Style::new()
+                            .white()
+                            .on_dark_gray()
+                            .bold()
+                        )
+                        .highlight_spacing(HighlightSpacing::Always)
+                    ;
+                    StatefulWidget::render(list, lhrv[2], buf, &mut state);
+                }
+                "2025-10-20" => {
+                    let p = Paragraph::new(
+                        text![
+                            line!["Monday October 20th 2025"]
+                                .bold()
+                                .underlined()
+                                .centered(),
+                            line![""],
+                            line!["2:30pm to 6:30pm (4:00)"]
+                                .centered()
+                                .italic()
+                        ]
+                    );
+                    p.render(lhrv[1], buf);
+
+                    let mut state = self.state.clone();
+                    let items = vec![
+                        ListItem::new(tui_markdown::from_str(
+                            "• First steps with **Faust**!"
+                        )),      
+                        ListItem::new(tui_markdown::from_str(
+                            "• **IDE** and programming **tools**/**environment**"
+                        )),      
+                        ListItem::new(tui_markdown::from_str(
+                            "• **Library**, **documentation** and **examples**"
+                        )),      
+                        ListItem::new(tui_markdown::from_str(
+                            "• **Simple DSP effects**, from scratch (*ringmod*, *delay*...)"
+                        )),
+                        ListItem::new(tui_markdown::from_str(
+                            "• **Adding GUI elements** for **control** (*sliders*, *buttons*...)"
+                        )),
+                        ListItem::new(tui_markdown::from_str(
+                            "• **Simple synthesis**: *oscillators* and *waveforms*"
+                        )),
+                    ];
+                    let list = List::new(items)
+                        .highlight_symbol("> ")
+                        .highlight_style(Style::new()
+                            .white()
+                            .on_dark_gray()
+                            .bold()
+                        )
+                        .highlight_spacing(HighlightSpacing::Always)
+                    ;
+                    StatefulWidget::render(list, lhrv[2], buf, &mut state);
+                }
+                "2025-11-10" => {
+                    let p = Paragraph::new(
+                        text![
+                            line!["Monday November 10th 2025"]
+                                .bold()
+                                .underlined()
+                                .centered(),
+                            line![""],
+                            line!["2:30pm to 6:30pm (4:00)"]
+                                .centered()
+                                .italic()
+                        ]
+                    );
+                    p.render(lhrv[1], buf);
+                    let mut state = self.state.clone();
+                    let items = vec![
+                        ListItem::new(tui_markdown::from_str(
+                            "• **Playing/recording** from/to *buffers* & *sound files*"
+                        )),
+                        ListItem::new(tui_markdown::from_str(
+                            "• **Filtering** & advanced effects"
+                        )),
+                        ListItem::new(tui_markdown::from_str(
+                            "• Building a **simple synthesizer**"
+                        )),
+                        ListItem::new(tui_markdown::from_str(
+                            "• **Personal projects**"
+                        )),
+                    ];
+                    let list = List::new(items)
+                        .highlight_symbol("> ")
+                        .highlight_style(Style::new()
+                            .white()
+                            .on_dark_gray()
+                            .bold()
+                        )
+                        .highlight_spacing(HighlightSpacing::Always)
+                    ;
+                    StatefulWidget::render(list, lhrv[2], buf, &mut state);
+                }
+                "2025-11-17" => {
+                    let p = Paragraph::new(
+                        text![
+                            line!["Monday November 17th 2025"]
+                                .bold()
+                                .underlined()
+                                .centered(),
+                            line![""],
+                            line!["2:30pm to 6:30pm (4:00)"]
+                                .centered()
+                                .italic()
+                        ]
+                    );
+                    p.render(lhrv[1], buf);
+                    let mut state = self.state.clone();
+                    let items = vec![
+                        ListItem::new(tui_markdown::from_str(
+                            "• **Personal projects** + *on-demand* info"
+                        )),
+                    ];
+                    let list = List::new(items)
+                        .highlight_symbol("> ")
+                        .highlight_style(Style::new()
+                            .white()
+                            .on_dark_gray()
+                            .bold()
+                        )
+                        .highlight_spacing(HighlightSpacing::Always)
+                    ;
+                    StatefulWidget::render(list, lhrv[2], buf, &mut state);
+                }
+                "2025-11-26" => {
+                    let p = Paragraph::new(
+                        text![
+                            line!["Monday November 17th 2025"]
+                                .bold()
+                                .underlined()
+                                .centered(),
+                            line![""],
+                            line!["2:30pm to 6:30pm (4:00)"]
+                                .centered()
+                                .italic()
+                        ]
+                    );
+                    p.render(lhrv[1], buf);
+                    let mut state = self.state.clone();
+                    let items = vec![
+                        ListItem::new(tui_markdown::from_str(
+                            "• **Personal projects**: let's hear them!"
+                        )),
                     ];
                     let list = List::new(items)
                         .highlight_symbol("> ")
