@@ -1,6 +1,11 @@
 use crossterm::event::{KeyCode, KeyEvent};
 use ratatui::{
-    buffer::Buffer, layout::{Constraint, Flex, Layout, Rect}, style::{Style, Stylize}, symbols::border, text::Line, widgets::{Block, BorderType, Clear, Widget, WidgetRef}
+    buffer::Buffer, 
+    layout::{Constraint, Flex, Layout, Rect}, 
+    style::{Style, Stylize}, 
+    symbols::border, 
+    text::Line, 
+    widgets::{Block, BorderType, Clear, Widget, WidgetRef}
 };
 
 use crate::widgets::control::button::Button;

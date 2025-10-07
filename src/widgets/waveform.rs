@@ -4,6 +4,7 @@ use std::{
     time::Duration
 };
 
+use crossterm::event::KeyEvent;
 use rand::Rng;
 use ratatui::{
     buffer::Buffer, 
@@ -18,6 +19,8 @@ use ratatui::{
     }
 };
 
+use crate::widgets::InteractiveWidget;
+
 const RESOLUTION: usize = 400usize;
 
 impl Waveform {
@@ -30,14 +33,20 @@ impl Waveform {
 
         }
     }
-    pub(crate) fn on_tick(&mut self, tick: usize) {
+}
+
+impl InteractiveWidget for Waveform {
+    fn on_key_event(&mut self, k: KeyEvent) {
+        
+    }
+    fn on_tick(&mut self, tick: usize) {
         self.tick += 1;
         // Update coordinates:
         for n in 0..self.coords.len() {
             let x = (n as f64 + tick as f64) / self.frequency as f64;
             let y = (x * PI * 2.0).sin() * self.amplitude as f64 + 200.0;
             self.coords[n] = (n as f64 + 5.5, y);
-        }
+        }   
     }
 }
 

@@ -24,11 +24,11 @@ use ratatui_macros::{
 };
 
 use crate::{
-    screens::{ContentArea, Screen, leafy}, 
+    screens::{leafy, ContentArea, Screen}, 
     widgets::{
         particles::Particles, 
         ripple::Ripple, 
-        waveform::Waveform
+        waveform::Waveform, InteractiveWidget
     }
 };
 

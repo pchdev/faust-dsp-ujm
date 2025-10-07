@@ -24,11 +24,11 @@ use ratatui_macros::{
 };
 
 use crate::{
-    screens::{ContentArea, Screen, leafy}, 
+    screens::{leafy, ContentArea, Screen}, 
     widgets::{
         particles::Particles, 
         ripple::Ripple, 
-        waveform::Waveform
+        waveform::Waveform, InteractiveWidget
     }
 };
 
@@ -43,8 +43,6 @@ const TITLE: &'static str = indoc!{"
 enum Animation {
     #[default]
     None,
-    Ripple(Ripple),
-    Particles(Particles),
     Waveform(Waveform)
 }
 
@@ -119,12 +117,6 @@ impl<'a> WidgetRef for Digital<'a> {
         ;
         self.lhs.render_ref(lhl, buf);
         match &self.rhs {
-            Animation::Ripple(r) => {
-                r.render_ref(lhr, buf);
-            }
-            Animation::Particles(p) => {
-                p.render_ref(lhr, buf);
-            }
             Animation::Waveform(p) => {
                 p.render_ref(lhr, buf);
             }
@@ -144,7 +136,7 @@ impl<'a> Screen for Digital<'a> {
             }
             KeyCode::Enter => {
                 match self.lhs.select {
-                    2..=3=> {
+                    2..=3 => {
                         self.rhs = Animation::Waveform(
                             Waveform::new(100, 25)
                         );
@@ -157,12 +149,6 @@ impl<'a> Screen for Digital<'a> {
     }
     fn on_tick(&mut self, t: usize) {
         match &mut self.rhs {
-            Animation::Ripple(r) => {
-                r.on_tick(t);
-            }
-            Animation::Particles(p) => {
-                p.on_tick(t);
-            }
             Animation::Waveform(w) => {
                 w.on_tick(t);
             }

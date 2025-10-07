@@ -1,7 +1,12 @@
 use crossterm::event::{KeyCode, KeyEvent};
 
 use ratatui::{
-    buffer::Buffer, layout::Flex, prelude::Rect, style::{Color, Style}, symbols, widgets::{
+    buffer::Buffer, 
+    layout::Flex, 
+    prelude::Rect, 
+    style::{Color, Style}, 
+    symbols, 
+    widgets::{
         canvas::{
             Canvas, 
             Circle
@@ -9,9 +14,12 @@ use ratatui::{
         WidgetRef
     }
 };
-use ratatui_macros::vertical;
 
-use crate::widgets::control::block::ControlBlock;
+use ratatui_macros::vertical;
+use crate::widgets::{
+    control::block::ControlBlock, 
+    InteractiveWidget
+};
 
 #[derive(Debug, Default)]
 pub struct Ripple {
@@ -33,16 +41,10 @@ impl Ripple {
                     .add_button("test2")
         }
     }
-    pub(crate) fn on_tick(&mut self, tick: usize) {
-        // TODO: frequency
-        if tick % 2 == 0 {
-            self.tick += 1;
-        }
-        if self.tick >= self.amplitude {
-           self.tick -= self.amplitude;
-        }
-    }
-    pub(crate) fn on_key_event(&mut self, k: KeyEvent) {
+}
+
+impl InteractiveWidget for Ripple {
+    fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::F(5) => {
                 self.block.display = !self.block.display;  
@@ -52,6 +54,15 @@ impl Ripple {
                     self.block.on_key_event(k);
                 } 
             }
+        }        
+    }
+    fn on_tick(&mut self, tick: usize) {
+        // TODO: frequency
+        if tick % 2 == 0 {
+            self.tick += 1;
+        }
+        if self.tick >= self.amplitude {
+           self.tick -= self.amplitude;
         }
     }
 }

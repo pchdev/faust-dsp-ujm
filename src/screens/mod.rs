@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use color_eyre::owo_colors::{OwoColorize, Rgb};
 use crossterm::event::{KeyCode, KeyEvent};
 use ratatui::{
@@ -9,16 +11,11 @@ use ratatui::{
         Color, Style, Stylize
     }, 
     widgets::{
-        HighlightSpacing, 
-        List, ListItem, ListState, 
-        Paragraph, 
-        StatefulWidget, 
-        Widget, WidgetRef, 
-        Wrap
+        Block, BorderType, Borders, HighlightSpacing, List, ListItem, ListState, Paragraph, StatefulWidget, Widget, WidgetRef, Wrap
     }
 };
 
-use ratatui_macros::vertical;
+use ratatui_macros::{horizontal, vertical};
 
 pub mod myself;
 pub mod agenda;
@@ -37,6 +34,8 @@ macro_rules! leafy {
 
 pub(crate) use leafy;
 
+use crate::widgets::InteractiveWidget;
+
 pub(crate) enum Content<'a> {
     Paragraph(Paragraph<'a>),
     List(Vec<String>, ListState),
@@ -45,9 +44,9 @@ pub(crate) enum Content<'a> {
 
 #[derive(Default)]
 pub(crate) struct ContentArea<'a> {
-      select: usize,
-       title: Option<String>,
-    contents: Vec<Content<'a>>
+    select: usize,
+    pub title: Option<String>,
+    pub contents: Vec<Content<'a>>
 }
 
 impl<'a> ContentArea<'a> {
@@ -137,7 +136,6 @@ impl<'a> WidgetRef for ContentArea<'a> {
         ;
         // Render everything:
         let mut i = 0;
-        let mut nlist = 0;
         for (n, content) in self.contents.iter().enumerate() {
             match content {
                 Content::Paragraph(ph) => {
@@ -187,6 +185,132 @@ impl<'a> WidgetRef for ContentArea<'a> {
 
                 }
             }
+        }
+    }
+}
+
+#[derive(Default)]
+enum Focus { #[default] Lhs, Rhs }
+
+#[derive(Default)]
+pub struct SideBySide<'a> {
+    lhs: ContentArea<'a>,
+    rhs: HashMap<usize, Box<dyn InteractiveWidget>>,
+    sel: Option<usize>,
+    cursor: usize,
+    focus: Focus,
+}
+
+impl<'a> SideBySide<'a> {
+    pub fn add_title(mut self, title: &'static str) -> Self {
+        self.lhs.title = Some(String::from(title));
+        return self;
+    }
+    pub fn add_paragraph(mut self, txt: &'static str) -> Self {
+        self.lhs.contents.push(
+            Content::Paragraph(
+                Paragraph::new(
+                    tui_markdown::from_str(txt)
+                ).wrap(Wrap {trim: true})
+            )
+        );
+        return self;
+    }
+    pub fn add_list(mut self, list: Vec<&'static str>) -> Self {
+        let mut items = vec![];
+        for i in list {
+            items.push(String::from(i));
+        }
+        self.lhs.contents.push(
+            Content::List(items, ListState::default())
+        );
+        return self;
+    }
+    pub fn add_widget(mut self, index: usize, w: Box<dyn InteractiveWidget>) -> Self {
+        self.rhs.insert(index, w);
+        return self;
+    }
+}
+
+impl<'a> Screen for SideBySide<'a> {
+    fn title(&self) -> &'static str {
+        "side-by-side template"
+    }
+    fn on_key_event(&mut self, k: KeyEvent) {
+        match self.focus {
+            Focus::Lhs => {
+                match k.code {
+                    KeyCode::Enter => {
+                        self.focus = Focus::Rhs;
+                        self.sel = Some(self.lhs.select);
+                    }
+                    _ => {
+                        self.lhs.on_key_event(k);
+                    }
+                }
+            }
+            Focus::Rhs => {
+                match k.code {
+                    KeyCode::Backspace => {
+                        self.focus = Focus::Lhs;                        
+                    }
+                    _ => {
+                        match &self.sel {
+                            Some(x) => {
+                                self.rhs.get_mut(x)
+                                    .expect("Selected Widget does not exist :<")
+                                    .on_key_event(k);
+                            }
+                            _ => ()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    fn on_tick(&mut self, t: usize) {
+        match &self.sel {
+            Some(x) => {
+                self.rhs.get_mut(x)
+                    .unwrap()
+                    .on_tick(t);
+            }
+            _ => ()
+        }
+    }
+}
+
+impl<'a> WidgetRef for SideBySide<'a> {
+    fn render_ref(&self, area: Rect, buf: &mut Buffer) {
+        // Divide screen 50/50 horizontally: 
+        let [lhl, lhr] = horizontal![==50%, ==50%]
+            .flex(Flex::Center)
+            .areas(area)
+        ;
+        // Add vertical separator:
+        Block::bordered()
+            .borders(Borders::LEFT)
+            .border_type(BorderType::Plain)
+            .render(lhr, buf)
+        ;
+        match self.focus {
+            Focus::Rhs => {
+                Block::bordered()
+                    .borders(Borders::ALL)
+                    .border_type(BorderType::Double)
+                    .style(Style::default().dark_gray())
+                    .render(lhr, buf);
+            }
+            _ => ()
+        }
+        self.lhs.render_ref(lhl, buf);
+        match &self.sel {
+            Some(x) => {
+                self.rhs.get(x)
+                    .unwrap()
+                    .render_ref(lhr, buf);
+            }
+            _ => ()
         }
     }
 }

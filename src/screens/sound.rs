@@ -1,25 +1,15 @@
 
-use crossterm::event::{KeyCode, KeyEvent};
+use crossterm::event::{KeyEvent};
 
 use ratatui::{
-    buffer::Buffer, layout::Flex, prelude::Rect, 
-    style::{Modifier, Style, Stylize}, 
-    widgets::{
-        Block, 
-        BorderType, 
-        Borders, 
-        Widget, WidgetRef, 
-    }
+    buffer::Buffer, prelude::Rect, 
+    widgets::{WidgetRef}
 };
 
 use indoc::indoc;
 
-use ratatui_macros::{
-    horizontal, 
-};
-
 use crate::{
-    screens::{ContentArea, Screen, leafy}, 
+    screens::{leafy, Screen, SideBySide}, 
     widgets::{
         particles::Particles, 
         ripple::Ripple, 
@@ -32,49 +22,46 @@ const TITLE: &'static str = indoc!{"
 ┗━┛┗━┛┗━┛╹ ╹╺┻┛
 "};
 
-#[derive(Debug, Default)]
-enum Animation {
-    #[default]
-    None,
-    Ripple(Ripple),
-    Particles(Particles),
+pub struct Sound<'a> {
+    screen: SideBySide<'a>,
 }
 
-impl Animation {
-    pub(crate) fn on_key_event(&mut self, k: KeyEvent) {
-        match self {
-            Self::Ripple(r) => {
-                r.on_key_event(k);
-            }
-            Self::Particles(p) => {
-
-            }
-            _ => ()
-        }
+impl<'a> WidgetRef for Sound<'a> {
+    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
+        self.screen.render_ref(area, buf);
     }
 }
 
-pub struct Sound<'a> {
-    lhs: ContentArea<'a>, 
-    rhs: Animation,
-    rhs_focus: bool,
+impl<'a> Screen for Sound<'a> {
+    fn title(&self) -> &'static str {
+        "Sound"
+    }
+    fn on_key_event(&mut self, k: KeyEvent) {
+        self.screen.on_key_event(k);
+    }
+
+    fn on_tick(&mut self, t: usize) {
+        self.screen.on_tick(t);
+    }
 }
 
 impl<'a> Default for Sound<'a> {
     fn default() -> Self {
         Sound {
-            lhs: ContentArea::default()
+            screen: SideBySide::default()
                 .add_title(TITLE)
                 .add_paragraph(leafy!(
                     "Sound is a ***pressure wave*** that propagates \
                     through a **medium** (*gas*, *liquid* or *solid*).
                     "
                 ))
+                .add_widget(0, Box::new(Ripple::new(200)))
                 .add_paragraph(leafy! {
                     "Propagation is carried by the **periodic oscillation** (*vibration*) of \
                     the medium's *particles* around their point of origin.
                     "
                 })
+                // .add_widget(1, Box::new(Particles::new(400)))
                 .add_paragraph(indoc! {
                     "• A sound has the following **properties**:"
                 })
@@ -99,10 +86,8 @@ impl<'a> Default for Sound<'a> {
                     "• **Cat**: 45 to 64,000 Hz",
                     "• **Dog**: 67 to 45,000 Hz",
                     "• **Chicken**: 125 to 2,000 Hz"
-                ])
-                ,
-            rhs: Animation::default(),       
-            rhs_focus: false,     
+                ]
+            )
         }
         // • Speed:
         //  - Air: ~340 m/s
@@ -113,94 +98,3 @@ impl<'a> Default for Sound<'a> {
     }
 }
 
-impl<'a> WidgetRef for Sound<'a> {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
-        let [lhl, lhr] = horizontal![==50%, ==50%]
-            .flex(Flex::Center)
-            .areas(area)
-        ;
-        Block::bordered()
-            .borders(Borders::LEFT)
-            .border_type(BorderType::Plain)
-            .render(lhr, buf)
-        ;
-        if self.rhs_focus {
-            Block::bordered()
-                .borders(Borders::ALL)
-                .border_type(BorderType::Double)
-                .style(Style::default().dark_gray())
-                .render(lhr, buf)
-            ;
-        }
-        self.lhs.render_ref(lhl, buf);
-        match &self.rhs {
-            Animation::Ripple(r) => {
-                r.render_ref(lhr, buf);
-            }
-            Animation::Particles(p) => {
-                p.render_ref(lhr, buf);
-            }
-            _ => ()
-        }
-    }
-}
-
-impl<'a> Screen for Sound<'a> {
-    fn title(&self) -> &'static str {
-        "Sound"
-    }
-    fn on_key_event(&mut self, k: KeyEvent) {
-        if self.rhs_focus {
-            if k.code == KeyCode::Backspace {
-                self.rhs_focus = false;
-            } else {
-                self.rhs.on_key_event(k);
-            }
-        } else {
-            match k.code {
-                KeyCode::Enter => {
-                    self.rhs_focus = true;
-                    match self.lhs.select {
-                        0  => {
-                            self.rhs = Animation::Ripple(
-                                Ripple::new(200)
-                            );
-                        }
-                        1 => {
-                            self.rhs = Animation::Particles(
-                                Particles::new(400)
-                            )
-                        }
-                        2 => {}
-                        3  => {
-                            self.rhs = Animation::Ripple(
-                                Ripple::new(200)
-                            );
-                        }
-                        4 => {}
-                        5  => {
-                            self.rhs = Animation::Ripple(
-                                Ripple::new(200)
-                            );
-                        }
-                        _ => ()
-                    }
-                }
-                _ => {
-                    self.lhs.on_key_event(k);
-                }
-            }
-        }
-    }
-    fn on_tick(&mut self, t: usize) {
-        match &mut self.rhs {
-            Animation::Ripple(r) => {
-                r.on_tick(t);
-            }
-            Animation::Particles(p) => {
-                p.on_tick(t);
-            }
-            _ => ()
-        }
-    }
-}
