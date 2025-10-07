@@ -2,7 +2,9 @@
 use crossterm::event::{KeyCode, KeyEvent};
 
 use ratatui::{
-    buffer::Buffer, layout::Flex, prelude::Rect, style::{Modifier, Style, Stylize}, widgets::{
+    buffer::Buffer, layout::Flex, prelude::Rect, 
+    style::{Modifier, Style, Stylize}, 
+    widgets::{
         Block, 
         BorderType, 
         Borders, 
@@ -148,46 +150,46 @@ impl<'a> Screen for Sound<'a> {
         "Sound"
     }
     fn on_key_event(&mut self, k: KeyEvent) {
-        match k.code {
-            KeyCode::Down | KeyCode::Up => {
-                if self.rhs_focus {
-                    self.rhs.on_key_event(k)
-                } else {
-                    self.lhs.on_key_event(k);
-                }                
+        if self.rhs_focus {
+            if k.code == KeyCode::Backspace {
+                self.rhs_focus = false;
+            } else {
+                self.rhs.on_key_event(k);
             }
-            KeyCode::Enter => {
-                self.rhs_focus = true;
-                match self.lhs.select {
-                    0  => {
-                        self.rhs = Animation::Ripple(
-                            Ripple::new(200)
-                        );
+        } else {
+            match k.code {
+                KeyCode::Enter => {
+                    self.rhs_focus = true;
+                    match self.lhs.select {
+                        0  => {
+                            self.rhs = Animation::Ripple(
+                                Ripple::new(200)
+                            );
+                        }
+                        1 => {
+                            self.rhs = Animation::Particles(
+                                Particles::new(400)
+                            )
+                        }
+                        2 => {}
+                        3  => {
+                            self.rhs = Animation::Ripple(
+                                Ripple::new(200)
+                            );
+                        }
+                        4 => {}
+                        5  => {
+                            self.rhs = Animation::Ripple(
+                                Ripple::new(200)
+                            );
+                        }
+                        _ => ()
                     }
-                    1 => {
-                        self.rhs = Animation::Particles(
-                            Particles::new(400)
-                        )
-                    }
-                    2 => {}
-                    3  => {
-                        self.rhs = Animation::Ripple(
-                            Ripple::new(200)
-                        );
-                    }
-                    4 => {}
-                    5  => {
-                        self.rhs = Animation::Ripple(
-                            Ripple::new(200)
-                        );
-                    }
-                    _ => ()
+                }
+                _ => {
+                    self.lhs.on_key_event(k);
                 }
             }
-            KeyCode::Backspace => {
-                self.rhs_focus = false;
-            }
-            _ => ()
         }
     }
     fn on_tick(&mut self, t: usize) {

@@ -1,11 +1,7 @@
-
-use std::{thread, time::Duration};
 use crossterm::event::{KeyCode, KeyEvent};
 
 use ratatui::{
-    buffer::Buffer, prelude::Rect, style::{Color, Style}, 
-    symbols, 
-    widgets::{
+    buffer::Buffer, layout::Flex, prelude::Rect, style::{Color, Style}, symbols, widgets::{
         canvas::{
             Canvas, 
             Circle
@@ -13,12 +9,16 @@ use ratatui::{
         WidgetRef
     }
 };
+use ratatui_macros::vertical;
+
+use crate::widgets::control::block::ControlBlock;
 
 #[derive(Debug, Default)]
 pub struct Ripple {
     pub tick: usize,
     pub frequency: usize,
-    pub amplitude: usize
+    pub amplitude: usize,
+    block: ControlBlock
 }
 
 impl Ripple {
@@ -26,7 +26,11 @@ impl Ripple {
         Ripple {
             tick: 0,
             frequency: 1,
-            amplitude
+            amplitude,
+            block: 
+                ControlBlock::default()
+                    .add_button("test1")
+                    .add_button("test2")
         }
     }
     pub(crate) fn on_tick(&mut self, tick: usize) {
@@ -41,9 +45,13 @@ impl Ripple {
     pub(crate) fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::F(5) => {
-                
+                self.block.display = !self.block.display;  
             }
-            _ => ()
+            _ => {
+                if self.block.display {
+                    self.block.on_key_event(k);
+                } 
+            }
         }
     }
 }
@@ -81,6 +89,12 @@ impl WidgetRef for Ripple {
             .x_bounds([00.0, 400.0 as f64])
             .y_bounds([00.0, 400.0 as f64])
             .render_ref(area, buf)
-        ;        
+        ;
+        // Render controls if any:
+        let lv = vertical![==33%, ==67%]
+            .flex(Flex::Center)
+            .split(area)
+        ;
+        self.block.render_ref(lv[0], buf);
     }
 }

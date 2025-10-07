@@ -315,7 +315,7 @@ impl WidgetRef for Agenda {
                 "2025-11-26" => {
                     let p = Paragraph::new(
                         text![
-                            line!["Monday November 17th 2025"]
+                            line!["Wednesday November 26th 2025"]
                                 .bold()
                                 .underlined()
                                 .centered(),
