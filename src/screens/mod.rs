@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use color_eyre::owo_colors::{OwoColorize, Rgb};
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use ratatui::{
     buffer::Buffer, 
@@ -8,10 +7,16 @@ use ratatui::{
         self, Constraint, Flex, Rect
     }, 
     style::{
-        Color, Style, Stylize
+        Style, Stylize
     }, 
     widgets::{
-        Block, BorderType, Borders, HighlightSpacing, List, ListItem, ListState, Paragraph, StatefulWidget, Widget, WidgetRef, Wrap
+        Block, 
+        BorderType, Borders, 
+        HighlightSpacing, 
+        List, ListItem, ListState, 
+        Paragraph, 
+        StatefulWidget, Widget, WidgetRef,
+        Wrap
     }
 };
 

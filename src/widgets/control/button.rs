@@ -7,12 +7,12 @@ use ratatui::{
     symbols::border, 
     text::Text, 
     widgets::{
-        Block, 
-        Widget, 
-        WidgetRef
+        Block, Clear, Widget, WidgetRef
     }
 };
 use ratatui_macros::vertical;
+
+use crate::widgets::InteractiveWidget;
 
 #[derive(Debug, Default)]
 pub struct Button {
@@ -20,8 +20,8 @@ pub struct Button {
     pub label: String
 }
 
-impl Button {
-    pub fn on_key_event(&mut self, k: KeyEvent) {
+impl InteractiveWidget for Button {
+    fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::Enter => {
                 self.state = !self.state;
@@ -40,15 +40,17 @@ impl WidgetRef for Button {
         };
         let block = Block::bordered()
             .border_set(border::ROUNDED)
-            .style(Style::default().black().on_white())
+            .style(style)
         ;
+        Clear::default().render(area, buf);
         let l = vertical![==40%, ==60%]
             .flex(Flex::Center)
-            .split(block.inner(area));
-        let label = Text::from(self.label.clone())
+            .split(block.inner(area))
+        ;
+        Text::from(self.label.clone())
             .style(Style::default().bold())
             .centered()
-            .render(l[1], buf);
+            .render(l[1], buf)
         ;
         block.render(area, buf);
     }

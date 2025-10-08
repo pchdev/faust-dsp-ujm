@@ -8,11 +8,11 @@ use ratatui::{
     widgets::{Block, BorderType, Clear, Widget, WidgetRef}
 };
 
-use crate::widgets::control::button::Button;
+use crate::widgets::{control::{button::Button, slider::Slider}, InteractiveWidget};
 
 #[derive(Default)]
 pub(crate) struct ControlBlock {
-    controls: Vec<Box<dyn WidgetRef>>,
+    controls: Vec<Box<dyn InteractiveWidget>>,
     pub display: bool,
     sel: usize,
 }
@@ -22,7 +22,12 @@ impl ControlBlock {
         let mut bx = Box::new(Button::default());
         bx.label = String::from(label);
         self.controls.push(bx);
-        self
+        return self;
+    }
+    pub fn add_slider(mut self, label: &'static str) -> Self {
+        let mut sd = Box::new(Slider::default());
+        self.controls.push(sd);
+        return self;
     }
 
     pub fn on_key_event(&mut self, k: KeyEvent) {
@@ -35,16 +40,13 @@ impl ControlBlock {
             }
             KeyCode::Left => {
                 if self.sel > 0 {
-                    self.sel -= 1;
+                   self.sel -= 1;
                 }
             }
-            KeyCode::Enter => {
-                // Select sub widget
-                let ctl = &self.controls[self.sel];
-                // ctl.on_key_event()
-            }
             _ => {
-                
+                // Select sub widget
+                let ctl = &mut self.controls[self.sel];
+                ctl.on_key_event(k);
             }
         }
     }
@@ -85,7 +87,7 @@ impl WidgetRef for ControlBlock {
         }
         // Add border to selected widget:
         let block = Block::bordered()
-            .border_type(BorderType::Double)
+            .border_type(BorderType::Plain)
             .border_style(Style::default().blue())
         ;
         block.render_ref(ly[self.sel], buf);

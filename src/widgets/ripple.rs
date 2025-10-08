@@ -37,8 +37,8 @@ impl Ripple {
             amplitude,
             block: 
                 ControlBlock::default()
-                    .add_button("test1")
-                    .add_button("test2")
+                    .add_slider("amplitude")
+                    .add_slider("frequency")
         }
     }
 }
@@ -48,6 +48,9 @@ impl InteractiveWidget for Ripple {
         match k.code {
             KeyCode::F(5) => {
                 self.block.display = !self.block.display;  
+            }
+            KeyCode::Esc => {
+                self.block.display = false;
             }
             _ => {
                 if self.block.display {
