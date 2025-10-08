@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 use crossterm::event::{KeyCode, KeyEvent};
 use ratatui::{
     buffer::Buffer, 
@@ -5,14 +7,14 @@ use ratatui::{
     style::{Style, Stylize}, 
     symbols::border, 
     text::Line, 
-    widgets::{Block, BorderType, Clear, Widget, WidgetRef}
+    widgets::{Block, BorderType, Clear, Padding, Widget, WidgetRef}
 };
 
-use crate::widgets::{control::{button::Button, slider::Slider}, InteractiveWidget};
+use crate::widgets::{control::{button::Button, slider::Slider, ControlWidget}};
 
 #[derive(Default)]
 pub(crate) struct ControlBlock {
-    controls: Vec<Box<dyn InteractiveWidget>>,
+    controls: Vec<Box<dyn ControlWidget>>,
     pub display: bool,
     sel: usize,
 }
@@ -24,10 +26,24 @@ impl ControlBlock {
         self.controls.push(bx);
         return self;
     }
-    pub fn add_slider(mut self, label: &'static str) -> Self {
-        let mut sd = Box::new(Slider::default());
-        self.controls.push(sd);
+    pub fn add_slider(mut self, 
+        label: &'static str, 
+        value: f32, 
+        range: Range<f32>
+    ) -> Self {
+        self.controls.push(Box::new(
+            Slider::new(label, value, range)
+        ));
         return self;
+    }
+
+    pub fn read_control(&self, index: usize) -> Option<f32> {
+        match self.controls.get(index) {
+            Some(ctl) => {
+                Some(ctl.get_value())
+            }
+            None => None
+        }
     }
 
     pub fn on_key_event(&mut self, k: KeyEvent) {
@@ -87,6 +103,7 @@ impl WidgetRef for ControlBlock {
         }
         // Add border to selected widget:
         let block = Block::bordered()
+            .padding(Padding::vertical(10))
             .border_type(BorderType::Plain)
             .border_style(Style::default().blue())
         ;

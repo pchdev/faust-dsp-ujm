@@ -12,11 +12,11 @@ use ratatui::{
 };
 use ratatui_macros::vertical;
 
-use crate::widgets::InteractiveWidget;
+use crate::widgets::{control::ControlWidget, InteractiveWidget};
 
 #[derive(Debug, Default)]
 pub struct Button {
-    state: bool,
+    pub state: bool,
     pub label: String
 }
 
@@ -28,6 +28,15 @@ impl InteractiveWidget for Button {
             }
             _ => ()
         }
+    }
+}
+
+impl ControlWidget for Button {
+    fn label(&self) -> String {
+        self.label.clone()
+    }
+    fn get_value(&self) -> f32 {
+        if self.state { 1.0 } else { 0.0 }
     }
 }
 

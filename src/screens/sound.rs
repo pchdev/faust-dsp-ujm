@@ -55,7 +55,7 @@ impl<'a> Default for Sound<'a> {
                     through a **medium** (*gas*, *liquid* or *solid*).
                     "
                 ))
-                .add_widget(0, Box::new(Ripple::new(200)))
+                .add_widget(0, Box::new(Ripple::new()))
                 .add_paragraph(leafy! {
                     "Propagation is carried by the **periodic oscillation** (*vibration*) of \
                     the medium's *particles* around their point of origin.

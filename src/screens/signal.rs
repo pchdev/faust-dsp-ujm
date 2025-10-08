@@ -68,7 +68,7 @@ impl<'a> Default for Signal<'a> {
                     "With an oscilloscope, we can measure the **amplitude** of a signal at a given *point in time* (***time-domain***), \
                     through the visualisation of a ***waveform***."
                 })   
-                .add_widget(3, Box::new(Waveform::new(100, 25)))
+                .add_widget(3, Box::new(Waveform::new()))
                 .add_paragraph(indoc! {
                     "• An analog signal can already be processed as it is, with ***analog effects***: \
                     *tape delay*, *distortion*, *chorus*, *reverberation (spring, plate)*, etc."

@@ -4,7 +4,7 @@ use ratatui::{
     buffer::Buffer, 
     layout::Flex, 
     prelude::Rect, 
-    style::{Color, Style}, 
+    style::{Color}, 
     symbols, 
     widgets::{
         canvas::{
@@ -24,21 +24,17 @@ use crate::widgets::{
 #[derive(Debug, Default)]
 pub struct Ripple {
     pub tick: usize,
-    pub frequency: usize,
-    pub amplitude: usize,
-    block: ControlBlock
+    cblock: ControlBlock
 }
 
 impl Ripple {
-    pub(crate) fn new(amplitude: usize) -> Self {
+    pub(crate) fn new() -> Self {
         Ripple {
             tick: 0,
-            frequency: 1,
-            amplitude,
-            block: 
+            cblock: 
                 ControlBlock::default()
-                    .add_slider("amplitude")
-                    .add_slider("frequency")
+                    .add_slider("amplitude", 25.0, 0.0..200.0)
+                    .add_slider("frequency", 25.0, 1.0..100.0)
         }
     }
 }
@@ -47,25 +43,26 @@ impl InteractiveWidget for Ripple {
     fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::F(5) => {
-                self.block.display = !self.block.display;  
+                self.cblock.display = !self.cblock.display;  
             }
             KeyCode::Esc => {
-                self.block.display = false;
+                self.cblock.display = false;
             }
             _ => {
-                if self.block.display {
-                    self.block.on_key_event(k);
+                if self.cblock.display {
+                    self.cblock.on_key_event(k);
                 } 
             }
         }        
     }
     fn on_tick(&mut self, tick: usize) {
         // TODO: frequency
+        let amplitude = self.cblock.read_control(0).unwrap() as usize * 4; 
         if tick % 2 == 0 {
             self.tick += 1;
         }
-        if self.tick >= self.amplitude {
-           self.tick -= self.amplitude;
+        if self.tick >= amplitude {
+           self.tick -= amplitude;
         }
     }
 }
@@ -73,13 +70,14 @@ impl InteractiveWidget for Ripple {
 impl WidgetRef for Ripple {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
         let ncircles = 3;
+        let amplitude = self.cblock.read_control(0).unwrap() as f64;
         Canvas::default()
             .marker(symbols::Marker::Braille)
             .background_color(Color::White)
             .paint(|ctx| {
                 ctx.draw(&Circle {
-                    x: self.amplitude as f64,
-                    y: self.amplitude as f64,
+                    x: 200.0,
+                    y: 200.0,
                     radius: 4.0,
                     color: Color::Black
                 });
@@ -91,14 +89,12 @@ impl WidgetRef for Ripple {
                     let c = delayed as u8;
                     let color = Color::Rgb(c, c, c);
                     ctx.draw(&Circle {
-                        x: self.amplitude as f64,
-                        y: self.amplitude as f64,
+                        x: 200.0,
+                        y: 200.0,
                         radius: delayed as f64,
                         color: color
                     });
                 }
-                // TODO: other ripple circles
-                // + sound?
             })            
             .x_bounds([00.0, 400.0 as f64])
             .y_bounds([00.0, 400.0 as f64])
@@ -109,6 +105,7 @@ impl WidgetRef for Ripple {
             .flex(Flex::Center)
             .split(area)
         ;
-        self.block.render_ref(lv[0], buf);
+        // Render control block if visible:
+        self.cblock.render_ref(lv[0], buf);
     }
 }

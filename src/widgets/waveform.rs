@@ -1,37 +1,30 @@
 
 use std::{
     f64::consts::PI, 
-    time::Duration
 };
 
-use crossterm::event::KeyEvent;
-use rand::Rng;
+use crossterm::event::{KeyCode, KeyEvent};
 use ratatui::{
-    buffer::Buffer, 
-    prelude::Rect, 
-    style::{Color}, 
-    symbols, 
-    widgets::{
+    buffer::Buffer, layout::Flex, prelude::Rect, style::Color, symbols, widgets::{
         canvas::{
             Canvas, Line, Points
-        }, 
-        WidgetRef
+        }, Widget, WidgetRef
     }
 };
+use ratatui_macros::vertical;
 
 use crate::widgets::{control::block::ControlBlock, InteractiveWidget};
 
 const RESOLUTION: usize = 400usize;
 
 impl Waveform {
-    pub(crate) fn new(frequency: usize, amplitude: usize) -> Self {
+    pub(crate) fn new() -> Self {
         Waveform {
             tick: 0,
-            frequency,
-            amplitude,
             coords: [(0.0, 0.0); RESOLUTION],
-            controls: ControlBlock::default()
-                .add_button("test")
+            cblock: ControlBlock::default()
+                .add_slider("amplitude", 25.0, 0.0..100.0)
+                .add_slider("frequency", 50.0, 1.0..100.0)
 
         }
     }
@@ -39,14 +32,28 @@ impl Waveform {
 
 impl InteractiveWidget for Waveform {
     fn on_key_event(&mut self, k: KeyEvent) {
-        
+        match k.code {
+            KeyCode::F(5) => {
+                self.cblock.display = !self.cblock.display;  
+            }
+            KeyCode::Esc => {
+                self.cblock.display = false;
+            }
+            _ => {
+                if self.cblock.display {
+                    self.cblock.on_key_event(k);
+                } 
+            }
+        }    
     }
     fn on_tick(&mut self, tick: usize) {
         self.tick += 1;
+        let amplitude = self.cblock.read_control(0).unwrap() as f64;
+        let frequency = self.cblock.read_control(1).unwrap() as f64;
         // Update coordinates:
         for n in 0..self.coords.len() {
-            let x = (n as f64 + tick as f64) / self.frequency as f64;
-            let y = (x * PI * 2.0).sin() * self.amplitude as f64 + 200.0;
+            let x = (n as f64 + tick as f64) / frequency as f64;
+            let y = (x * PI * 2.0).sin() * amplitude as f64 + 200.0;
             self.coords[n] = (n as f64 + 5.5, y);
         }   
     }
@@ -55,10 +62,8 @@ impl InteractiveWidget for Waveform {
 #[derive(Debug)]
 pub struct Waveform {
     pub tick: usize,
-    pub frequency: usize,
-    pub amplitude: usize, 
     pub coords: [(f64, f64); RESOLUTION],
-    controls: ControlBlock,
+    cblock: ControlBlock,
 }
 
 impl WidgetRef for Waveform {
@@ -81,5 +86,10 @@ impl WidgetRef for Waveform {
             .y_bounds([00.0, 400.0 as f64])
             .render_ref(area, buf)
         ;        
+        let lv = vertical![==33%, ==67%]
+            .flex(Flex::Center)
+            .split(area)
+        ;
+        self.cblock.render(lv[0], buf);
     }
 }
