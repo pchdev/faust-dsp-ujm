@@ -9,7 +9,6 @@ use ratatui::{
 
 use indoc::indoc;
 
-
 use crate::{
     screens::{leafy, Screen, SideBySide}, 
 };
@@ -62,8 +61,8 @@ impl<'a> Default for Myself<'a> {
                     and other projects."
                 }) 
                 .add_paragraph(indoc! {
-                    "• Then, ***COVID*** happened T_T. But got into a (*secret*) \
-                    project with ***GRAME*** (*Max2FaustTranslator*)."
+                    "• Then, ***COVID*** happened :( But got into a (*secret*) \
+                    project with ***GRAME*** (*Max2FaustTranslator*) in Lyon."
                 }) 
                 .add_paragraph(leafy! {
                     "• Now in *Inria/INSA* team ***Emeraude***, working as a *research engineer* in *Lyon*, alongside:"

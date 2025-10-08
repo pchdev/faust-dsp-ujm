@@ -9,8 +9,8 @@ masterVol = hslider("masterVol",0.8,0,1,0.01) <: _*_;
 panning = hslider("pan",0.5,0,1,0.01)  : si.smoo;
 
 // Buttons:
-activateNoise = button(\"activateNoise\");
-killSwitch = 1-button(\"killSwitch\");
+activateNoise = button("activateNoise");
+killSwitch = 1-button("killSwitch");
 
 LFO = os.lf_triangle(lfoFreq) * 0.5 + 0.5;
 
