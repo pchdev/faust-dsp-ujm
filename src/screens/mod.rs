@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use color_eyre::owo_colors::{OwoColorize, Rgb};
-use crossterm::event::{KeyCode, KeyEvent};
+use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use ratatui::{
     buffer::Buffer, 
     layout::{
@@ -39,7 +39,6 @@ use crate::widgets::InteractiveWidget;
 pub(crate) enum Content<'a> {
     Paragraph(Paragraph<'a>),
     List(Vec<String>, ListState),
-    Widget(Box<dyn WidgetRef>)
 }
 
 #[derive(Default)]
@@ -125,8 +124,6 @@ impl<'a> WidgetRef for ContentArea<'a> {
                         Constraint::Length(list.len() as u16)
                     )
                 }
-                Content::Widget(w) => {
-                }
             }
         }
         // Build the layout:
@@ -181,9 +178,6 @@ impl<'a> WidgetRef for ContentArea<'a> {
                     StatefulWidget::render(l, lp[n], buf, &mut s);
                     i += svec.len();
                 }
-                Content::Widget(w) => {
-
-                }
             }
         }
     }
@@ -197,7 +191,6 @@ pub struct SideBySide<'a> {
     lhs: ContentArea<'a>,
     rhs: HashMap<usize, Box<dyn InteractiveWidget>>,
     sel: Option<usize>,
-    cursor: usize,
     focus: Focus,
 }
 
@@ -240,9 +233,17 @@ impl<'a> Screen for SideBySide<'a> {
         match self.focus {
             Focus::Lhs => {
                 match k.code {
+                    KeyCode::Right => {
+                        if k.modifiers.contains(KeyModifiers::CONTROL)
+                        && k.modifiers.contains(KeyModifiers::SHIFT) {
+                            self.focus = Focus::Rhs;
+                        }
+                    }
                     KeyCode::Enter => {
                         self.focus = Focus::Rhs;
-                        self.sel = Some(self.lhs.select);
+                        if self.rhs.contains_key(&self.lhs.select) {
+                            self.sel = Some(self.lhs.select);
+                        }   
                     }
                     _ => {
                         self.lhs.on_key_event(k);
@@ -250,20 +251,22 @@ impl<'a> Screen for SideBySide<'a> {
                 }
             }
             Focus::Rhs => {
-                match k.code {
-                    KeyCode::Backspace => {
-                        self.focus = Focus::Lhs;                        
-                    }
-                    _ => {
-                        match &self.sel {
-                            Some(x) => {
-                                self.rhs.get_mut(x)
-                                    .expect("Selected Widget does not exist :<")
-                                    .on_key_event(k);
+                if k.modifiers.contains(KeyModifiers::CONTROL)
+                && k.modifiers.contains(KeyModifiers::SHIFT)
+                && k.code == KeyCode::Left {
+                    self.focus = Focus::Lhs;
+                } else {
+                    match &self.sel {
+                        Some(x) => {
+                            match self.rhs.get_mut(x) {
+                                Some(w) => {
+                                    w.on_key_event(k);
+                                }
+                                None => ()
                             }
-                            _ => ()
                         }
-                    }
+                        _ => ()
+                    }                    
                 }
             }
         }
@@ -271,9 +274,12 @@ impl<'a> Screen for SideBySide<'a> {
     fn on_tick(&mut self, t: usize) {
         match &self.sel {
             Some(x) => {
-                self.rhs.get_mut(x)
-                    .unwrap()
-                    .on_tick(t);
+                match self.rhs.get_mut(x) {
+                    Some(w) => {
+                        w.on_tick(t);
+                    }
+                    _ => ()
+                }
             }
             _ => ()
         }
@@ -306,9 +312,12 @@ impl<'a> WidgetRef for SideBySide<'a> {
         self.lhs.render_ref(lhl, buf);
         match &self.sel {
             Some(x) => {
-                self.rhs.get(x)
-                    .unwrap()
-                    .render_ref(lhr, buf);
+                match self.rhs.get(x) {
+                    Some(w) => {
+                        w.render_ref(lhr, buf);
+                    }
+                    _ => ()
+                }
             }
             _ => ()
         }

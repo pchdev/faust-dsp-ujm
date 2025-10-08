@@ -1,20 +1,10 @@
 
-use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
+use crossterm::event::{KeyEvent};
 
 use ratatui::{
     buffer::Buffer, 
-    layout::{
-        Flex, 
-    }, 
     prelude::Rect, 
-    widgets::{
-        Block, 
-        BorderType, 
-        Borders, 
-        ListState, 
-        Paragraph, 
-        Widget, WidgetRef, 
-    }
+    widgets::{WidgetRef}
 };
 
 use indoc::indoc;
@@ -24,8 +14,8 @@ use ratatui_macros::{
 };
 
 use crate::{
-    screens::{ContentArea, Screen, leafy}, 
-    widgets::{faustblock::FaustWidget}
+    screens::{leafy, ContentArea, Screen, SideBySide}, 
+    widgets::faustblock::FaustWidget
 };
 
 /// Font is 'Future':
@@ -35,59 +25,36 @@ const TITLE: &'static str = indoc!{"
 ┗━╸╹ ╹ ╹ ┗━╸╹┗╸   ╹  ╹ ╹┗━┛┗━┛ ╹ 
 "};
 
-const VIRTUAL_ANALOG: &'static str = indoc! {"
-import(\"stdfaust.lib\");
+const VIRTUAL_ANALOG: &'static str = 
+    include_str!("../../examples/virtualAnalog.dsp");
 
-// Sliders:
-oscFreq = hslider(\"oscFreq\",80,50,500,0.01);
-lfoFreq = hslider(\"lfoFreq\",1,0.01,8,0.01);
-lfoRange = hslider(\"lfoRange\",1000,10,5000,0.01) : si.smoo;
-noiseGain = hslider(\"noiseGain\",0,0,1,0.01) <: _*_;
-masterVol = hslider(\"masterVol\",0.8,0,1,0.01) <: _*_;
-panning = hslider(\"pan\",0.5,0,1,0.01)  : si.smoo;
-
-// Buttons:
-activateNoise = button(\"activateNoise\");
-killSwitch = 1-button(\"killSwitch\");
-
-LFO = os.lf_triangle(lfoFreq) * 0.5 + 0.5;
-
-process = os.oscrc(440) 
-        * 0.25 
-        * killSwitch 
-        * os.sawtooth(oscFreq) 
-        + no.noise * noiseGain
-        * activateNoise : fi.resonlp(
-            LFO * lfoRange + 50,
-            5,
-            1)
-        * masterVol <: _ * (1-panning), _ * panning;
-"};
-
-#[derive(Default)]
-enum Animation {
-    #[default]
-    None,
-    CodeBlock(FaustWidget)
-}
-
-#[derive(Debug)]
-enum Content<'a> {
-    Paragraph(Paragraph<'a>),
-    List(Vec<String>, ListState)
-}
 
 pub struct Faust<'a> {
-      lhs: ContentArea<'a>, 
-      rhs: Animation,
-    rhs_focus: bool,
-     rhs_init: bool,
+    screen: SideBySide<'a>,
+}
+
+impl<'a> WidgetRef for Faust<'a> {
+    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
+        self.screen.render_ref(area, buf);
+    }
+}
+
+impl<'a> Screen for Faust<'a> {
+    fn title(&self) -> &'static str {
+        "Enter Faust!"
+    }
+    fn on_key_event(&mut self, k: KeyEvent) {
+        self.screen.on_key_event(k);
+    }
+    fn on_tick(&mut self, t: usize) {
+        self.screen.on_tick(t);
+    }
 }
 
 impl<'a> Default for Faust<'a> {
     fn default() -> Self {
         Faust {
-            lhs: ContentArea::default()
+            screen: SideBySide::default()
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
                     "• **Faust** (*Functional Audio Stream*) is a programming language \
@@ -114,134 +81,9 @@ impl<'a> Default for Faust<'a> {
                 .add_paragraph(leafy! {
                     "Dedicated online IDE: ***https://faustide.grame.fr***"
                 })
+                .add_widget(0, Box::new(FaustWidget::new(VIRTUAL_ANALOG)))
                 ,
-            rhs: Animation::None,            
-            rhs_focus: false,
-            rhs_init: false,
         }
     }
 }
 
-impl<'a> WidgetRef for Faust<'a> {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
-        let [lhl, lhr] = horizontal![==50%, ==50%]
-            .flex(Flex::Center)
-            .areas(area)
-        ;
-        Block::bordered()
-            .borders(Borders::LEFT)
-            .border_type(BorderType::Plain)
-            .render(lhr, buf)
-        ;
-        self.lhs.render_ref(lhl, buf);
-        match &self.rhs {
-            Animation::CodeBlock(f) => {
-                f.render_ref(lhr, buf);
-            }
-            _ => ()
-        }
-    }
-}
-
-impl<'a> Screen for Faust<'a> {
-    fn title(&self) -> &'static str {
-        "Enter Faust!"
-    }
-    fn on_key_event(&mut self, k: KeyEvent) {
-        match k.code {
-            KeyCode::Right => {
-                if k.modifiers.contains(KeyModifiers::CONTROL)
-                && k.modifiers.contains(KeyModifiers::SHIFT) {
-                    if self.rhs_init == false {
-                        self.rhs = Animation::CodeBlock(
-                            FaustWidget::new(VIRTUAL_ANALOG)
-                        );
-                    }
-                    self.rhs_focus = true;
-                } else {
-                    match &mut self.rhs {
-                        Animation::None => {
-                            self.lhs.on_key_event(k);
-                        }
-                        Animation::CodeBlock(cb) => {
-                            if self.rhs_focus {
-                                cb.on_key_event(k);
-                            } else {
-                                self.lhs.on_key_event(k);
-                            }
-                        }
-                    }
-                }
-            }
-            KeyCode::Left => {
-                if k.modifiers.contains(KeyModifiers::CONTROL)
-                && k.modifiers.contains(KeyModifiers::SHIFT) {
-                    self.rhs_focus = false;
-                } else {
-                    // match &mut self.rhs {
-                        
-                    // }
-                    // if self.rhs_focus {
-                    //     cb.on_key_event(k);
-                    // } else {
-                    //     self.lhs.on_key_event(k);
-                    // }                            
-                }
-            }
-            _ => {
-                
-            }
-        }
-        match &mut self.rhs {
-            Animation::None => {
-                match k.code {
-                    // Ctrl+Right: switch to right panel
-                    KeyCode::Right => {
-                        if k.modifiers.contains(KeyModifiers::CONTROL) 
-                        && k.modifiers.contains(KeyModifiers::SHIFT) {
-                            if self.rhs_init == false {
-                                self.rhs = Animation::CodeBlock(
-                                    FaustWidget::default()
-                                );
-                            }
-                            self.rhs_focus = true;
-                        }
-                    }
-                    _ => {
-                        self.lhs.on_key_event(k);
-                    }
-                }
-            }
-            Animation::CodeBlock(cb) => {
-                match k.code {
-                    KeyCode::Left => {
-                        if k.modifiers.contains(KeyModifiers::CONTROL) 
-                        && k.modifiers.contains(KeyModifiers::SHIFT) {
-                            self.rhs_focus = false
-                        } else {
-                            if self.rhs_focus {
-                                cb.on_key_event(k);
-                            } else {
-                                self.lhs.on_key_event(k);
-                            }                            
-                        }
-                    }
-                    _ => {
-                        if self.rhs_focus {
-                            cb.on_key_event(k);
-                        } else {
-                            self.lhs.on_key_event(k);
-                        }
-                        
-                    }
-                }
-            }
-        }
-    }
-
-    fn on_tick(&mut self, t: usize) {
-        match &mut self.rhs {
-            _ => ()
-        }
-    }
-}

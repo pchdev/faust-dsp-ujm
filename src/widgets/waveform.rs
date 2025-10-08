@@ -19,7 +19,7 @@ use ratatui::{
     }
 };
 
-use crate::widgets::InteractiveWidget;
+use crate::widgets::{control::block::ControlBlock, InteractiveWidget};
 
 const RESOLUTION: usize = 400usize;
 
@@ -29,7 +29,9 @@ impl Waveform {
             tick: 0,
             frequency,
             amplitude,
-            coords: [(0.0, 0.0); RESOLUTION]
+            coords: [(0.0, 0.0); RESOLUTION],
+            controls: ControlBlock::default()
+                .add_button("test")
 
         }
     }
@@ -56,6 +58,7 @@ pub struct Waveform {
     pub frequency: usize,
     pub amplitude: usize, 
     pub coords: [(f64, f64); RESOLUTION],
+    controls: ControlBlock,
 }
 
 impl WidgetRef for Waveform {

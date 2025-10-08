@@ -3,33 +3,16 @@ use crossterm::event::{KeyCode, KeyEvent};
 
 use ratatui::{
     buffer::Buffer, 
-    layout::{
-        Flex, 
-    }, 
     prelude::Rect, 
     widgets::{
-        Block, 
-        BorderType, 
-        Borders, 
-        ListState, 
-        Paragraph, 
-        Widget, WidgetRef, 
+        WidgetRef, 
     }
 };
 
 use indoc::indoc;
 
-use ratatui_macros::{
-    horizontal, 
-};
-
 use crate::{
-    screens::{leafy, ContentArea, Screen}, 
-    widgets::{
-        particles::Particles, 
-        ripple::Ripple, 
-        waveform::Waveform, InteractiveWidget
-    }
+    screens::{leafy, Screen, SideBySide}, widgets::waveform::Waveform, 
 };
 
 /// Font is 'Future':
@@ -39,30 +22,32 @@ const TITLE: &'static str = indoc!{"
 ┗━┛╹┗━┛╹ ╹╹ ╹┗━╸
 "};
 
-#[derive(Debug, Default)]
-enum Animation {
-    #[default]
-    None,
-    Ripple(Ripple),
-    Particles(Particles),
-    Waveform(Waveform)
-}
-
-#[derive(Debug)]
-enum Content<'a> {
-    Paragraph(Paragraph<'a>),
-    List(Vec<String>, ListState)
-}
-
 pub struct Signal<'a> {
-    lhs: ContentArea<'a>, 
-    rhs: Animation,
+    screen: SideBySide<'a>,
+}
+
+impl<'a> WidgetRef for Signal<'a> {
+    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
+        self.screen.render_ref(area, buf);
+    }
+}
+
+impl<'a> Screen for Signal<'a> {
+    fn title(&self) -> &'static str {
+        "Signal"
+    }
+    fn on_key_event(&mut self, k: KeyEvent) {
+        self.screen.on_key_event(k);
+    }
+    fn on_tick(&mut self, t: usize) {
+        self.screen.on_tick(t);
+    }
 }
 
 impl<'a> Default for Signal<'a> {
     fn default() -> Self {
         Signal {
-            lhs: ContentArea::default()
+            screen: SideBySide::default()
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
                     "• A ***signal*** describes the evolution of data *over time*. \
@@ -83,6 +68,7 @@ impl<'a> Default for Signal<'a> {
                     "With an oscilloscope, we can measure the **amplitude** of a signal at a given *point in time* (***time-domain***), \
                     through the visualisation of a ***waveform***."
                 })   
+                .add_widget(3, Box::new(Waveform::new(100, 25)))
                 .add_paragraph(indoc! {
                     "• An analog signal can already be processed as it is, with ***analog effects***: \
                     *tape delay*, *distortion*, *chorus*, *reverberation (spring, plate)*, etc."
@@ -93,73 +79,8 @@ impl<'a> Default for Signal<'a> {
                     For this purpose, it's far more efficient to switch to the ***frequency domain***, which requires the analog signal to \
                     be turned into a ***digital signal***..."
                 })                
-                ,
-            rhs: Animation::default(),            
+                ,            
         }
     }
 }
 
-impl<'a> WidgetRef for Signal<'a> {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
-        let [lhl, lhr] = horizontal![==50%, ==50%]
-            .flex(Flex::Center)
-            .areas(area)
-        ;
-        Block::bordered()
-            .borders(Borders::LEFT)
-            .border_type(BorderType::Plain)
-            .render(lhr, buf)
-        ;
-        self.lhs.render_ref(lhl, buf);
-        match &self.rhs {
-            Animation::Ripple(r) => {
-                r.render_ref(lhr, buf);
-            }
-            Animation::Particles(p) => {
-                p.render_ref(lhr, buf);
-            }
-            Animation::Waveform(p) => {
-                p.render_ref(lhr, buf);
-            }
-            _ => ()
-        }
-    }
-}
-
-impl<'a> Screen for Signal<'a> {
-    fn title(&self) -> &'static str {
-        "Signal"
-    }
-    fn on_key_event(&mut self, k: KeyEvent) {
-        match k.code {
-            KeyCode::Down | KeyCode::Up => {
-                self.lhs.on_key_event(k);
-            }
-            KeyCode::Enter => {
-                match self.lhs.select {
-                    2..=3=> {
-                        self.rhs = Animation::Waveform(
-                            Waveform::new(100, 25)
-                        );
-                    }
-                    _ => ()
-                }
-            }
-            _ => ()
-        }
-    }
-    fn on_tick(&mut self, t: usize) {
-        match &mut self.rhs {
-            Animation::Ripple(r) => {
-                r.on_tick(t);
-            }
-            Animation::Particles(p) => {
-                p.on_tick(t);
-            }
-            Animation::Waveform(w) => {
-                w.on_tick(t);
-            }
-            _ => ()
-        }
-    }
-}

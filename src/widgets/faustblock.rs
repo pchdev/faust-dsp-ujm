@@ -20,7 +20,7 @@ use ratatui_macros::vertical;
 use strum::{Display, EnumIter, FromRepr, IntoEnumIterator};
 use indoc::indoc;
 
-use crate::screens::faust::Faust;
+use crate::{screens::faust::Faust, widgets::InteractiveWidget};
 
 #[derive(Clone)]
 pub struct FaustEditor {
@@ -143,21 +143,24 @@ impl Default for FaustWidget {
     }
 }
 
+impl InteractiveWidget for FaustWidget {
+    fn on_key_event(&mut self, k: KeyEvent) {
+        match &mut self.select {            
+            TabSelect::Editor(e) => {
+                // Propagate key event to underlying widget:
+                e.on_key_event(k);
+            }
+            _ => ()
+        }        
+    }
+}
+
 impl FaustWidget {
     pub(crate) fn new<T: ToString>(str: T) -> Self {
         FaustWidget { 
             select: TabSelect::Editor(
                 FaustEditor::new(str)
             ) 
-        }
-    }
-    /// Propagate key event to underlying widget:
-    pub(crate) fn on_key_event(&mut self, k: KeyEvent) {
-        match &mut self.select {
-            TabSelect::Editor(e) => {
-                e.on_key_event(k);
-            }
-            _ => ()
         }
     }
 }

@@ -61,7 +61,7 @@ impl<'a> Default for Sound<'a> {
                     the medium's *particles* around their point of origin.
                     "
                 })
-                // .add_widget(1, Box::new(Particles::new(400)))
+                .add_widget(1, Box::new(Particles::new(400)))
                 .add_paragraph(indoc! {
                     "• A sound has the following **properties**:"
                 })

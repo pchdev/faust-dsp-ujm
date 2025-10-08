@@ -1,21 +1,29 @@
 
-use std::{f64::consts::PI, thread, time::Duration};
+use std::{f64::consts::PI};
 
 use crossterm::event::KeyEvent;
 use ratatui::{
-    buffer::Buffer, prelude::Rect, style::{Color, Style}, symbols, widgets::{
+    buffer::Buffer, 
+    prelude::Rect, 
+    style::{Color}, 
+    symbols, 
+    widgets::{
         canvas::{
             Canvas, 
-            Circle, Points
-        }, StatefulWidgetRef, WidgetRef
+            Points
+        }, 
+        WidgetRef
     }
 };
+
+use crate::widgets::{control::block::ControlBlock, InteractiveWidget};
 
 #[derive(Debug, Default)]
 pub struct Particles {
     pub tick: usize,
     pub frequency: usize,
-    pub amplitude: usize
+    pub amplitude: usize,
+    controls: ControlBlock
 }
 
 impl Particles {
@@ -23,18 +31,11 @@ impl Particles {
         Particles { 
             tick: 0,
             frequency: 1,
-            amplitude
+            amplitude,
+            controls: ControlBlock::default()
+                .add_button("test")
         }
     }
-
-    pub(crate) fn on_tick(&mut self, tick: usize) {
-        // TODO: frequency
-        self.tick += 1;
-        if self.tick >= self.amplitude {
-           self.tick -= self.amplitude;
-        }
-    }
-
     fn position(&self, pos: (usize, usize)) -> (f64, f64) {
         // Spacing between each particle:
         const SPACING: f64 = 25.0;
@@ -54,6 +55,20 @@ impl Particles {
             x + ph,
             y
         )
+    }
+}
+
+impl InteractiveWidget for Particles {
+    fn on_key_event(&mut self, k: KeyEvent) {
+
+    }
+
+    fn on_tick(&mut self, tick: usize) {
+        // TODO: frequency
+        self.tick += 1;
+        if self.tick >= self.amplitude {
+           self.tick -= self.amplitude;
+        }
     }
 }
 

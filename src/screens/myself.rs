@@ -1,35 +1,17 @@
 
-use crossterm::event::{KeyCode, KeyEvent};
+use crossterm::event::{KeyEvent};
 
 use ratatui::{
     buffer::Buffer, 
-    layout::{
-        Flex, 
-    }, 
     prelude::Rect, 
-    widgets::{
-        Block, 
-        BorderType, 
-        Borders, 
-        ListState, 
-        Paragraph, 
-        Widget, WidgetRef, 
-    }
+    widgets::{WidgetRef}
 };
 
 use indoc::indoc;
 
-use ratatui_macros::{
-    horizontal, 
-};
 
 use crate::{
-    screens::{ContentArea, Screen, leafy}, 
-    widgets::{
-        particles::Particles, 
-        ripple::Ripple, 
-        waveform::Waveform
-    }
+    screens::{leafy, Screen, SideBySide}, 
 };
 
 /// Font is 'Future':
@@ -39,27 +21,32 @@ const TITLE: &'static str = indoc!{"
 ╹ ╹┗━╸┗━╸┗━╸┗━┛╹
 "};
 
-#[derive(Debug, Default)]
-enum Animation {
-    #[default]
-    None,
-}
-
-#[derive(Debug)]
-enum Content<'a> {
-    Paragraph(Paragraph<'a>),
-    List(Vec<String>, ListState)
-}
-
 pub struct Myself<'a> {
-    lhs: ContentArea<'a>, 
-    rhs: Animation,
+    screen: SideBySide<'a>,
+}
+
+impl<'a> WidgetRef for Myself<'a> {
+    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
+        self.screen.render_ref(area, buf);
+    }
+}
+
+impl<'a> Screen for Myself<'a> {
+    fn title(&self) -> &'static str {
+        "Hello!"
+    }
+    fn on_key_event(&mut self, k: KeyEvent) {
+        self.screen.on_key_event(k);
+    }
+    fn on_tick(&mut self, t: usize) {
+        self.screen.on_tick(t);
+    }
 }
 
 impl<'a> Default for Myself<'a> {
     fn default() -> Self {
         Myself {
-            lhs: ContentArea::default()
+            screen: SideBySide::default()
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
                     "• My name is **Pierre**, nice to meet you!"
@@ -97,50 +84,7 @@ impl<'a> Default for Myself<'a> {
                     "• Not really a musician anymore, not really expert in **DSP** either (sorry)... \
                     I like **code** (and *pixels*), and helping researchers."
                 })
-                ,
-            rhs: Animation::default(),            
-        }
-    }
-}
-
-impl<'a> WidgetRef for Myself<'a> {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
-        let [lhl, lhr] = horizontal![==50%, ==50%]
-            .flex(Flex::Center)
-            .areas(area)
-        ;
-        Block::bordered()
-            .borders(Borders::LEFT)
-            .border_type(BorderType::Plain)
-            .render(lhr, buf)
-        ;
-        self.lhs.render_ref(lhl, buf);
-        match &self.rhs {
-            _ => ()
-        }
-    }
-}
-
-impl<'a> Screen for Myself<'a> {
-    fn title(&self) -> &'static str {
-        "Hello!"
-    }
-    fn on_key_event(&mut self, k: KeyEvent) {
-        match k.code {
-            KeyCode::Down | KeyCode::Up => {
-                self.lhs.on_key_event(k);
-            }
-            KeyCode::Enter => {
-                match self.lhs.select {
-                    _ => ()
-                }
-            }
-            _ => ()
-        }
-    }
-    fn on_tick(&mut self, t: usize) {
-        match &mut self.rhs {
-            _ => ()
+                ,   
         }
     }
 }
