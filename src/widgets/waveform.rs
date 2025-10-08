@@ -24,7 +24,7 @@ impl Waveform {
             coords: [(0.0, 0.0); RESOLUTION],
             cblock: ControlBlock::default()
                 .add_slider("amplitude", 25.0, 0.0..100.0)
-                .add_slider("frequency", 50.0, 1.0..100.0)
+                .add_slider("frequency", 100.0, 1.0..100.0)
 
         }
     }

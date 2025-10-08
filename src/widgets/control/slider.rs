@@ -56,9 +56,15 @@ impl InteractiveWidget for Slider {
         match k.code {
             KeyCode::Up => {
                 self.value += 1.0;
+                if self.value > 100.0 {
+                   self.value = 100.0
+                }
             }
             KeyCode::Down => {
                 self.value -= 1.0;
+                if self.value < 0.0 {
+                   self.value = 0.0;
+                }
             }
             _ => ()
         }
