@@ -4,7 +4,7 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use ratatui::{
     buffer::Buffer, 
     layout::{
-        self, Constraint, Flex, Rect
+        self, Constraint, Flex, Rect, Size
     }, 
     style::{
         Style, Stylize
@@ -38,6 +38,7 @@ macro_rules! leafy {
 }
 
 pub(crate) use leafy;
+use tui_widgets::scrollview::{ScrollView, ScrollViewState, ScrollbarVisibility};
 
 use crate::widgets::InteractiveWidget;
 
@@ -116,10 +117,12 @@ impl<'a> WidgetRef for ContentArea<'a> {
         }
         // Compute layout constraints:
         let mut constraints = vec![];
+        let (mut w, mut h) = (lv[2].width, 0);
         for content in self.contents.iter() {
             match content {
                 Content::Paragraph(ph) => {
                     let lc = ph.line_count(lv[2].width);
+                    h += lc + 1;
                     constraints.push(
                         Constraint::Length(lc.try_into().unwrap())
                     );
@@ -127,7 +130,8 @@ impl<'a> WidgetRef for ContentArea<'a> {
                 Content::List(list, ..) => {
                     constraints.push(
                         Constraint::Length(list.len() as u16)
-                    )
+                    );
+                    h += list.len() + 1;
                 }
             }
         }
@@ -135,6 +139,9 @@ impl<'a> WidgetRef for ContentArea<'a> {
         let lp = layout::Layout::vertical(constraints)
             .spacing(1)
             .split(lv[2])
+        ;
+        let mut scroll = ScrollView::new(Size::new(w, h as u16))
+            .vertical_scrollbar_visibility(ScrollbarVisibility::Always)
         ;
         // Render everything:
         let mut i = 0;
@@ -144,12 +151,15 @@ impl<'a> WidgetRef for ContentArea<'a> {
                     if self.select == i {
                         // If paragraph is selected:
                         let p = ph.clone().black().on_gray();
-                        p.render(lp[n], buf);
+                        scroll.render_widget(p, lp[n]);
+                        // p.render(lp[n], buf);
                     } else if self.select > i {
-                        ph.render(lp[n], buf);
+                        scroll.render_widget(ph, lp[n]);
+                        // ph.render(lp[n], buf);
                     } else {
                         let p = ph.clone().gray().on_white();
-                        p.render(lp[n], buf);
+                        // p.render(lp[n], buf);
+                        scroll.render_widget(p, lp[n]);
                     }               
                     i += 1;     
                 }
@@ -180,11 +190,14 @@ impl<'a> WidgetRef for ContentArea<'a> {
                         .highlight_style(Style::new().black().on_gray())
                         .highlight_spacing(HighlightSpacing::Always)
                     ;
-                    StatefulWidget::render(l, lp[n], buf, &mut s);
+                    // scroll.render_widget(l, lp[n]);
+                    // StatefulWidget::render(l, lp[n], buf, &mut s);
                     i += svec.len();
                 }
             }
         }
+        let mut state = ScrollViewState::new();
+        scroll.render(lv[2], buf, &mut state);
     }
 }
 
