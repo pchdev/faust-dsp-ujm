@@ -55,13 +55,13 @@ impl<'a> Default for Signal<'a> {
                     "
                 })
                 .add_paragraph(indoc! {
-                    "• Just like *nerve impulses* carried to the brain, the analyzed data usually needs to be first converted \
+                    "• Just like sound waves turning into nerve impulses, the analyzed data usually needs to be first converted \
                     to another *physical unit*, or *domain* (***transduction***) in order to adapt to measurement/processing tools.
                     "
                 })
                 .add_paragraph(indoc! {
                     "• The vibration of a microphone's membrane is, for instance, usually converted to ***continuous electrical current***, \
-                    and can be then processed and/or analyzed. In this case, the signal is said to be ***\"analog\"***.
+                    before it can be processed and/or analyzed. In this case, the signal is said to be ***\"analog\"***.
                     "
                 })    
                 ,            

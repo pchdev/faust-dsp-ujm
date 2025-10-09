@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crossterm::event::{KeyCode, KeyEvent};
 
 use ratatui::{
@@ -23,19 +25,28 @@ use crate::widgets::{
 // DFDDC8
 #[derive(Debug, Default)]
 pub struct Ripple {
-    pub tick: usize,
+    amplitude: f32,
+    distance: f32,
+    phase: Vec<f32>,
     cblock: ControlBlock
 }
 
 impl Ripple {
     pub(crate) fn new() -> Self {
-        Ripple {
-            tick: 0,
+        let mut r = Ripple {
+            amplitude: 1.0,
+            distance: 0.25,
+            phase: vec![0f32; 4],
             cblock: 
                 ControlBlock::default()
-                    .add_slider("amplitude", 50.0, 0.0..200.0)
-                    .add_slider("frequency", 25.0, 1.0..100.0)
+                    .add_slider("amplitude", 100.0, 0.0..100.0)
+                    // .add_slider("frequency", 25.0, 1.0..100.0)
+        };
+        for (n, ph) in r.phase.iter_mut().enumerate() {
+            // add the negative (delayed) phase offsets:
+            *ph -= n as f32 * 0.25;
         }
+        return r;
     }
 }
 
@@ -50,27 +61,46 @@ impl InteractiveWidget for Ripple {
             }
             _ => {
                 if self.cblock.display {
-                    self.cblock.on_key_event(k);
+                   self.cblock.on_key_event(k);
+                   // Update values immediately:
+                   let reg = self.amplitude;
+                   self.amplitude = self.cblock
+                       .read_control(0)
+                       .unwrap()
+                       / 100.0;
+                    // if amplitude changes, we need to re-compute
+                    // the number of simultaneous waves:
+                    if reg != self.amplitude {
+                        self.phase.resize(
+                            (self.amplitude/self.distance) as usize, 
+                            0.0
+                        );
+                    }
+                   for (n, ph) in self.phase.iter_mut().enumerate() {
+                        // add the negative (delayed) phase offsets:
+                        *ph -= n as f32 * 0.25;
+                    }
                 } 
             }
         }        
     }
-    fn on_tick(&mut self, tick: usize) {
-        // TODO: frequency
-        let amplitude = self.cblock.read_control(0).unwrap() as usize * 4; 
-        if tick % 2 == 0 {
-            self.tick += 1;
-        }
-        if self.tick >= amplitude {
-           self.tick -= amplitude;
+    fn on_tick(&mut self, _: usize) {
+        let len = Duration::from_millis(5).as_secs_f32();
+        let incr = len/(self.amplitude*2.0);
+        for ph in &mut self.phase {
+            *ph += incr;
+            if *ph >= 1.0 {
+               *ph -= 1.0;
+            }
         }
     }
 }
 
 impl WidgetRef for Ripple {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
-        let ncircles = 3;
-        let amplitude = self.cblock.read_control(0).unwrap() as f64;
+        // Maximum number of circles at the same time:
+        let max_amplitude = self.amplitude * 200.0;
+
         Canvas::default()
             .marker(symbols::Marker::Braille)
             .background_color(Color::White)
@@ -81,19 +111,18 @@ impl WidgetRef for Ripple {
                     radius: 4.0,
                     color: Color::Black
                 });
-                for n in 0..ncircles {
-                    let pos = n*25;
-                    let delayed = if self.tick < pos { 0 } else { 
-                        self.tick - pos
-                    };
-                    let c = delayed as u8;
-                    let color = Color::Rgb(c, c, c);
-                    ctx.draw(&Circle {
-                        x: 200.0,
-                        y: 200.0,
-                        radius: delayed as f64,
-                        color: color
-                    });
+                for ph in &self.phase {
+                    let c = (ph*240.0) as u8;
+                    let clr = Color::Rgb(c, c, c);
+                    let r = ph * max_amplitude;
+                    if r > 0.0 {
+                        ctx.draw(&Circle {
+                            x: 200.0,
+                            y: 200.0,
+                            radius: r as f64,
+                            color: clr
+                        });
+                    }
                 }
             })            
             .x_bounds([00.0, 400.0 as f64])

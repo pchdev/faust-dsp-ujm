@@ -101,7 +101,7 @@ impl<'a> Default for Digital2<'a> {
             screen: SideBySide::default()
                 .add_title(TITLE)
                 .add_paragraph(leafy! {
-                    "• Once we take a sample at a given time, we need to determine the ***scale of its value***, \
+                    "• Once we take a sample of a signal at a given time, we need to determine the ***scale of its value***, \
                     this is called ***quantization***. Increasing the scale implies reducing the ***quantization noise*** \
                     (*quality vs. storage tradeoff*).
                     "

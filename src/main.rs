@@ -8,12 +8,13 @@ use crossterm::event::{
 
 use ratatui::{
     layout::Flex, 
-    style::{Style, Stylize}, 
+    style::{Color, Style, Stylize}, 
     symbols::border, 
     widgets::{Block, Borders, Clear, HighlightSpacing, List, ListItem, ListState, StatefulWidget}, 
     DefaultTerminal, Frame
 };
 use ratatui_macros::{horizontal, line, vertical};
+use tachyonfx::{fx, EffectManager, Interpolation};
 use tui_widgets::popup::{Popup, SizedWrapper};
 
 use crate::screens::{
@@ -39,6 +40,7 @@ pub struct App {
     screens: Vec<Box<dyn Screen>>,
       popup: bool,
       popup_state: ListState,
+      fx: EffectManager<()>,
        exit: bool,
 }
 
@@ -57,6 +59,8 @@ impl App {
             Box::new(Digital2::default()),            
             Box::new(Faust::default()),
         ];
+        let fade = fx::fade_to(Color::Cyan, Color::Gray, (1000, Interpolation::SineIn));
+        app.fx.add_effect(fade);
         app
     }
 
@@ -65,7 +69,9 @@ impl App {
         let mut last_tick = Instant::now();
         let mut tick_count = 0usize;
         while !self.exit {
-            term.draw(|frame| self.draw(frame))?;
+            term.draw(|frame| {
+                self.draw(frame);                
+            })?;
             let timeout = tick_rate.saturating_sub(last_tick.elapsed());
             if event::poll(timeout)? {
                 match event::read()? {
