@@ -51,7 +51,7 @@ impl<'a> Default for Myself<'a> {
                     "• My name is **Pierre**, nice to meet you!"
                 }) 
                 .add_paragraph(indoc! {
-                    "• **In your shoes**, *12 years ago* :-)"
+                    "• First time teaching... but **in your shoes**, *12 years ago* :-)"
                 }) 
                 .add_paragraph(indoc! {
                     "• Got an internship at ***SCRIME-LaBRI*** in Bordeaux! \

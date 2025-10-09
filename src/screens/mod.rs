@@ -4,7 +4,7 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use ratatui::{
     buffer::Buffer, 
     layout::{
-        self, Constraint, Flex, Rect, Size
+        self, Constraint, Flex, Rect
     }, 
     style::{
         Style, Stylize
@@ -38,9 +38,32 @@ macro_rules! leafy {
 }
 
 pub(crate) use leafy;
-use tui_widgets::scrollview::{ScrollView, ScrollViewState, ScrollbarVisibility};
 
 use crate::widgets::InteractiveWidget;
+
+pub(crate) trait Screen : WidgetRef {
+    fn title(&self) -> &'static str;
+    fn on_key_event(&mut self, k: KeyEvent) {}
+    fn on_tick(&mut self, t: usize) {}
+}
+
+// The ideal would be:
+// 
+
+// #[derive(Screen)]
+// #[screen(layout = Layout::SideBySide)]
+
+// struct MyScreen {
+//     // ---------------------------
+//     /// Get **markdown comments**
+//     ph1: Paragraph<'_>,
+//     // ---------------------------
+//     /// - First item
+//     /// - Second item
+//     /// - etc.
+//     ph2: List<'_>
+//     // ---------------------------
+// }
 
 pub(crate) enum Content<'a> {
     Paragraph(Paragraph<'a>),
@@ -98,11 +121,11 @@ impl<'a> WidgetRef for ContentArea<'a> {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
         let lv = vertical![
              ==5%, // some spacing before title
-            ==15%, // title 
-            ==80%  // contents
+            ==17%, // title 
+            ==78%  // contents
         ]
             .flex(Flex::Center)
-            .horizontal_margin(5)
+            .horizontal_margin(2)
             .split(area)
         ;
         // Render title:
@@ -117,12 +140,10 @@ impl<'a> WidgetRef for ContentArea<'a> {
         }
         // Compute layout constraints:
         let mut constraints = vec![];
-        let (mut w, mut h) = (lv[2].width, 0);
         for content in self.contents.iter() {
             match content {
                 Content::Paragraph(ph) => {
                     let lc = ph.line_count(lv[2].width);
-                    h += lc + 1;
                     constraints.push(
                         Constraint::Length(lc.try_into().unwrap())
                     );
@@ -130,8 +151,7 @@ impl<'a> WidgetRef for ContentArea<'a> {
                 Content::List(list, ..) => {
                     constraints.push(
                         Constraint::Length(list.len() as u16)
-                    );
-                    h += list.len() + 1;
+                    )
                 }
             }
         }
@@ -139,9 +159,6 @@ impl<'a> WidgetRef for ContentArea<'a> {
         let lp = layout::Layout::vertical(constraints)
             .spacing(1)
             .split(lv[2])
-        ;
-        let mut scroll = ScrollView::new(Size::new(w, h as u16))
-            .vertical_scrollbar_visibility(ScrollbarVisibility::Always)
         ;
         // Render everything:
         let mut i = 0;
@@ -151,15 +168,12 @@ impl<'a> WidgetRef for ContentArea<'a> {
                     if self.select == i {
                         // If paragraph is selected:
                         let p = ph.clone().black().on_gray();
-                        scroll.render_widget(p, lp[n]);
-                        // p.render(lp[n], buf);
+                        p.render(lp[n], buf);
                     } else if self.select > i {
-                        scroll.render_widget(ph, lp[n]);
-                        // ph.render(lp[n], buf);
+                        ph.render(lp[n], buf);
                     } else {
                         let p = ph.clone().gray().on_white();
-                        // p.render(lp[n], buf);
-                        scroll.render_widget(p, lp[n]);
+                        p.render(lp[n], buf);
                     }               
                     i += 1;     
                 }
@@ -190,16 +204,67 @@ impl<'a> WidgetRef for ContentArea<'a> {
                         .highlight_style(Style::new().black().on_gray())
                         .highlight_spacing(HighlightSpacing::Always)
                     ;
-                    // scroll.render_widget(l, lp[n]);
-                    // StatefulWidget::render(l, lp[n], buf, &mut s);
+                    StatefulWidget::render(l, lp[n], buf, &mut s);
                     i += svec.len();
                 }
             }
         }
-        let mut state = ScrollViewState::new();
-        scroll.render(lv[2], buf, &mut state);
     }
 }
+
+
+#[derive(Default)]
+pub struct PlainFull<'a> {
+    contents: ContentArea<'a>,
+}
+
+impl<'a> PlainFull<'a> {
+    pub fn add_title(mut self, title: &'static str) -> Self {
+        self.contents.title = Some(String::from(title));
+        return self;
+    }
+    pub fn add_paragraph(mut self, txt: &'static str) -> Self {
+        self.contents.contents.push(
+            Content::Paragraph(
+                Paragraph::new(
+                    tui_markdown::from_str(txt)
+                ).wrap(Wrap {trim: true})
+            )
+        );
+        return self;
+    }
+    pub fn add_list(mut self, list: Vec<&'static str>) -> Self {
+        let mut items = vec![];
+        for i in list {
+            items.push(String::from(i));
+        }
+        self.contents.contents.push(
+            Content::List(items, ListState::default())
+        );
+        return self;
+    }    
+}
+
+impl<'a> Screen for PlainFull<'a> {
+    fn title(&self) -> &'static str {
+        "plain-full template"
+    }
+    fn on_key_event(&mut self, k: KeyEvent) {
+        self.contents.on_key_event(k);   
+    }
+}
+
+impl<'a> WidgetRef for PlainFull<'a> {
+    fn render_ref(&self, area: Rect, buf: &mut Buffer) {
+        let lh = horizontal![==15%, ==70%, ==15%]
+            .flex(Flex::Center)
+            .split(area)
+        ;
+        self.contents.render_ref(lh[1], buf);
+    }
+}
+
+
 
 #[derive(Default)]
 enum Focus { #[default] Lhs, Rhs }
@@ -342,26 +407,3 @@ impl<'a> WidgetRef for SideBySide<'a> {
     }
 }
 
-pub(crate) trait Screen : WidgetRef {
-    fn title(&self) -> &'static str;
-    fn on_key_event(&mut self, k: KeyEvent) {}
-    fn on_tick(&mut self, t: usize) {}
-}
-
-// The ideal would be:
-// 
-
-// #[derive(Screen)]
-// #[screen(layout = Layout::SideBySide)]
-
-// struct MyScreen {
-//     // ---------------------------
-//     /// Get **markdown comments**
-//     ph1: Paragraph<'_>,
-//     // ---------------------------
-//     /// - First item
-//     /// - Second item
-//     /// - etc.
-//     ph2: List<'_>
-//     // ---------------------------
-// }

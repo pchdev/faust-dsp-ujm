@@ -18,11 +18,11 @@ use tui_widgets::popup::{Popup, SizedWrapper};
 
 use crate::screens::{
     agenda::Agenda, 
-    digital::Digital, 
+    digital::{Digital, Digital2}, 
     faust::Faust, 
     myself::Myself, 
-    signal::Signal, 
-    sound::Sound, 
+    signal::{Signal, Signal2}, 
+    sound::{Sound, Sound2}, 
     splash::Splash, Screen
 };
 
@@ -50,8 +50,11 @@ impl App {
             Box::new(Myself::default()),
             Box::new(Agenda::default()),
             Box::new(Sound::default()),
+            Box::new(Sound2::default()),
             Box::new(Signal::default()),
+            Box::new(Signal2::default()),            
             Box::new(Digital::default()),
+            Box::new(Digital2::default()),            
             Box::new(Faust::default()),
         ];
         app
