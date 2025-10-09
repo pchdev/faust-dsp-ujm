@@ -28,6 +28,8 @@ const TITLE: &'static str = indoc!{"
 const VIRTUAL_ANALOG: &'static str = 
     include_str!("../../examples/virtualAnalog.dsp");
 
+const HELLO440: &'static str = 
+    include_str!("../../examples/hello440.dsp");
 
 pub struct Faust<'a> {
     screen: SideBySide<'a>,
@@ -59,11 +61,13 @@ impl<'a> Default for Faust<'a> {
                 .add_paragraph(indoc! {
                     "• **Faust** (*Functional Audio Stream*) is a programming language \
                     specifically made for ***audio DSP and synthesis***. \
-                    It was created by Yann Orlarey, Dominique Fober & Stéphane Letz at GRAME in 2002."
+                    It was created by **Yann Orlarey**, **Dominique Fober** & **Stéphane Letz** at **GRAME** in 2002."
                 })
                 .add_list(vec! [
-                    "• *Functional* paradigm",
-                    "• Declarative, math-like syntax",
+                    "**+** *Functional* paradigm",
+                    "**+** Declarative, math-like syntax",
+                    "**+** Produces optimized code for many architectures",
+                    "**-** Not recommended for multi-rate (FFT), but improving!"
                 ])
                 .add_paragraph(indoc! {
                     "• Compiles to **many targets** and **architectures**:",
@@ -81,7 +85,7 @@ impl<'a> Default for Faust<'a> {
                 .add_paragraph(leafy! {
                     "Dedicated online IDE: ***https://faustide.grame.fr***"
                 })
-                .add_widget(0, Box::new(FaustWidget::new(VIRTUAL_ANALOG)))
+                .add_widget(0, Box::new(FaustWidget::new(HELLO440)))
                 ,
         }
     }

@@ -9,7 +9,7 @@ use ratatui::{
 use indoc::indoc;
 
 use crate::{
-    screens::{leafy, Screen, SideBySide}, 
+    screens::{leafy, PlainFull, Screen, SideBySide}, 
     widgets::{
         particles::Particles, 
         ripple::Ripple, 
@@ -73,21 +73,6 @@ impl<'a> Default for Sound<'a> {
                     "• **Frequency**: cycles/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)",
                     "• **Spectrum**, or *Timbre*"
                 })
-            //     .add_paragraph(indoc! {
-            //         "• Our ***perception*** of sound is made from the translation of the vibrations reaching our ***eardrums*** to \
-            //         a *signal of nerve impulses*, transmitted and interpreted by **the brain**."
-            //     })
-            //     .add_paragraph(indoc! {
-            //         "• Human ears can typically identify sounds ***from 20 Hz to 20 kHz***."
-            //     })
-            //     .add_list(vec![
-            //         "• **Bat**: 2000 to 110,000 Hz",
-            //         "• **Porpoise**: 75 to 150,000 Hz",
-            //         "• **Cat**: 45 to 64,000 Hz",
-            //         "• **Dog**: 67 to 45,000 Hz",
-            //         "• **Chicken**: 125 to 2,000 Hz"
-            //     ]
-            // )
         }
         // • Speed:
         //  - Air: ~340 m/s
@@ -99,7 +84,7 @@ impl<'a> Default for Sound<'a> {
 }
 
 pub struct Sound2<'a> {
-    screen: SideBySide<'a>,
+    screen: PlainFull<'a>,
 }
 
 impl<'a> WidgetRef for Sound2<'a> {
@@ -124,31 +109,8 @@ impl<'a> Screen for Sound2<'a> {
 impl<'a> Default for Sound2<'a> {
     fn default() -> Self {
         Sound2 {
-            screen: SideBySide::default()
+            screen: PlainFull::default()
                 .add_title(TITLE)
-                // .add_paragraph(leafy!(
-                //     "Sound is a ***pressure wave*** that propagates \
-                //     through a **medium** (*gas*, *liquid* or *solid*).
-                //     "
-                // ))
-                // .add_widget(0, Box::new(Ripple::new()))
-                // .add_paragraph(leafy! {
-                //     "Propagation is carried by the **periodic oscillation** (*vibration*) of \
-                //     the medium's *particles* around their point of origin.
-                //     "
-                // })
-                // .add_widget(1, Box::new(Particles::new(400)))
-                // .add_paragraph(indoc! {
-                //     "• A sound has the following **properties**:"
-                // })
-                // .add_list(vec! {
-                //     "• **Speed**: ~343 m/s in **air**",
-                //     "• **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)",
-                //     "• **Period**: the time between two oscillations",
-                //     "• **Wavelength**: the distance between two oscillations",
-                //     "• **Frequency**: oscillations/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)",
-                //     "• **Spectrum**, or *Timbre*"
-                // })
                 .add_paragraph(indoc! {
                     "• Our ***perception*** of sound is made from the translation of the vibrations reaching our ***eardrums*** to \
                     a *signal of nerve impulses*, transmitted and interpreted by **the brain**."
@@ -165,12 +127,6 @@ impl<'a> Default for Sound2<'a> {
                 ]
             )
         }
-        // • Speed:
-        //  - Air: ~340 m/s
-        //  - Water: ~1,480 m/s
-        //  - Steel: ~5,960 m/s
-        //  - Solid atomic hydrogen: ~36,000 m/s
-        //  - Speed of light: 299,792,458 m/s
     }
 }
 

@@ -81,11 +81,11 @@ impl WidgetRef for Agenda {
             .horizontal_margin(14)
             .areas(lhlv[2])
         ;
-        let m_oct_h = horizontal![==25%, ==50%, ==25%]
+        let m_oct_h = horizontal![==10%, ==80%, ==10%]
             .flex(Flex::Center)
             .split(m_oct)
         ;
-        let m_nov_h = horizontal![==25%, ==50%, ==25%]
+        let m_nov_h = horizontal![==10%, ==80%, ==10%]
             .flex(Flex::Center)
             .split(m_nov)
         ;
@@ -152,7 +152,7 @@ impl WidgetRef for Agenda {
         ;
         let lhrv = vertical![==15%, ==15%, ==60%, ==10%]
             .flex(Flex::Center)
-            .horizontal_margin(10)
+            .horizontal_margin(2)
             .split(lhr)
         ;
         if self.selection {
@@ -221,10 +221,10 @@ impl WidgetRef for Agenda {
                             "• **Library**, **documentation** and **examples**"
                         )),      
                         ListItem::new(tui_markdown::from_str(
-                            "• **Simple DSP effects**, from scratch (*ringmod*, *delay*...)"
+                            "• **Simple DSP effects** (*ringmod*, *delay*...)"
                         )),
                         ListItem::new(tui_markdown::from_str(
-                            "• **Adding GUI elements** for **control** (*sliders*, *buttons*...)"
+                            "• **GUI** for **control** (*sliders*, *buttons*...)"
                         )),
                         ListItem::new(tui_markdown::from_str(
                             "• **Simple synthesis**: *oscillators* and *waveforms*"
