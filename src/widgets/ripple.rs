@@ -20,7 +20,7 @@ use crate::widgets::{
     control::block::ControlBlock, 
     InteractiveWidget
 };
-
+// DFDDC8
 #[derive(Debug, Default)]
 pub struct Ripple {
     pub tick: usize,
@@ -33,7 +33,7 @@ impl Ripple {
             tick: 0,
             cblock: 
                 ControlBlock::default()
-                    .add_slider("amplitude", 25.0, 0.0..200.0)
+                    .add_slider("amplitude", 50.0, 0.0..200.0)
                     .add_slider("frequency", 25.0, 1.0..100.0)
         }
     }
