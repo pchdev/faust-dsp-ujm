@@ -67,7 +67,7 @@ impl WidgetRef for Agenda {
             .border_type(BorderType::Plain)
             .render(lhr, buf)
         ;
-        let lhlv = vertical![==10%, ==15%, ==75%]
+        let lhlv = vertical![==5%, ==20%, ==75%]
             .flex(Flex::Center)
             .split(lhl)
         ;
@@ -75,7 +75,7 @@ impl WidgetRef for Agenda {
             .centered()
         ;
         subtitle.render(lhlv[1], buf);
-        let [m_oct, m_nov] = vertical![==40%, ==60%]
+        let [m_oct, m_nov] = vertical![==50%, ==50%]
             .flex(Flex::Center)
             .vertical_margin(1)
             .horizontal_margin(14)

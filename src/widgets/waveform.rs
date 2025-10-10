@@ -162,8 +162,8 @@ impl WidgetRef for Waveform {
                     coords: &self.coords,
                     color: Color::Black                    
                 });
-                ctx.print(375.0, 305.0, ratatui::text::Line::from("+1V"));
-                ctx.print(375.0, 95.0, ratatui::text::Line::from("-1V"));
+                ctx.print(375.0, 315.0, ratatui::text::Line::from("+1V"));
+                ctx.print(375.0, 75.0, ratatui::text::Line::from("-1V"));
                 for n in (0..self.coords.len()).step_by(2) {
                     // If we have too much of a gap between two values in one sample, 
                     // draw the line on the same vertical axis:

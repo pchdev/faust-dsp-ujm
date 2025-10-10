@@ -58,8 +58,8 @@ impl<'a> Default for Faust<'a> {
         Faust {
             screen: SideBySide::default()
                 .add_title(TITLE)
-                .add_paragraph(indoc! {
-                    "• **Faust** (*Functional Audio Stream*) is a programming language \
+                .add_paragraph(leafy! {
+                    "**Faust** (*Functional Audio Stream*) is a programming language \
                     specifically made for ***audio DSP and synthesis***. \
                     It was created by **Yann Orlarey**, **Dominique Fober** & **Stéphane Letz** at **GRAME** in 2002."
                 })
@@ -69,9 +69,6 @@ impl<'a> Default for Faust<'a> {
                     "**+** Produces optimized code for many architectures",
                     "**-** Not recommended for multi-rate (FFT), but improving!"
                 ])
-                .add_paragraph(indoc! {
-                    "• Compiles to **many targets** and **architectures**:",
-                })
                 .add_list(vec![
                     "• **Plugins**: VST, CLAP, AudioUnit",
                     "• **Software**: Max, Pd, SuperCollider, Csound",

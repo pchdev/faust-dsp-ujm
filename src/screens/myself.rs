@@ -69,11 +69,10 @@ impl<'a> Default for Myself<'a> {
                     "• Now in *Inria/INSA* team ***Emeraude***, working as a *research engineer* in *Lyon*, alongside:"
                 }) 
                 .add_list(vec![
-                    "• Tanguy Risset (Team Boss)",
+                    // "• Tanguy Risset (Team Boss)",
                     "• **Romain Michon**",
-                    "• Yann Orlarey (Papa Faust)",
                     "• **Stéphane Letz**",
-                    "• and many more..."
+                    "• Yann Orlarey (Papa Faust)",
                 ])
                 .add_paragraph(indoc! {
                     "• What I'm working on: "
@@ -84,7 +83,7 @@ impl<'a> Default for Myself<'a> {
                     "• ***Faust***"
                 ])
                 .add_paragraph(indoc! {
-                    "• P.S: I'm not really good at DSP :("
+                    "• **P.S**: I'm not really good at DSP :("
                 })
                 // .add_paragraph(indoc! {
                 //     "• Not really a musician anymore, not really expert in **DSP** either (sorry)... \
