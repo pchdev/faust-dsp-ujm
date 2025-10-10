@@ -112,7 +112,7 @@ impl<'a> Default for Sound2<'a> {
             screen: PlainFull::default()
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
-                    "• Our ***perception*** of sound is made from the translation of the vibrations reaching our ***eardrums*** to \
+                    "• Our ***perception*** of sound is made from the conversion of the vibrations reaching our ***eardrums*** to \
                     a *signal of nerve impulses*, transmitted and interpreted by **the brain**."
                 })
                 .add_paragraph(indoc! {

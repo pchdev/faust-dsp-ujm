@@ -51,7 +51,7 @@ impl<'a> Default for Signal<'a> {
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
                     "• A ***signal*** describes the evolution of data *over time*. \
-                    In our case, the periodic oscillation of an entity (like the *membrane* of a ***microphone***).
+                    In our case, the oscillation of an entity (like the *membrane* of a ***microphone***).
                     "
                 })
                 .add_paragraph(indoc! {
