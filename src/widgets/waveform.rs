@@ -35,6 +35,7 @@ impl Waveform {
                 .add_button("sine")
                 .add_button("triangle")
                 .add_button("square")
+                .add_button("sawtooth")
                 .add_button("noise")
         }
     }
@@ -66,7 +67,8 @@ impl InteractiveWidget for Waveform {
         let sine = self.cblock.read_control(1).unwrap();
         let tri = self.cblock.read_control(2).unwrap();
         let sqr = self.cblock.read_control(3).unwrap();
-        let noise = self.cblock.read_control(4).unwrap();
+        let saw = self.cblock.read_control(4).unwrap();
+        let noise = self.cblock.read_control(5).unwrap();
         let x_offset = 5.5 as f64;
 
         if sine != 0.0 {
@@ -103,6 +105,18 @@ impl InteractiveWidget for Waveform {
                 let mut y = if phase <= 0.5 {-1.0} else {1.0};
                 y = y * amplitude + 200.0;
                 self.coords[n] = (n as f64 + x_offset, y);
+                phase += incr;
+                if phase >= 1.0 {
+                   phase -= 1.0;
+                }
+            }
+            self.phase = phase;
+
+        } else if saw != 0.0 {
+            let mut phase = self.phase;
+            for n in 0..self.coords.len() {
+                let y = phase * 2.0 - 1.0;
+                self.coords[n] = (n as f64 + x_offset, y as f64 * amplitude + 200.0);
                 phase += incr;
                 if phase >= 1.0 {
                    phase -= 1.0;
