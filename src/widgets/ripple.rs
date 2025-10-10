@@ -99,7 +99,7 @@ impl InteractiveWidget for Ripple {
 impl WidgetRef for Ripple {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
         // Maximum number of circles at the same time:
-        let max_amplitude = self.amplitude * 200.0;
+        let max_amplitude = self.amplitude * 180.0;
 
         Canvas::default()
             .marker(symbols::Marker::Braille)

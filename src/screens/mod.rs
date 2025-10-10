@@ -256,7 +256,7 @@ impl<'a> Screen for PlainFull<'a> {
 
 impl<'a> WidgetRef for PlainFull<'a> {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
-        let lh = horizontal![==15%, ==70%, ==15%]
+        let lh = horizontal![==20%, ==60%, ==20%]
             .flex(Flex::Center)
             .split(area)
         ;
