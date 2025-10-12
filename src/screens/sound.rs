@@ -57,8 +57,8 @@ impl<'a> Default for Sound<'a> {
                 ))
                 .add_widget(0, Box::new(Ripple::new()))
                 .add_paragraph(leafy! {
-                    "Propagation is carried by the **periodic oscillation** (*vibration*) of \
-                    the medium's *particles* around their point of origin.
+                    "Propagation is caused by the **oscillation** (*vibration*) of \
+                    the medium's *particles*, around their equilibrium positions.
                     "
                 })
                 .add_widget(1, Box::new(Particles::new(400)))

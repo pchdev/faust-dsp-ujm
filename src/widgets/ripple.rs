@@ -85,7 +85,7 @@ impl InteractiveWidget for Ripple {
         }        
     }
     fn on_tick(&mut self, _: usize) {
-        let len = Duration::from_millis(5).as_secs_f32();
+        let len = Duration::from_millis(5).as_secs_f32() * 0.9;
         let incr = len/(self.amplitude*2.0);
         for ph in &mut self.phase {
             *ph += incr;

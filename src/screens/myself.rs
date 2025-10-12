@@ -4,13 +4,13 @@ use crossterm::event::{KeyEvent};
 use ratatui::{
     buffer::Buffer, 
     prelude::Rect, 
-    widgets::{WidgetRef}
+    widgets::{Widget, WidgetRef}
 };
 
 use indoc::indoc;
 
 use crate::{
-    screens::{leafy, Screen, SideBySide}, 
+    screens::{leafy, PlainFull, Screen, SideBySide}, widgets::InteractiveWidget, 
 };
 
 /// Font is 'Future':
@@ -20,8 +20,23 @@ const TITLE: &'static str = indoc!{"
 ╹ ╹┗━╸┗━╸┗━╸┗━┛╹
 "};
 
+
+#[derive(Default, Debug)]
+struct Logos {
+
+}
+
+
+impl WidgetRef for Logos {
+    fn render_ref(&self, area: Rect, buf: &mut Buffer) {
+    }
+}
+
+impl InteractiveWidget for Logos {}
+
+
 pub struct Myself<'a> {
-    screen: SideBySide<'a>,
+    screen: PlainFull<'a>,
 }
 
 impl<'a> WidgetRef for Myself<'a> {
@@ -45,14 +60,13 @@ impl<'a> Screen for Myself<'a> {
 impl<'a> Default for Myself<'a> {
     fn default() -> Self {
         Myself {
-            screen: SideBySide::default()
+            screen: PlainFull::default()
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
                     "• My name is **Pierre**, nice to meet you all!"
                 }) 
                 .add_paragraph(indoc! {
-                    "• First time teaching... but **in your shoes**, *12 years ago* \
-                    in the very same university :)"
+                    "• First time teaching... but **in your shoes**, *12 years ago* :)"
                 }) 
                 // .add_paragraph(indoc! {
                 //     "• Got an internship at ***SCRIME-LaBRI*** in Bordeaux! \
@@ -66,13 +80,14 @@ impl<'a> Default for Myself<'a> {
                 //     project with ***GRAME*** (*Max2FaustTranslator*) in Lyon."
                 // }) 
                 .add_paragraph(leafy! {
-                    "• Now in *Inria/INSA* team ***Emeraude***, working as a *research engineer* in *Lyon*, alongside:"
+                    "Now in *Inria/INSA* team ***Emeraude***, working as a *research engineer* in *Lyon*, alongside:"
                 }) 
+                // .add_widget(2, Box::new(Logos::default()))
                 .add_list(vec![
                     // "• Tanguy Risset (Team Boss)",
                     "• **Romain Michon**",
                     "• **Stéphane Letz**",
-                    "• Yann Orlarey (Papa Faust)",
+                    "• Yann Orlarey",
                 ])
                 .add_paragraph(indoc! {
                     "• What I'm working on: "
@@ -83,7 +98,7 @@ impl<'a> Default for Myself<'a> {
                     "• ***Faust***"
                 ])
                 .add_paragraph(indoc! {
-                    "• **P.S**: I'm not really good at DSP :("
+                    "• **P.S**: I'm not really an expert in DSP :("
                 })
                 // .add_paragraph(indoc! {
                 //     "• Not really a musician anymore, not really expert in **DSP** either (sorry)... \

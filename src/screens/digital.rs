@@ -12,7 +12,7 @@ use ratatui::{
 use indoc::indoc;
 
 use crate::{
-    screens::{leafy, Screen, SideBySide}, 
+    screens::{leafy, Screen, SideBySide}, widgets::{aliasing::Aliasing, quantization::Quantization, sampling::SamplingIllustration}, 
 };
 
 /// Font is 'Future':
@@ -59,6 +59,7 @@ impl<'a> Default for Digital<'a> {
                     "***Sampling*** means taking a sample of a signal at a certain frequency/rate (***sample rate***).
                     "
                 })
+                .add_widget(1, Box::new(SamplingIllustration::default()))
                 .add_list(vec![
                     "• **Audio CD**: *44.1 kHz*",
                     "• **Pro Audio**: *48/96 kHz*",
@@ -67,8 +68,8 @@ impl<'a> Default for Digital<'a> {
                 .add_paragraph(leafy!(
                     "• Because of ***aliasing***, the *sampling rate* must be **at least two times superior** to \
                     the **highest frequency** we want to represent (*Nyquist-Shannon*)."
-                )
-            )
+                ))
+                .add_widget(5, Box::new(Aliasing::default()))
         }
     }
 }
@@ -106,6 +107,7 @@ impl<'a> Default for Digital2<'a> {
                     (*quality vs. storage tradeoff*).
                     "
                 })
+                .add_widget(0, Box::new(Quantization::default()))
                 .add_list(vec![
                     "• **Audio CD**: 16-bits (65,536 values, 98 dB SNR)",
                     "• **Pro Audio**: 24-bits (~16,7 mil., 146 dB SNR)",

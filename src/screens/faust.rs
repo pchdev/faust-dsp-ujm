@@ -67,7 +67,7 @@ impl<'a> Default for Faust<'a> {
                     "**+** *Functional* paradigm",
                     "**+** Declarative, math-like syntax",
                     "**+** Produces optimized code for many architectures",
-                    "**-** Not recommended for multi-rate (FFT), but improving!"
+                    "**-** Not recommended (yet) for multi-rate (FFT)"
                 ])
                 .add_list(vec![
                     "• **Plugins**: VST, CLAP, AudioUnit",

@@ -12,7 +12,7 @@ use ratatui::{
 use indoc::indoc;
 
 use crate::{
-    screens::{leafy, PlainFull, Screen, SideBySide}, widgets::waveform::Waveform, 
+    screens::{leafy, PlainFull, Screen, SideBySide}, widgets::{spectrogram::SpectrumCanvas, waveform::Waveform}, 
 };
 
 /// Font is 'Future':
@@ -51,7 +51,7 @@ impl<'a> Default for Signal<'a> {
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
                     "• A ***signal*** describes the evolution of data *over time*. \
-                    In our case, the oscillation of an entity (like the *membrane* of a ***microphone***).
+                    In our case, the vibration of an entity (like the *membrane* of a ***microphone***).
                     "
                 })
                 .add_paragraph(indoc! {
@@ -110,7 +110,8 @@ impl<'a> Default for Signal2<'a> {
                     "On the other hand, it is difficult to extract precise information about ***frequency*** and ***spectrum***. \
                     For this purpose, it's far more efficient to switch to the ***frequency domain***, which requires the analog signal to \
                     be turned into a ***digital signal***..."
-                })                
+                })               
+                .add_widget(2, Box::new(SpectrumCanvas::default())) 
                 ,            
         }
     }

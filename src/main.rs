@@ -125,7 +125,10 @@ impl App {
                         self.popup_state.select_previous();
                     }
                     KeyCode::Down => {
-                        self.popup_state.select_next();
+                        let i = self.popup_state.selected().unwrap();
+                        if i < self.screens.len()-1 {
+                            self.popup_state.select_next();
+                        }
                     }
                     KeyCode::Enter => {
                         self.index = self.popup_state.selected().unwrap();
