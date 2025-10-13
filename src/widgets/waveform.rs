@@ -35,7 +35,7 @@ impl Waveform {
                 .add_button("sine")
                 .add_button("triangle")
                 .add_button("square")
-                .add_button("sawtooth")
+                .add_button("saw")
                 .add_button("noise")
         }
     }

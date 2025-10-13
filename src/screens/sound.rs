@@ -58,12 +58,12 @@ impl<'a> Default for Sound<'a> {
                 .add_widget(0, Box::new(Ripple::new()))
                 .add_paragraph(leafy! {
                     "Propagation is caused by the **oscillation** (*vibration*) of \
-                    the medium's *particles*, around their equilibrium positions.
+                    the medium's *particles*, around their ***equilibrium*** positions.
                     "
                 })
                 .add_widget(1, Box::new(Particles::new(400)))
                 .add_paragraph(indoc! {
-                    "• A sound has the following **properties**:"
+                    "• Sound has the following **properties**:"
                 })
                 .add_list(vec! {
                     "• **Speed**: ~343 m/s in **air**",

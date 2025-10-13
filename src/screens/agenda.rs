@@ -182,6 +182,7 @@ impl WidgetRef for Agenda {
                         ListItem::new("• Digital Audio Formats"),
                         ListItem::new("• Digital Audio Processing and Synthesis"),
                         ListItem::new("• The Faust programming language"),            
+                        ListItem::new("• Faust playground!"),            
                     ];
                     let list = List::new(items)
                         .highlight_symbol("> ")
@@ -320,7 +321,7 @@ impl WidgetRef for Agenda {
                                 .underlined()
                                 .centered(),
                             line![""],
-                            line!["2:30pm to 6:30pm (4:00)"]
+                            line!["2:30pm to 4:30pm (2:00)"]
                                 .centered()
                                 .italic()
                         ]
