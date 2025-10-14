@@ -10,6 +10,7 @@ pub mod sampling;
 pub mod aliasing;
 pub mod quantization;
 pub mod spectrogram;
+pub mod popup_menu;
 
 pub trait InteractiveWidget : WidgetRef {
     fn on_key_event(&mut self, k: KeyEvent) {}

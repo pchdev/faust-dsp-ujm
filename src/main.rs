@@ -10,14 +10,14 @@ use ratatui::{
     layout::Flex, 
     style::{Color, Style, Stylize}, 
     symbols::border, 
-    widgets::{Block, Borders, Clear, HighlightSpacing, List, ListItem, ListState, StatefulWidget}, 
+    widgets::{Block, Borders, Clear, HighlightSpacing, List, ListItem, ListState, StatefulWidget, WidgetRef}, 
     DefaultTerminal, Frame
 };
 use ratatui_macros::{horizontal, line, vertical};
 use tachyonfx::{fx, EffectManager, Interpolation};
 use tui_widgets::popup::{Popup, SizedWrapper};
 
-use crate::screens::{
+use crate::{screens::{
     agenda::Agenda, 
     digital::{Digital, Digital2}, 
     faust::Faust, 
@@ -25,7 +25,7 @@ use crate::screens::{
     signal::{Signal, Signal2}, 
     sound::{Sound, Sound2}, 
     splash::Splash, Screen
-};
+}, widgets::{popup_menu::PopupMenu, InteractiveWidget}};
 
 fn main() -> io::Result<()> {
     let mut term = ratatui::init();
@@ -35,16 +35,15 @@ fn main() -> io::Result<()> {
 }
 
 #[derive(Default)]
-pub struct App {
+pub struct App<'a> {
       index: usize,
     screens: Vec<Box<dyn Screen>>,
-      popup: bool,
-      popup_state: ListState,
+       menu: PopupMenu<'a>,
       fx: EffectManager<()>,
        exit: bool,
 }
 
-impl App {
+impl<'a> App<'a> {
     pub fn new() -> Self {
         let mut app = App::default();
         app.screens = vec![
@@ -59,7 +58,16 @@ impl App {
             Box::new(Digital2::default()),            
             Box::new(Faust::default()),
         ];
-        let fade = fx::fade_to(Color::Cyan, Color::Gray, (1000, Interpolation::SineIn));
+        // Populate menu popup:
+        let items: Vec<ListItem> = app.screens.iter().enumerate()
+            .map(|(n,i)| 
+                ListItem::new(format!("{}. {}", n+1, i.title()))
+            )
+            .collect()
+        ;
+        app.menu.populate(items);
+        // TODO:
+        let fade = fx::fade_to(Color::Cyan, Color::White, (1000, Interpolation::SineIn));
         app.fx.add_effect(fade);
         app
     }
@@ -70,7 +78,9 @@ impl App {
         let mut tick_count = 0usize;
         while !self.exit {
             term.draw(|frame| {
-                self.draw(frame);                
+                let area = frame.area();
+                self.draw(frame);                   
+
             })?;
             let timeout = tick_rate.saturating_sub(last_tick.elapsed());
             if event::poll(timeout)? {
@@ -117,36 +127,21 @@ impl App {
                 }
             }
         } else { 
-            // No modifier:
-            if self.popup {
-                // Navigate popup:
-                match k.code {
-                    KeyCode::Up => {
-                        self.popup_state.select_previous();
+            // No modifier, pass to menu:
+            if self.menu.open {
+                match self.menu.on_key_event(k) {
+                    Some(index) => {
+                        self.index = index;
                     }
-                    KeyCode::Down => {
-                        let i = self.popup_state.selected().unwrap();
-                        if i < self.screens.len()-1 {
-                            self.popup_state.select_next();
-                        }
-                    }
-                    KeyCode::Enter => {
-                        self.index = self.popup_state.selected().unwrap();
-                        self.popup = false;
-                    }
-                    KeyCode::F(4) | KeyCode::Esc => {
-                        self.popup = false;
-                        self.popup_state.select(Some(self.index));
-                    }
-                    _ => ()
+                    None => ()
                 }
             } else {
                 // Open popup, or pass to underlying screen:
                 match k.code {
                     KeyCode::F(4) => {
                         // Open popup:
-                        self.popup = true;
-                        self.popup_state.select(Some(self.index));
+                        self.menu.open();
+                        self.menu.select(Some(self.index));
                     }
                     _ => {
                         let screen = &mut self.screens[self.index];
@@ -158,7 +153,7 @@ impl App {
         }
     }
     fn animate(&self, frame: &mut Frame) {
-        // Let's have a 'dissolve', and a fade-in/fade-out animation
+        todo!()
     }
 
     fn draw(&self, frame: &mut Frame) {
@@ -202,41 +197,7 @@ impl App {
         let screen = &self.screens[self.index];
         frame.render_widget(&block, frame.area());
         screen.render_ref(inner, frame.buffer_mut());
-        if self.popup {
-            let lv = vertical![==33%, ==33%, ==33%]
-                .flex(Flex::Center)
-                .split(frame.area())
-            ;
-            let lh = horizontal![==33%, ==33%, ==33%]
-                .flex(Flex::Center)
-                .split(lv[1])
-            ;
-            let items: Vec<ListItem> = self.screens.iter().enumerate()
-                .map(|(n,i)| 
-                    ListItem::new(format!("{}. {}", n+1, i.title()))
-                )
-                .collect()
-            ;
-            let l = List::new(items)
-                .style(Style::new().black().on_white())
-                .highlight_symbol("⤷ ")
-                .highlight_style(Style::new().black().on_gray().bold())
-                .highlight_spacing(HighlightSpacing::Always)
-            ;
-            let block = Block::bordered()
-                .title(line![" jump to screen: "].centered().bold())
-                .border_set(border::ROUNDED)
-                .black().on_white()
-            ;
-            let lvb = vertical![==10%, ==80%, ==10%]
-                .flex(Flex::Center)
-                .split(block.inner(lh[1]))
-            ; 
-            let mut state = self.popup_state.clone();
-            frame.render_widget(Clear, lh[1]);
-            frame.render_widget(&block, lh[1]);
-            l.render(lvb[1], frame.buffer_mut(), &mut state);
-        }
+        self.menu.render_ref(frame.area(), frame.buffer_mut());
     }
 
     fn exit(&mut self) {
