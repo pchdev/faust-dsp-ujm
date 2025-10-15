@@ -16,6 +16,13 @@ impl<'a> PopupMenu<'a> {
     pub fn populate(&mut self, items: Vec<ListItem<'a>>) {
         self.items = items;
     }
+    pub fn populate_from_string(&mut self, items: Vec<String>) {
+        self.items = items.iter().enumerate()
+            .map(|(n,i)| 
+                ListItem::new(format!("{}. {}", n+1, i))
+            )
+            .collect();
+    }
     pub fn open(&mut self) {
         self.open = true;
     }

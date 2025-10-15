@@ -267,7 +267,7 @@ impl<'a> WidgetRef for PlainFull<'a> {
 
 
 #[derive(Default)]
-enum Focus { #[default] Lhs, Rhs }
+pub enum Focus { #[default] Lhs, Rhs }
 
 #[derive(Default)]
 pub struct SideBySide<'a> {

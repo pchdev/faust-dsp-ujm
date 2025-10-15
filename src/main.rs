@@ -7,15 +7,13 @@ use crossterm::event::{
 };
 
 use ratatui::{
-    layout::Flex, 
-    style::{Color, Style, Stylize}, 
+    style::{Color, Stylize}, 
     symbols::border, 
-    widgets::{Block, Borders, Clear, HighlightSpacing, List, ListItem, ListState, StatefulWidget, WidgetRef}, 
+    widgets::{Block, WidgetRef}, 
     DefaultTerminal, Frame
 };
-use ratatui_macros::{horizontal, line, vertical};
+use ratatui_macros::{line, };
 use tachyonfx::{fx, EffectManager, Interpolation};
-use tui_widgets::popup::{Popup, SizedWrapper};
 
 use crate::{screens::{
     agenda::Agenda, 
@@ -25,7 +23,8 @@ use crate::{screens::{
     signal::{Signal, Signal2}, 
     sound::{Sound, Sound2}, 
     splash::Splash, Screen
-}, widgets::{popup_menu::PopupMenu, InteractiveWidget}};
+}, widgets::{popup_menu::PopupMenu}
+};
 
 fn main() -> io::Result<()> {
     let mut term = ratatui::init();
@@ -59,13 +58,10 @@ impl<'a> App<'a> {
             Box::new(Faust::default()),
         ];
         // Populate menu popup:
-        let items: Vec<ListItem> = app.screens.iter().enumerate()
-            .map(|(n,i)| 
-                ListItem::new(format!("{}. {}", n+1, i.title()))
-            )
-            .collect()
-        ;
-        app.menu.populate(items);
+        app.menu.populate_from_string(
+            app.screens.iter().map(|s| s.title().into()).collect()
+        );
+
         // TODO:
         let fade = fx::fade_to(Color::Cyan, Color::White, (1000, Interpolation::SineIn));
         app.fx.add_effect(fade);
@@ -78,7 +74,6 @@ impl<'a> App<'a> {
         let mut tick_count = 0usize;
         while !self.exit {
             term.draw(|frame| {
-                let area = frame.area();
                 self.draw(frame);                   
 
             })?;

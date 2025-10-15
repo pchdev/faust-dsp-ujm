@@ -1,5 +1,7 @@
 
-use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
+use std::{collections::HashMap};
+
+use crossterm::event::{KeyCode, KeyEvent};
 use ratatui::{
     buffer::Buffer, 
     layout::{
@@ -19,379 +21,326 @@ use ratatui::{
         StatefulWidget, Widget, WidgetRef
     }
 };
-use ratatui_macros::{text, line, horizontal, vertical};
-use time::{Date, Month, OffsetDateTime};
-use time::ext::NumericalDuration;
+use ratatui_macros::{text, line, span, horizontal, vertical};
 use indoc::indoc;
+use time::{convert::Day, macros::format_description, Date, Duration, Month, PrimitiveDateTime, Time};
+use time::macros::time;
+use time::ext::NumericalDuration;
 
-use crate::screens::Screen;
+use crate::screens::{Focus, Screen};
 
-const AGENDA: &'static str = indoc!{"
+const TITLE: &'static str = indoc!{"
 ┏━┓┏━╸┏━╸┏┓╻╺┳┓┏━┓
 ┣━┫┃╺┓┣╸ ┃┗┫ ┃┃┣━┫
 ╹ ╹┗━┛┗━╸╹ ╹╺┻┛╹ ╹
 __________________
 "};
 
-#[derive(Debug)]
-pub struct Agenda {
-    date: Date,
-    state: ListState,
-    selection: bool,
+macro_rules! strikethrough {
+    ($txt:literal) => {
+        span!($txt).crossed_out()        
+    };
 }
 
-impl Default for Agenda {
-    fn default() -> Self {
-        Self {
-            date: OffsetDateTime::now_local()
-                .unwrap()
-                .date()
-                .replace_day(1).unwrap()
-                .replace_month(Month::October)
-                .unwrap(),
+macro_rules! item {
+    ($e:expr) => {
+        ListItem::new($e)
+    };
+}
+
+macro_rules! md {
+    ($e:expr) => {
+        tui_markdown::from_str($e)
+    };
+}
+
+
+#[derive(Debug)]
+struct Events<'a> {
+     start: Time,
+       end: Time,
+     state: ListState,
+     items: Vec<ListItem<'a>>,
+}
+
+struct MonthSchedule<'a> {
+    cursor: Date,
+     store: CalendarEventStore,
+    events: HashMap<Date, Events<'a>>,
+}
+
+impl<'a> MonthSchedule<'a> {
+    fn new(m: Month) -> Self {
+        MonthSchedule {
+            cursor: Date::from_calendar_date(2025, m, 1).unwrap(),
+            store: CalendarEventStore::default(),
+            events: HashMap::default()
+        }
+    }
+    fn add_date(mut self, 
+             day: u8, 
+           start: Time,
+             end: Time, 
+           items: Vec<ListItem<'a>>
+    ) -> Self {
+        let dt = self.cursor.replace_day(day).unwrap().with_time(start);
+        self.store.add(dt.date(), Style::default().blue());
+        self.events.insert(dt.date(), Events {
+            start,
+            end,
             state: ListState::default(),
-            selection: false
+            items
+        });
+        return self;
+    }
+
+    fn get_events(&self, date: Date) -> Option<(&Date, &Events<'a>)> {
+        return self.events.get_key_value(&date)
+    }
+
+    fn get_events_mut(&mut self, date: Date) -> Option<&mut Events<'a>> {
+        return self.events.get_mut(&date)
+    }
+}
+
+impl<'a> PartialEq<Date> for MonthSchedule<'a> {
+    fn eq(&self, other: &Date) -> bool {
+        return self.cursor.month() == other.month();   
+    }
+}
+
+impl<'a> WidgetRef for MonthSchedule<'a> {
+    fn render_ref(&self, area: Rect, buf: &mut Buffer) {
+        Monthly::new(self.cursor, self.store.clone())
+            .show_month_header(
+                Style::default().bold()
+            )
+            .show_weekdays_header(
+                Style::default().italic()
+            )  
+            .render_ref(area, buf)
+        ; 
+    }
+}
+
+pub struct Agenda<'a> {
+    date: Date,
+    msched: Vec<MonthSchedule<'a>>,
+    focus: Focus,
+}
+
+impl<'a> Agenda<'a> {
+    fn update(&mut self) {
+        for ms in &mut self.msched {
+            if *ms == self.date {
+                ms.cursor.replace_day(self.date.day()).unwrap();
+            }
+        }
+    }
+    fn get_events(&self) -> Option<(&Date, &Events<'a>)> {
+        for ms in &self.msched {
+            if *ms == self.date {
+                return ms.get_events(self.date)
+            }
+        }
+        None
+    }
+    fn get_events_mut(&mut self) -> Option<&mut Events<'a>> {
+        for ms in &mut self.msched {
+            if *ms == self.date {
+                return ms.get_events_mut(self.date)
+            }
+        }
+        None        
+    }
+
+    fn has_events(&self) -> bool {
+        self.get_events().is_some()
+    }
+}
+
+impl<'a> Screen for Agenda<'a> {
+    fn title(&self) -> &'static str {
+        "Agenda"
+    }
+    fn on_key_event(&mut self, k: KeyEvent) {
+        match self.focus {
+            Focus::Lhs => {
+                match k.code {
+                    KeyCode::Up => {
+                        self.date -= 1.weeks();
+                        self.update();
+                    }
+                    KeyCode::Down => {
+                        self.date += 1.weeks();
+                        self.update();
+                    }
+                    KeyCode::Left => {
+                        self.date += 1.days();
+                        self.update();
+                    }
+                    KeyCode::Right => {
+                        self.date -= 1.days();
+                        self.update();
+                    }
+                    KeyCode::Enter => {
+                        if self.has_events() {
+                           self.focus = Focus::Rhs;
+                        }
+                    }
+                    _ => ()
+                }
+            }
+            Focus::Rhs => {
+                match k.code {
+                    KeyCode::Up => {
+                        match self.get_events_mut() {
+                            Some(ev) => {
+                                ev.state.select_previous();
+                            }
+                            None => ()
+                        }
+                    }
+                    KeyCode::Down => {
+                        match self.get_events_mut() {
+                            Some(ev) => {
+                                ev.state.select_next();
+                            }
+                            None => ()
+                        }
+                    }
+                    _ => ()
+                }
+
+            }
         }
     }
 }
 
-impl WidgetRef for Agenda {
+
+impl<'a> Default for Agenda<'a> {
+    fn default() -> Self {
+        Self {
+            date: Date::from_calendar_date(2025, Month::October, 1).unwrap(),
+            msched: vec![
+                MonthSchedule::new(Month::October)
+                    .add_date(13, time!(14:30), time!(18:30), vec![
+                        item!(strikethrough!("• Sound")),
+                        item!(strikethrough!("• Audio Signal")),
+                        item!(strikethrough!("• From Analog to Digital")),
+                        item!(strikethrough!("• Sampling")),
+                        item!(strikethrough!("• Quantization")),
+                        item!(strikethrough!("• Digital Audio Formats")),
+                        item!(strikethrough!("• Digital Audio Processing and Synthesis")),
+                        item!(strikethrough!("• The Faust programming language")), 
+                        item!(strikethrough!("• Faust playground!")), 
+                    ])
+                    .add_date(20, time!(14:30), time!(18:30), vec![
+                        item!(md!("• First steps with **Faust**!")),
+                        item!(md!("• **IDE** and programming **tools**/**environment**")),
+                        item!(md!("• **Library**, **documentation** and **examples**")),
+                        item!(md!("• **Simple DSP effects** (*ringmod*, *delay*)")),
+                        item!(md!("• **GUI** for **control** (*sliders*, *buttons*...)")),
+                        item!(md!("• **Simple synthesis**: *oscillators* and *waveforms*"))
+                    ]),
+                MonthSchedule::new(Month::November)
+                    .add_date(10, time!(14:30), time!(18:30), vec![
+                        item!(md!("• **Playing/recording** from/to *buffers* & *sound files*")),
+                        item!(md!("• **Filtering** & advanced effects")),
+                        item!(md!("• Building a **simple synthesizer**")),
+                        item!(md!("• **Personal projects**"))
+                    ])
+                    .add_date(17, time!(14:30), time!(18:30), vec![
+                        item!(md!("• **Personal projects** + *on-demand* info"))
+                    ])
+                    .add_date(26, time!(14:30), time!(16:30), vec![
+                        item!(md!("• **Personal projects** + *on-demand* info"))
+                    ]
+                )
+            ],
+            focus: Focus::Lhs,
+        }
+    }
+}
+
+
+impl<'a> WidgetRef for Agenda<'a> {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
+        // Divide the screen in two horizontally:
         let [lhl, lhr] = horizontal![==50%, ==50%]
             .flex(Flex::Center)
             .areas(area)
         ;
-        // Add a border between the two panes
-        let lhrb = Block::bordered()
+        // Add a border between the two panes:
+        Block::bordered()
             .borders(Borders::LEFT)
             .border_type(BorderType::Plain)
             .render(lhr, buf)
         ;
+        // Lhs pane vertical layout:
         let lhlv = vertical![==5%, ==20%, ==75%]
             .flex(Flex::Center)
             .split(lhl)
         ;
-        let subtitle = Paragraph::new(AGENDA)
+        // Add a title:
+        Paragraph::new(TITLE)
             .centered()
+            .render(lhlv[1], buf)
         ;
-        subtitle.render(lhlv[1], buf);
-        let [m_oct, m_nov] = vertical![==50%, ==50%]
+        // Oct/Nov months layout:
+        let [l_oct, l_nov] = vertical![==50%, ==50%]
             .flex(Flex::Center)
             .vertical_margin(1)
             .horizontal_margin(14)
             .areas(lhlv[2])
         ;
-        let m_oct_h = horizontal![==10%, ==80%, ==10%]
+        // Center the Monthly widgets horizontally:
+        let l_oct_h = horizontal![==10%, ==80%, ==10%]
             .flex(Flex::Center)
-            .split(m_oct)
+            .split(l_oct)
         ;
-        let m_nov_h = horizontal![==10%, ==80%, ==10%]
+        let l_nov_h = horizontal![==10%, ==80%, ==10%]
             .flex(Flex::Center)
-            .split(m_nov)
+            .split(l_oct)
         ;
-        let mut oct_dates = CalendarEventStore::default();
-        let mut nov_dates = CalendarEventStore::default();
-        let mut date = self.date.clone();
-        oct_dates.add(
-            Date::from_calendar_date(2025, Month::October, 13).unwrap(), 
-            Style::default().red().bold()
-        );
-        oct_dates.add(
-            Date::from_calendar_date(2025, Month::October, 20).unwrap(),
-            Style::default().blue().bold()
-        );
-        if date.month() == Month::October {
-            oct_dates.add(
-                date,
-                Style::default().white().on_dark_gray()
-            );
-        } else {
-            date = date.replace_day(1).unwrap();
-            date = date.replace_month(Month::October).unwrap();
-        }
-        Monthly::new(date, oct_dates)
-            .show_month_header(
-                Style::default().bold()
-            )
-            .show_weekdays_header(
-                Style::default().italic()
-            )
-            .render(m_oct_h[1], buf)
-        ;
-        // November
-        date = self.date.clone();
-        nov_dates.add(
-            Date::from_calendar_date(2025, Month::November, 10).unwrap(),
-            Style::default().blue().bold()
-        );
-        nov_dates.add(
-            Date::from_calendar_date(2025, Month::November, 17).unwrap(),
-            Style::default().blue().bold()
-        );
-        nov_dates.add(
-            Date::from_calendar_date(2025, Month::November, 26).unwrap(),
-            Style::default().blue().bold()
-        );        
-        if date.month() == Month::November {
-            nov_dates.add(
-                date,
-                Style::default().white().on_dark_gray()
-            );
-        } else {
-            date = date.replace_day(1).unwrap();
-            date = date.replace_month(Month::November).unwrap();
-        }
-        Monthly::new(date, nov_dates)
-            .show_month_header(
-                Style::default().bold()
-            )
-            .show_weekdays_header(
-                Style::default().italic()
-            )
-            .render(m_nov_h[1], buf)
-        ;
+        // Render Monthly widgets:            
+        self.msched[0].render_ref(l_oct_h[1], buf);
+        self.msched[1].render_ref(l_nov_h[1], buf);
+
+        // Rhs pane vertical layout:
         let lhrv = vertical![==15%, ==15%, ==60%, ==10%]
             .flex(Flex::Center)
             .horizontal_margin(2)
             .split(lhr)
         ;
-        if self.selection {
-            match self.date.to_string().as_str() {
-                "2025-10-13" => {
-                    let p = Paragraph::new(
-                        text![
-                            line!["Monday October 13th 2025"]
-                                .bold()
-                                .underlined()
-                                .centered(),
-                            line![""],
-                            line!["2:30pm to 6:30pm (4:00)"]
-                                .centered()
-                                .italic()
-                        ]
-                    );
-                    p.render(lhrv[1], buf);
-
-                    let mut state = self.state.clone();
-                    let items = vec![
-                        ListItem::new("• Sound"),
-                        ListItem::new("• Audio Signal"),
-                        ListItem::new("• From Analog to Digital"),
-                        ListItem::new("• Sampling"),
-                        ListItem::new("• Quantization"),
-                        ListItem::new("• Digital Audio Formats"),
-                        ListItem::new("• Digital Audio Processing and Synthesis"),
-                        ListItem::new("• The Faust programming language"),            
-                        ListItem::new("• Faust playground!"),            
-                    ];
-                    let list = List::new(items)
-                        .highlight_symbol("> ")
-                        .highlight_style(Style::new()
-                            .white()
-                            .on_dark_gray()
-                            .bold()
-                        )
-                        .highlight_spacing(HighlightSpacing::Always)
-                    ;
-                    StatefulWidget::render(list, lhrv[2], buf, &mut state);
-                }
-                "2025-10-20" => {
-                    let p = Paragraph::new(
-                        text![
-                            line!["Monday October 20th 2025"]
-                                .bold()
-                                .underlined()
-                                .centered(),
-                            line![""],
-                            line!["2:30pm to 6:30pm (4:00)"]
-                                .centered()
-                                .italic()
-                        ]
-                    );
-                    p.render(lhrv[1], buf);
-
-                    let mut state = self.state.clone();
-                    let items = vec![
-                        ListItem::new(tui_markdown::from_str(
-                            "• First steps with **Faust**!"
-                        )),      
-                        ListItem::new(tui_markdown::from_str(
-                            "• **IDE** and programming **tools**/**environment**"
-                        )),      
-                        ListItem::new(tui_markdown::from_str(
-                            "• **Library**, **documentation** and **examples**"
-                        )),      
-                        ListItem::new(tui_markdown::from_str(
-                            "• **Simple DSP effects** (*ringmod*, *delay*...)"
-                        )),
-                        ListItem::new(tui_markdown::from_str(
-                            "• **GUI** for **control** (*sliders*, *buttons*...)"
-                        )),
-                        ListItem::new(tui_markdown::from_str(
-                            "• **Simple synthesis**: *oscillators* and *waveforms*"
-                        )),
-                    ];
-                    let list = List::new(items)
-                        .highlight_symbol("> ")
-                        .highlight_style(Style::new()
-                            .white()
-                            .on_dark_gray()
-                            .bold()
-                        )
-                        .highlight_spacing(HighlightSpacing::Always)
-                    ;
-                    StatefulWidget::render(list, lhrv[2], buf, &mut state);
-                }
-                "2025-11-10" => {
-                    let p = Paragraph::new(
-                        text![
-                            line!["Monday November 10th 2025"]
-                                .bold()
-                                .underlined()
-                                .centered(),
-                            line![""],
-                            line!["2:30pm to 6:30pm (4:00)"]
-                                .centered()
-                                .italic()
-                        ]
-                    );
-                    p.render(lhrv[1], buf);
-                    let mut state = self.state.clone();
-                    let items = vec![
-                        ListItem::new(tui_markdown::from_str(
-                            "• **Playing/recording** from/to *buffers* & *sound files*"
-                        )),
-                        ListItem::new(tui_markdown::from_str(
-                            "• **Filtering** & advanced effects"
-                        )),
-                        ListItem::new(tui_markdown::from_str(
-                            "• Building a **simple synthesizer**"
-                        )),
-                        ListItem::new(tui_markdown::from_str(
-                            "• **Personal projects**"
-                        )),
-                    ];
-                    let list = List::new(items)
-                        .highlight_symbol("> ")
-                        .highlight_style(Style::new()
-                            .white()
-                            .on_dark_gray()
-                            .bold()
-                        )
-                        .highlight_spacing(HighlightSpacing::Always)
-                    ;
-                    StatefulWidget::render(list, lhrv[2], buf, &mut state);
-                }
-                "2025-11-17" => {
-                    let p = Paragraph::new(
-                        text![
-                            line!["Monday November 17th 2025"]
-                                .bold()
-                                .underlined()
-                                .centered(),
-                            line![""],
-                            line!["2:30pm to 6:30pm (4:00)"]
-                                .centered()
-                                .italic()
-                        ]
-                    );
-                    p.render(lhrv[1], buf);
-                    let mut state = self.state.clone();
-                    let items = vec![
-                        ListItem::new(tui_markdown::from_str(
-                            "• **Personal projects** + *on-demand* info"
-                        )),
-                    ];
-                    let list = List::new(items)
-                        .highlight_symbol("> ")
-                        .highlight_style(Style::new()
-                            .white()
-                            .on_dark_gray()
-                            .bold()
-                        )
-                        .highlight_spacing(HighlightSpacing::Always)
-                    ;
-                    StatefulWidget::render(list, lhrv[2], buf, &mut state);
-                }
-                "2025-11-26" => {
-                    let p = Paragraph::new(
-                        text![
-                            line!["Wednesday November 26th 2025"]
-                                .bold()
-                                .underlined()
-                                .centered(),
-                            line![""],
-                            line!["2:30pm to 4:30pm (2:00)"]
-                                .centered()
-                                .italic()
-                        ]
-                    );
-                    p.render(lhrv[1], buf);
-                    let mut state = self.state.clone();
-                    let items = vec![
-                        ListItem::new(tui_markdown::from_str(
-                            "• **Personal projects**: let's hear them!"
-                        )),
-                    ];
-                    let list = List::new(items)
-                        .highlight_symbol("> ")
-                        .highlight_style(Style::new()
-                            .white()
-                            .on_dark_gray()
-                            .bold()
-                        )
-                        .highlight_spacing(HighlightSpacing::Always)
-                    ;
-                    StatefulWidget::render(list, lhrv[2], buf, &mut state);
-                }
-                _ => ()
+        match self.get_events() {
+            Some((dt, ev)) => {
+                let fmtd = dt.format(
+                    format_description!["[weekday] [month] [day] [year]"]
+                ).unwrap();
+                let fmth = dt.format(
+                    format_description!["[hour]:[minute]-[hour]:[minute]"]
+                ).unwrap();
+                // Render paragraph with date-time:
+                Paragraph::new(
+                    text![
+                        line!(fmtd).bold().underlined().centered(),
+                        line!(""),
+                        line!(fmth).centered().italic()
+                    ]
+                ).render(lhrv[1], buf);
+                let mut state = ev.state.clone();
+                let events = List::new(ev.items.clone())
+                    .highlight_symbol("> ")
+                    .highlight_style(
+                        Style::new().white().on_dark_gray().bold()
+                    )
+                    .highlight_spacing(HighlightSpacing::Always)
+                ;
+                StatefulWidget::render(events, lhrv[2], buf, &mut state);
             }
+            None => ()
         }
     }
 }
 
-impl Screen for Agenda {
-    fn title(&self) -> &'static str {
-        "Agenda"
-    }
-    fn on_key_event(&mut self, k: KeyEvent) {
-        match k.code {
-            KeyCode::Up => {
-                if self.selection {
-                    self.state.select_previous();                    
-                } else {
-                    self.date -= 1.weeks();
-                }
-            }
-            KeyCode::Down => {
-                if self.selection {
-                    self.state.select_next();                  
-                } else {
-                    self.date += 1.weeks();                      
-                }
-            }
-            KeyCode::Right => {
-                if self.selection {
-                    // do nothing
-                } else {
-                    self.date += 1.days();
-                }
-            }
-            KeyCode::Left => {
-                if self.selection {                    
-                    if k.modifiers.contains(KeyModifiers::CONTROL) {
-                        self.selection = false;
-                        self.state.select(None);
-                    }
-                } else {
-                    self.date -= 1.days();
-                }
-            }
-            KeyCode::Enter => {
-                self.selection = true;
-                self.state.select_first();
-            } 
-            _ => ()
-        }
-    }
-}
