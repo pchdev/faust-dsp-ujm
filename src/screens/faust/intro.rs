@@ -9,12 +9,8 @@ use ratatui::{
 
 use indoc::indoc;
 
-use ratatui_macros::{
-    horizontal, 
-};
-
 use crate::{
-    screens::{leafy, ContentArea, Screen, SideBySide}, 
+    screens::{leafy, Screen, SideBySide}, 
     widgets::faustblock::FaustWidget
 };
 
@@ -25,23 +21,20 @@ const TITLE: &'static str = indoc!{"
 ┗━╸╹ ╹ ╹ ┗━╸╹┗╸   ╹  ╹ ╹┗━┛┗━┛ ╹ 
 "};
 
-const VIRTUAL_ANALOG: &'static str = 
-    include_str!("../../examples/virtualAnalog.dsp");
-
 const HELLO440: &'static str = 
-    include_str!("../../examples/hello440.dsp");
+    include_str!("../../../examples/basics/hello440.dsp");
 
-pub struct Faust<'a> {
+pub struct FaustIntro<'a> {
     screen: SideBySide<'a>,
 }
 
-impl<'a> WidgetRef for Faust<'a> {
+impl<'a> WidgetRef for FaustIntro<'a> {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
         self.screen.render_ref(area, buf);
     }
 }
 
-impl<'a> Screen for Faust<'a> {
+impl<'a> Screen for FaustIntro<'a> {
     fn title(&self) -> &'static str {
         "Enter Faust!"
     }
@@ -53,9 +46,9 @@ impl<'a> Screen for Faust<'a> {
     }
 }
 
-impl<'a> Default for Faust<'a> {
+impl<'a> Default for FaustIntro<'a> {
     fn default() -> Self {
-        Faust {
+        FaustIntro {
             screen: SideBySide::default()
                 .add_title(TITLE)
                 .add_paragraph(leafy! {

@@ -6,10 +6,14 @@ use std::{
 use crossterm::event::{KeyCode, KeyEvent};
 use rand::Rng;
 use ratatui::{
-    buffer::Buffer, layout::Flex, prelude::Rect, style::Color, symbols, text::Text, widgets::{
-        canvas::{
-            Canvas, Label, Line, Points
-        }, Widget, WidgetRef
+    buffer::Buffer, 
+    layout::Flex, 
+    prelude::Rect, 
+    style::Color, 
+    symbols, 
+    widgets::{
+        canvas::{Canvas, Line, Points},
+        Widget, WidgetRef
     }
 };
 use ratatui_macros::vertical;

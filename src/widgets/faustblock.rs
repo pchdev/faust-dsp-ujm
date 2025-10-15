@@ -20,7 +20,7 @@ use ratatui_macros::vertical;
 use strum::{Display, EnumIter, FromRepr, IntoEnumIterator};
 use indoc::indoc;
 
-use crate::{screens::faust::Faust, widgets::InteractiveWidget};
+use crate::{widgets::InteractiveWidget};
 
 #[derive(Clone)]
 pub struct FaustEditor {

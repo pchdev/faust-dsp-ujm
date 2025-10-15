@@ -39,7 +39,7 @@ __________________
 // Utility macros:
 
 macro_rules! strikethrough {
-    ($txt:literal) => {
+    ($txt:expr) => {
         span!($txt).crossed_out()        
     };
 }
