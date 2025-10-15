@@ -266,7 +266,7 @@ impl<'a> WidgetRef for PlainFull<'a> {
 
 
 
-#[derive(Default)]
+#[derive(Default, PartialEq)]
 pub enum Focus { #[default] Lhs, Rhs }
 
 #[derive(Default)]

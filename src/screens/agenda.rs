@@ -10,8 +10,7 @@ use ratatui::{
     style::{Style, Stylize}, 
     widgets::{
         calendar::{
-            CalendarEventStore, 
-            Monthly
+            CalendarEventStore, Monthly
         }, 
         Block, 
         BorderType, Borders, 
@@ -23,7 +22,7 @@ use ratatui::{
 };
 use ratatui_macros::{text, line, span, horizontal, vertical};
 use indoc::indoc;
-use time::{convert::Day, macros::format_description, Date, Duration, Month, PrimitiveDateTime, Time};
+use time::{macros::format_description, Date, Month, Time, UtcDateTime};
 use time::macros::time;
 use time::ext::NumericalDuration;
 
@@ -35,6 +34,9 @@ const TITLE: &'static str = indoc!{"
 ╹ ╹┗━┛┗━╸╹ ╹╺┻┛╹ ╹
 __________________
 "};
+
+
+// Utility macros:
 
 macro_rules! strikethrough {
     ($txt:literal) => {
@@ -67,14 +69,16 @@ struct MonthSchedule<'a> {
     cursor: Date,
      store: CalendarEventStore,
     events: HashMap<Date, Events<'a>>,
+     focus: bool,
 }
 
 impl<'a> MonthSchedule<'a> {
     fn new(m: Month) -> Self {
         MonthSchedule {
             cursor: Date::from_calendar_date(2025, m, 1).unwrap(),
-            store: CalendarEventStore::default(),
-            events: HashMap::default()
+             store: CalendarEventStore::default(),
+            events: HashMap::default(),
+             focus: false,
         }
     }
     fn add_date(mut self, 
@@ -84,7 +88,7 @@ impl<'a> MonthSchedule<'a> {
            items: Vec<ListItem<'a>>
     ) -> Self {
         let dt = self.cursor.replace_day(day).unwrap().with_time(start);
-        self.store.add(dt.date(), Style::default().blue());
+        self.store.add(dt.date(), Style::default().blue().bold());
         self.events.insert(dt.date(), Events {
             start,
             end,
@@ -103,15 +107,14 @@ impl<'a> MonthSchedule<'a> {
     }
 }
 
-impl<'a> PartialEq<Date> for MonthSchedule<'a> {
-    fn eq(&self, other: &Date) -> bool {
-        return self.cursor.month() == other.month();   
-    }
-}
-
 impl<'a> WidgetRef for MonthSchedule<'a> {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
-        Monthly::new(self.cursor, self.store.clone())
+        let mut store = self.store.clone();
+        store.add(UtcDateTime::now().date(), Style::default().red().bold());
+        if self.focus {
+            store.add(self.cursor, Style::default().white().on_black());
+        }        
+        Monthly::new(self.cursor, store)
             .show_month_header(
                 Style::default().bold()
             )
@@ -130,16 +133,20 @@ pub struct Agenda<'a> {
 }
 
 impl<'a> Agenda<'a> {
+    /// Update MonthSchedule cursor
     fn update(&mut self) {
         for ms in &mut self.msched {
-            if *ms == self.date {
-                ms.cursor.replace_day(self.date.day()).unwrap();
+            if ms.cursor.month() == self.date.month() {
+               ms.cursor = self.date;
+               ms.focus = true;
+            } else {
+                ms.focus = false;
             }
         }
     }
     fn get_events(&self) -> Option<(&Date, &Events<'a>)> {
         for ms in &self.msched {
-            if *ms == self.date {
+            if self.date == ms.cursor {
                 return ms.get_events(self.date)
             }
         }
@@ -147,7 +154,7 @@ impl<'a> Agenda<'a> {
     }
     fn get_events_mut(&mut self) -> Option<&mut Events<'a>> {
         for ms in &mut self.msched {
-            if *ms == self.date {
+            if self.date == ms.cursor {
                 return ms.get_events_mut(self.date)
             }
         }
@@ -176,11 +183,11 @@ impl<'a> Screen for Agenda<'a> {
                         self.update();
                     }
                     KeyCode::Left => {
-                        self.date += 1.days();
+                        self.date -= 1.days();
                         self.update();
                     }
                     KeyCode::Right => {
-                        self.date -= 1.days();
+                        self.date += 1.days();
                         self.update();
                     }
                     KeyCode::Enter => {
@@ -301,7 +308,7 @@ impl<'a> WidgetRef for Agenda<'a> {
         ;
         let l_nov_h = horizontal![==10%, ==80%, ==10%]
             .flex(Flex::Center)
-            .split(l_oct)
+            .split(l_nov)
         ;
         // Render Monthly widgets:            
         self.msched[0].render_ref(l_oct_h[1], buf);
@@ -313,33 +320,40 @@ impl<'a> WidgetRef for Agenda<'a> {
             .horizontal_margin(2)
             .split(lhr)
         ;
-        match self.get_events() {
-            Some((dt, ev)) => {
-                let fmtd = dt.format(
-                    format_description!["[weekday] [month] [day] [year]"]
-                ).unwrap();
-                let fmth = dt.format(
-                    format_description!["[hour]:[minute]-[hour]:[minute]"]
-                ).unwrap();
-                // Render paragraph with date-time:
-                Paragraph::new(
-                    text![
-                        line!(fmtd).bold().underlined().centered(),
-                        line!(""),
-                        line!(fmth).centered().italic()
-                    ]
-                ).render(lhrv[1], buf);
-                let mut state = ev.state.clone();
-                let events = List::new(ev.items.clone())
-                    .highlight_symbol("> ")
-                    .highlight_style(
-                        Style::new().white().on_dark_gray().bold()
-                    )
-                    .highlight_spacing(HighlightSpacing::Always)
-                ;
-                StatefulWidget::render(events, lhrv[2], buf, &mut state);
+        if self.focus == Focus::Rhs {
+            match self.get_events() {
+                Some((dt, ev)) => {
+                    let fmtd = dt.format(
+                        format_description!["[weekday], [month repr:long] [day]th [year]"]
+                    ).unwrap();
+                    let fmth_start = ev.start.format(
+                        format_description!["[hour repr:12]:[minute][period]"]
+                    ).unwrap();
+                    let fmth_end = ev.end.format(
+                        format_description!["[hour repr:12]:[minute][period]"]
+                    ).unwrap();
+                    let dur = ev.end - ev.start;
+                    let fmth = format!("{fmth_start} - {fmth_end} ({dur})");
+                    // Render paragraph with date-time:
+                    Paragraph::new(
+                        text![
+                            line!(fmtd).bold().underlined().centered(),
+                            line!(""),
+                            line!(fmth).centered().italic()
+                        ]
+                    ).render(lhrv[1], buf);
+                    let mut state = ev.state.clone();
+                    let events = List::new(ev.items.clone())
+                        .highlight_symbol("> ")
+                        .highlight_style(
+                            Style::new().white().on_dark_gray().bold()
+                        )
+                        .highlight_spacing(HighlightSpacing::Always)
+                    ;
+                    StatefulWidget::render(events, lhrv[2], buf, &mut state);
+                }
+                None => ()
             }
-            None => ()
         }
     }
 }
