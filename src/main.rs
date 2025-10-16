@@ -26,6 +26,8 @@ use crate::{screens::{
 }, widgets::popup_menu::PopupMenu
 };
 
+use ratzilla::{event::KeyCode as RatKeyCode, DomBackend, WebRenderer};
+
 fn main() -> io::Result<()> {
     let mut term = ratatui::init();
     let res = App::new().run(&mut term);
