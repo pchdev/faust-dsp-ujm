@@ -11,7 +11,7 @@ use indoc::indoc;
 
 use crate::{
     screens::{leafy, Screen, SideBySide}, 
-    widgets::faustblock::FaustWidget
+    widgets::{db::Decibels, faustblock::FaustWidget}
 };
 
 /// Font is 'Future':
@@ -32,7 +32,6 @@ macro_rules! example {
         )        
     };
 }
-
 
 pub struct FaustBasics2<'a> {
     screen: SideBySide<'a>,
@@ -63,17 +62,39 @@ impl<'a> Default for FaustBasics2<'a> {
                 .add_title(TITLE)
                 // ---------------------------------------------------------------------------------------
                 .add_paragraph(leafy! {
-                    "In Faust, connecting DSP functions can be done using the ***sequential operator*** '**:**'."
+                    "In Faust, *connecting DSP functions* can be done using the ***sequential operator*** '**:**'."
                 })
                 .add_widget(0, example!("sequential.dsp"))
                 // ---------------------------------------------------------------------------------------
                 .add_paragraph(leafy! {
-                    "We can use the ***split operator*** '**<:**' and ***cable operator*** to connect our \
-                    signal to multiple targets."
+                    "The ***split operator*** '**<:**' and ***cable operator*** can also be used to connect a \
+                    signal to *multiple targets*."
                 })
                 .add_widget(1, example!("split-cable.dsp"))
                 // ---------------------------------------------------------------------------------------
-
+                .add_paragraph(leafy! {
+                    "On the other hand, the ***merge operator*** '**:>**' can be used to \
+                    **merge** (**mix**) **signals together**."
+                })
+                .add_widget(2, example!("merge-cable.dsp"))
+                // ---------------------------------------------------------------------------------------
+                .add_paragraph(leafy! {
+                    "*Graphical User Interface* (***GUI***) elements can be added to ***control parameters***: \
+                    **sliders** (*hslider*/*vslider*), **buttons**, **switches...**"
+                })
+                .add_widget(3, example!("sliders.dsp"))
+                // ---------------------------------------------------------------------------------------                
+                .add_paragraph(leafy! {
+                    "They can be used to make a proper ***gain*** control in ***dB*** for example."
+                })
+                .add_widget(4, example!("gain.dsp"))
+                // ---------------------------------------------------------------------------------------                
+                .add_paragraph(leafy! {
+                    "***Decibels*** (***dB***) are frequently used in audio to represent ***volume***, but they \
+                    are sometimes a bit confusing to deal with."
+                })
+                .add_widget(5, Box::new(Decibels::default()))
+                // ---------------------------------------------------------------------------------------                
                 ,
         }
     }

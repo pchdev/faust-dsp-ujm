@@ -30,7 +30,6 @@ pub mod splash;
 pub mod digital;
 pub mod faust;
 
-
 macro_rules! leafy {
     ($str:expr) => {
         concat!("**[↲]**  ", indoc!($str))

@@ -11,6 +11,7 @@ pub mod aliasing;
 pub mod quantization;
 pub mod spectrogram;
 pub mod popup_menu;
+pub mod db;
 
 pub trait InteractiveWidget : WidgetRef {
     fn on_key_event(&mut self, k: KeyEvent) {}

@@ -62,10 +62,6 @@ impl InteractiveWidget for Waveform {
         }    
     }
     fn on_tick(&mut self, _: usize) {
-        // One tick is 5 millis,
-        // meaning we have 200 ticks per second:
-        let period = Duration::from_millis(5).as_secs_f32();
-
         let incr = 0.0050125;
         let amplitude = self.cblock.read_control(0).unwrap() as f64;
         let sine = self.cblock.read_control(1).unwrap();
@@ -74,70 +70,46 @@ impl InteractiveWidget for Waveform {
         let saw = self.cblock.read_control(4).unwrap();
         let noise = self.cblock.read_control(5).unwrap();
         let x_offset = 5.5 as f64;
+        let mut y = 0f64;
+        let mut phase = self.phase;
 
+        // Shift all values left first:
+        for n in 0..self.coords.len()-1 {
+            self.coords[n] = (n as f64, self.coords[n+1].1);
+        }
         if sine != 0.0 {
-            // Update coordinates:
-            let mut phase = self.phase;
-            for n in 0..self.coords.len() {
-                let y = (phase as f64 * PI * 2.0).sin() * amplitude as f64 + 200.0;
-                self.coords[n] = (n as f64 + x_offset, y);
-                phase += incr;
-                if phase >= 1.0 {
-                   phase -= 1.0;
-                }
-            }   
-            self.phase = phase;
+            // Compute last value:
+            y = (phase as f64 * PI * 2.0).sin();
         } else if tri != 0.0 {
-            let mut phase = self.phase;
-            for n in 0..self.coords.len() {
-                let t = if phase <= 0.5 {
-                    phase
-                } else {
-                    1.0 - phase
-                };
-                let y = ((t as f64 - 0.25) * 4.0) * amplitude as f64 + 200.0;
-                self.coords[n] = (n as f64 + x_offset, y);
-                phase += incr;
-                if phase >= 1.0 {
-                   phase -= 1.0;
-                }
-            }
-            self.phase = phase;
+            let t = if phase <= 0.5 {
+                phase
+            } else {
+                1.0 - phase
+            };
+            y = (t as f64 - 0.25) * 4.0;
         } else if sqr != 0.0 {
-            let mut phase = self.phase;
-            for n in 0..self.coords.len() {
-                let mut y = if phase <= 0.5 {-1.0} else {1.0};
-                y = y * amplitude + 200.0;
-                self.coords[n] = (n as f64 + x_offset, y);
-                phase += incr;
-                if phase >= 1.0 {
-                   phase -= 1.0;
-                }
-            }
-            self.phase = phase;
+            y = if phase <= 0.5 {-1.0} else {1.0};
 
         } else if saw != 0.0 {
-            let mut phase = self.phase;
-            for n in 0..self.coords.len() {
-                let y = phase * 2.0 - 1.0;
-                self.coords[n] = (n as f64 + x_offset, y as f64 * amplitude + 200.0);
-                phase += incr;
-                if phase >= 1.0 {
-                   phase -= 1.0;
-                }
-            }
-            self.phase = phase;
+            y = phase as f64 * 2.0 - 1.0;
         } else if noise != 0.0 {
-            // shift all values left:
-            for n in 0..self.coords.len()-1 {
-                self.coords[n] = (n as f64, self.coords[n+1].1);
-            }
             let mut rng = rand::rng();
-            let y = rng.random_range(-1.0..1.0);
-            let n = self.coords.len()-1;
-            let last = self.coords.last_mut().unwrap();
-            *last = (n as f64 + x_offset, y * amplitude + 200.0);
+            y = rng.random_range(-1.0..1.0);
+        } else {
+            return;
         }
+        // Mul/add: 
+        y *= amplitude as f64;
+        y += 200.0;
+
+        let x = self.coords.len()-1;
+        let last = self.coords.last_mut().unwrap();
+        *last = (x as f64 + x_offset, y);
+        phase += incr;
+        if phase >= 1.0 {
+            phase -= 1.0;
+        }
+        self.phase = phase;
     }
 }
 
