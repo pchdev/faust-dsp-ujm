@@ -70,7 +70,7 @@ impl InteractiveWidget for Waveform {
         let saw = self.cblock.read_control(4).unwrap();
         let noise = self.cblock.read_control(5).unwrap();
         let x_offset = 5.5 as f64;
-        let mut y = 0f64;
+        let mut y;
         let mut phase = self.phase;
 
         // Shift all values left first:
