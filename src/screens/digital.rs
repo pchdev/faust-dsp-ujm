@@ -12,7 +12,16 @@ use ratatui::{
 use indoc::indoc;
 
 use crate::{
-    screens::{leafy, Screen, SideBySide}, widgets::{aliasing::Aliasing, quantization::Quantization, sampling::SamplingIllustration}, 
+    screens::{
+        leafy, 
+        Screen, 
+        SideBySide
+    }, 
+    widgets::{
+        aliasing::Aliasing, 
+        quantization::Quantization, 
+        sampling::SamplingIllustration
+    }, 
 };
 
 /// Font is 'Future':

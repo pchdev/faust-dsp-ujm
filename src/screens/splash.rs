@@ -2,15 +2,12 @@
 use crossterm::event::{KeyCode, KeyEvent};
 use ratatui::{
     buffer::Buffer, layout::{
-        Constraint, 
         Flex, 
-        Layout, 
         Rect
-    }, style::Stylize, text::{
-        Line, Text
-    }, 
+    }, style::Stylize, 
+    text::Text, 
     widgets::{
-        StatefulWidgetRef, Widget, WidgetRef
+        Widget, WidgetRef
     }
 };
 use ratatui_macros::{horizontal, vertical, line};
@@ -34,10 +31,10 @@ const FAUST: &'static str = indoc!{"
 #[derive(Debug, Default)]
 pub struct Splash;
 
-enum State {
-    Start,
-    Dissolve(usize)
-}
+// enum State {
+//     Start,
+//     Dissolve(usize)
+// }
 
 impl WidgetRef for Splash {   
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {

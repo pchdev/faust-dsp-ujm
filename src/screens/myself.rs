@@ -4,13 +4,13 @@ use crossterm::event::{KeyEvent};
 use ratatui::{
     buffer::Buffer, 
     prelude::Rect, 
-    widgets::{Widget, WidgetRef}
+    widgets::WidgetRef
 };
 
 use indoc::indoc;
 
 use crate::{
-    screens::{leafy, PlainFull, Screen, SideBySide}, widgets::InteractiveWidget, 
+    screens::{leafy, PlainFull, Screen}, 
 };
 
 /// Font is 'Future':
@@ -21,18 +21,16 @@ const TITLE: &'static str = indoc!{"
 "};
 
 
-#[derive(Default, Debug)]
-struct Logos {
-
-}
+// #[derive(Default, Debug)]
+// struct Logos {}
 
 
-impl WidgetRef for Logos {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {
-    }
-}
+// impl WidgetRef for Logos {
+//     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
+//     }
+// }
 
-impl InteractiveWidget for Logos {}
+// impl InteractiveWidget for Logos {}
 
 
 pub struct Myself<'a> {

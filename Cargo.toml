@@ -22,4 +22,4 @@ strum = { version = "0.27.2", features = ["derive", "strum_macros"] }
 tui-widgets = "0.4.1"
 tachyonfx = "0.19.0"
 time = { version = "0.3.44", features = ["parsing", "macros", "std"] }
-ratzilla = "0.2.0"
+# ratzilla = "0.2.0"

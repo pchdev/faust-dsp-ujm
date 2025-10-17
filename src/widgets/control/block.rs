@@ -69,7 +69,7 @@ impl ControlBlock {
 }
 
 impl std::fmt::Debug for ControlBlock {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, _: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         Ok(())
     }
 }

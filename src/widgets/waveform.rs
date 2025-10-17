@@ -1,6 +1,6 @@
 
 use std::{
-    f64::consts::PI, time::Duration, 
+    f64::consts::PI
 };
 
 use crossterm::event::{KeyCode, KeyEvent};

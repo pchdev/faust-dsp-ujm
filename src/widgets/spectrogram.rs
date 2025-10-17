@@ -1,17 +1,13 @@
 use ratatui::prelude::*;
-use ratatui::widgets::canvas::{Canvas, Line, Painter, Shape};
+use ratatui::widgets::canvas::{Canvas, Line};
 use ratatui::widgets::WidgetRef;
-use std::f64::consts::PI;
 
 use crate::widgets::InteractiveWidget;
-
 
 #[derive(Default, Debug)]
 pub struct SpectrumCanvas;
 
-impl InteractiveWidget for SpectrumCanvas {
-
-}
+impl InteractiveWidget for SpectrumCanvas {}
 
 impl WidgetRef for SpectrumCanvas {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {

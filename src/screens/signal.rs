@@ -1,5 +1,5 @@
 
-use crossterm::event::{KeyCode, KeyEvent};
+use crossterm::event::KeyEvent;
 
 use ratatui::{
     buffer::Buffer, 
@@ -12,7 +12,8 @@ use ratatui::{
 use indoc::indoc;
 
 use crate::{
-    screens::{leafy, PlainFull, Screen, SideBySide}, widgets::{spectrogram::SpectrumCanvas, waveform::Waveform}, 
+    screens::{leafy, PlainFull, Screen, SideBySide}, 
+    widgets::{spectrogram::SpectrumCanvas, waveform::Waveform}, 
 };
 
 /// Font is 'Future':

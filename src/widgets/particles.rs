@@ -50,7 +50,7 @@ impl Particles {
         x += 100.0;
         y *= SPACING;
         y += 100.0;
-        let ph = (ph * PI * 2.0).sin() * SPACING;
+        let ph = (ph * PI_2).sin() * SPACING;
         (
             x + ph,
             y
@@ -63,7 +63,7 @@ impl InteractiveWidget for Particles {
 
     }
 
-    fn on_tick(&mut self, tick: usize) {
+    fn on_tick(&mut self, _: usize) {
         // TODO: frequency
         self.tick += 1;
         if self.tick >= self.amplitude {

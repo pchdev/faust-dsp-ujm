@@ -1,6 +1,12 @@
 use crossterm::event::KeyCode;
 use ratatui::{
-    layout::Rect, style::Color, symbols, widgets::{canvas::{Canvas, Circle, Line, Points}, Block, Borders, Widget, WidgetRef}
+    layout::Rect, 
+    style::Color, 
+    symbols, 
+    widgets::{
+        canvas::{Canvas, Circle, Line}, 
+        Widget, WidgetRef
+    }
 };
 
 use crate::widgets::InteractiveWidget;
