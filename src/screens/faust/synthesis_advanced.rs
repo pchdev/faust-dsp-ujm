@@ -80,6 +80,11 @@ impl<'a> Default for FaustSynthesisAdvanced<'a> {
                 })
                 .add_widget(2, example!("monitoring_values.dsp"))
                 // ---------------------------------------------------------------------------------------
+                .add_paragraph(leafy! {
+                    "We can use it here to ***switch our synth's waveform automatically every second.***"
+                })
+                .add_widget(3, example!("waveform_switch_counter.dsp"))
+                // ---------------------------------------------------------------------------------------
                 ,
         }
     }

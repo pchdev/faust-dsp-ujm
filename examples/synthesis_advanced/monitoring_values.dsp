@@ -1,4 +1,3 @@
-
 import("stdfaust.lib");
 
 SR = 48000;
