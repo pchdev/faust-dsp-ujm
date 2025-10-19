@@ -22,7 +22,7 @@ use crate::{screens::{
         basics::FaustBasics, 
         basics2::FaustBasics2, 
         intro::FaustIntro, 
-        synthesis::{FaustSynthesis}
+        synthesis::FaustSynthesis, synthesis_advanced::FaustSynthesisAdvanced
     }, 
     myself::Myself, 
     signal::{Signal, Signal2}, 
@@ -64,6 +64,7 @@ impl<'a> App<'a> {
             Box::new(FaustBasics::default()),
             Box::new(FaustBasics2::default()),
             Box::new(FaustSynthesis::default()),
+            Box::new(FaustSynthesisAdvanced::default()),
         ];
         // Populate menu popup:
         app.menu.populate_from_string(

@@ -26,7 +26,7 @@ macro_rules! example {
         Box::new(
             FaustWidget::new(
                 include_str!(
-                    concat!("../../../examples/spectrum/", $path)
+                    concat!("../../../examples/synthesis/", $path)
                 )
             )
         )        
