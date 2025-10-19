@@ -16,9 +16,9 @@ use crate::{
 
 /// Font is 'Future':
 const TITLE: &'static str = indoc!{"
-┏━┓╻ ╻┏┓╻╺┳╸╻ ╻┏━╸┏━┓╻┏━┓
-┗━┓┗┳┛┃┗┫ ┃ ┣━┫┣╸ ┗━┓┃┗━┓
-┗━┛ ╹ ╹ ╹ ╹ ╹ ╹┗━╸┗━┛╹┗━┛
+╺┳╸╻┏┳┓┏━╸
+ ┃ ┃┃┃┃┣╸ 
+ ╹ ╹╹ ╹┗━╸
 "};
 
 macro_rules! example {
@@ -26,26 +26,26 @@ macro_rules! example {
         Box::new(
             FaustWidget::new(
                 include_str!(
-                    concat!("../../../examples/synthesis_advanced/", $path)
+                    concat!("../../../examples/time/", $path)
                 )
             )
         )        
     };
 }
 
-pub struct FaustSynthesisAdvanced<'a> {
+pub struct FaustTime<'a> {
     screen: SideBySide<'a>,
 }
 
-impl<'a> WidgetRef for FaustSynthesisAdvanced<'a> {
+impl<'a> WidgetRef for FaustTime<'a> {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
         self.screen.render_ref(area, buf);
     }
 }
 
-impl<'a> Screen for FaustSynthesisAdvanced<'a> {
+impl<'a> Screen for FaustTime<'a> {
     fn title(&self) -> &'static str {
-        "Faust: advanced synthesis"
+        "Faust: time"
     }
     fn on_key_event(&mut self, k: KeyEvent) {
         self.screen.on_key_event(k);
@@ -55,9 +55,9 @@ impl<'a> Screen for FaustSynthesisAdvanced<'a> {
     }
 }
 
-impl<'a> Default for FaustSynthesisAdvanced<'a> {
+impl<'a> Default for FaustTime<'a> {
     fn default() -> Self {
-        FaustSynthesisAdvanced {
+        FaustTime {
             screen: SideBySide::default()
                 .add_title(TITLE)
                 // ---------------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ impl<'a> Default for FaustSynthesisAdvanced<'a> {
                 .add_widget(2, example!("monitoring_values.dsp"))
                 // ---------------------------------------------------------------------------------------
                 .add_paragraph(leafy! {
-                    "We can use it here to ***switch our synth's waveform automatically every second.***"
+                    "We can for example use a counter to ***switch our synth's waveform automatically every second.***"
                 })
                 .add_widget(3, example!("waveform_switch_counter.dsp"))
                 // ---------------------------------------------------------------------------------------
