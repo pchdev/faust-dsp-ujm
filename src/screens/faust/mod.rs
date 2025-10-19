@@ -2,4 +2,4 @@
 pub mod intro;
 pub mod basics;
 pub mod basics2;
-pub mod spectrum;
+pub mod synthesis;
