@@ -30,7 +30,7 @@ cd faust-dsp-ujm
 cargo run --release
 ```
 
-> **Note**: only tested on *Linux* and  **macOS**, **Windows** would be appreciated :-) 
+> **Note**: only tested on *Linux* and  *macOS*, **Windows** would be appreciated :-) 
 
 # Keyboard shortcuts:
 
