@@ -1,7 +1,7 @@
 
 use std::{collections::HashMap};
 
-use crossterm::event::{KeyCode, KeyEvent};
+use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use ratatui::{
     buffer::Buffer, 
     layout::{
@@ -199,6 +199,15 @@ impl<'a> Screen for Agenda<'a> {
                 }
             }
             Focus::Rhs => {
+                if k.modifiers.contains(KeyModifiers::CONTROL)
+                && k.modifiers.contains(KeyModifiers::SHIFT) {
+                    match k.code {
+                        KeyCode::Left => {
+                            self.focus = Focus::Lhs
+                        }
+                        _ => ()
+                    }
+                }
                 match k.code {
                     KeyCode::Up => {
                         match self.get_events_mut() {
@@ -248,7 +257,8 @@ impl<'a> Default for Agenda<'a> {
                         item!(md!("• **Library**, **documentation** and **examples**")),
                         item!(md!("• **Simple DSP effects** (*ringmod*, *delay*)")),
                         item!(md!("• **GUI** for **control** (*sliders*, *buttons*...)")),
-                        item!(md!("• **Simple synthesis**: *oscillators* and *waveforms*"))
+                        item!(md!("• **Simple synthesis**: *oscillators* and *waveforms*")),
+                        item!(md!("• **Handling time** in Faust"))
                     ]),
                 MonthSchedule::new(Month::November)
                     .add_date(10, time!(14:30), time!(18:30), vec![
