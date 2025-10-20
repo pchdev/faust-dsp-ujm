@@ -4,7 +4,11 @@
 # Install the rust toolchain:
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
+# Clone this repository:
+git clone https://github.com/pchdev/faust-dsp-ujm
+
 # Build and run the presentation:
+cd faust-dsp-ujm
 cargo run --release
 ```
 
