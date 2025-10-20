@@ -1,8 +1,24 @@
-# Building
+# Build and run the presentation
 
 ```sh
+# Install the rust toolchain:
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Build and run the presentation:
 cargo run --release
 ```
+
+# Resources
+
+- **Class examples**: in the `examples/` directory.
+- **Slides**: [slides.pdf](slides.pdf)
+- **Faust IDE**: [https://faustide.grame.fr](https://faustide.grame.fr)
+- **Faust Playground**: [https://faustplayground.grame.fr/](https://faustplayground.grame.fr/)
+- **Faust Manual**: [https://faustdoc.grame.fr/manual/introduction/](https://faustdoc.grame.fr/manual/introduction/)
+- **Faust Syntax Documentation**: [https://faustdoc.grame.fr/manual/syntax/#faust-syntax](https://faustdoc.grame.fr/manual/syntax/#faust-syntax)
+- **Faust Libraries Documentation**: [https://faustlibraries.grame.fr/libs/](https://faustlibraries.grame.fr/libs/)
+
+
 
 ## License
 
