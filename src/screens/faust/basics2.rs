@@ -80,7 +80,7 @@ impl<'a> Default for FaustBasics2<'a> {
                 // ---------------------------------------------------------------------------------------
                 .add_paragraph(leafy! {
                     "*Graphical User Interface* (***GUI***) elements can be added to ***control parameters***: \
-                    **sliders** (*hslider*/*vslider*), **buttons**, **switches...**"
+                    **sliders**, **buttons**, **switches**, **vu-meters**, *etc.*"
                 })
                 .add_widget(3, example!("sliders.dsp"))
                 // ---------------------------------------------------------------------------------------                

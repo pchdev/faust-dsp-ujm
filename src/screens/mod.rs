@@ -274,6 +274,7 @@ pub struct SideBySide<'a> {
     rhs: HashMap<usize, Box<dyn InteractiveWidget>>,
     sel: Option<usize>,
     focus: Focus,
+    fullscreen: bool,
 }
 
 impl<'a> SideBySide<'a> {
@@ -334,9 +335,19 @@ impl<'a> Screen for SideBySide<'a> {
             }
             Focus::Rhs => {
                 if k.modifiers.contains(KeyModifiers::CONTROL)
-                && k.modifiers.contains(KeyModifiers::SHIFT)
-                && k.code == KeyCode::Left {
-                    self.focus = Focus::Lhs;
+                && k.modifiers.contains(KeyModifiers::SHIFT) {
+                    match k.code {
+                        KeyCode::Left => {
+                            self.focus = Focus::Lhs;
+                        }
+                        KeyCode::Up => {
+                            self.fullscreen = true;
+                        }
+                        KeyCode::Down => {
+                            self.fullscreen = false;
+                        }
+                        _ => ()
+                    }
                 } else {
                     match &self.sel {
                         Some(x) => {
@@ -371,38 +382,63 @@ impl<'a> Screen for SideBySide<'a> {
 impl<'a> WidgetRef for SideBySide<'a> {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
         // Divide screen 50/50 horizontally: 
-        let [lhl, lhr] = horizontal![==50%, ==50%]
-            .flex(Flex::Center)
-            .areas(area)
-        ;
-        // Add vertical separator:
-        Block::bordered()
-            .borders(Borders::LEFT)
-            .border_type(BorderType::Plain)
-            .render(lhr, buf)
-        ;
-        match self.focus {
-            Focus::Rhs => {
-                Block::bordered()
-                    .borders(Borders::ALL)
-                    .border_type(BorderType::Double)
-                    .style(Style::default().dark_gray())
-                    .render(lhr, buf);
-            }
-            _ => ()
-        }
-        self.lhs.render_ref(lhl, buf);
-        match &self.sel {
-            Some(x) => {
-                match self.rhs.get(x) {
-                    Some(w) => {
-                        w.render_ref(lhr, buf);
-                    }
-                    _ => ()
+        if !self.fullscreen {
+            let [lhl, lhr] = horizontal![==50%, ==50%]
+                .flex(Flex::Center)
+                .areas(area)
+            ;
+            // Add vertical separator:
+            Block::bordered()
+                .borders(Borders::LEFT)
+                .border_type(BorderType::Plain)
+                .render(lhr, buf)
+            ;
+            match self.focus {
+                Focus::Rhs => {
+                    Block::bordered()
+                        .borders(Borders::ALL)
+                        .border_type(BorderType::Double)
+                        .style(Style::default().dark_gray())
+                        .render(lhr, buf);
                 }
+                _ => ()
             }
-            _ => ()
+            self.lhs.render_ref(lhl, buf);
+            match &self.sel {
+                Some(x) => {
+                    match self.rhs.get(x) {
+                        Some(w) => {
+                            w.render_ref(lhr, buf);
+                        }
+                        _ => ()
+                    }
+                }
+                _ => ()
+            }
+        } else {
+            match self.focus {
+                Focus::Rhs => {
+                    Block::bordered()
+                        .borders(Borders::ALL)
+                        .border_type(BorderType::Double)
+                        .style(Style::default().dark_gray())
+                        .render(area, buf);
+                }
+                _ => ()
+            }
+            match &self.sel {
+                Some(x) => {
+                    match self.rhs.get(x) {
+                        Some(w) => {
+                            w.render_ref(area, buf);
+                        }
+                        _ => ()
+                    }
+                }
+                _ => ()
+            }
         }
+
     }
 }
 
