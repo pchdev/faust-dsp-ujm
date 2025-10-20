@@ -1,4 +1,4 @@
-# Build and run the presentation
+# Build and run the presentation - Linux
 
 ```sh
 # Install the rust toolchain:
@@ -12,17 +12,35 @@ cd faust-dsp-ujm
 cargo run --release
 ```
 
-> **Note**: only tested on *Linux*, any feedback on **macOS** or **Windows** would be appreciated :-) 
+# Build and run the presentation - OSX
+
+```sh
+# Install the rust toolchain:
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# Add Rust to Your PATH
+export PATH="$HOME/.cargo/bin:$PATH"
+# Then reload your shell:
+source ~/.zshrc
+
+# Clone this repository:
+git clone https://github.com/pchdev/faust-dsp-ujm
+
+# Build and run the presentation:
+cd faust-dsp-ujm
+cargo run --release
+```
+
+> **Note**: only tested on *Linux* and  *macOS*, **Windows** would be appreciated :-) 
 
 # Keyboard shortcuts:
 
-- `Ctrl+space`: Next slide;
-- `Ctrl+backspace`: Previous slide;
+- `Right arrow`: Next slide;
+- `Left arrow`: Previous slide;
 - `F4`: jump to specific slide;
 - `Up/Down` arrows for navigating the slide paragraphs;
 - `Enter` on a paragraph to see the animation (if there's one);
 - `Ctrl+Shift+Left or Right`: switch between left-side and right-side windows;
-- `Ctrl+q`: quit the presentation.
+- `Ctrl+W`: quit the presentation.
 
 # Resources
 
