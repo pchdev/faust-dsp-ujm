@@ -339,6 +339,7 @@ impl<'a> Screen for SideBySide<'a> {
                     match k.code {
                         KeyCode::Left => {
                             self.focus = Focus::Lhs;
+                            self.fullscreen = false;
                         }
                         KeyCode::Up => {
                             self.fullscreen = true;
