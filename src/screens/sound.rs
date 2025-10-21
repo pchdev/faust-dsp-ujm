@@ -3,7 +3,7 @@ use crossterm::event::{KeyEvent};
 
 use ratatui::{
     buffer::Buffer, prelude::Rect, 
-    widgets::{WidgetRef}
+    widgets::{Paragraph, WidgetRef}
 };
 
 use indoc::indoc;
@@ -16,6 +16,9 @@ use crate::{
         ripple::Ripple, 
     }
 };
+
+use macros::Screen;
+
 
 const TITLE: &'static str = indoc!{"
 ┏━┓┏━┓╻ ╻┏┓╻╺┳┓
@@ -44,6 +47,33 @@ impl<'a> Screen for Sound<'a> {
     fn on_tick(&mut self, t: usize) {
         self.screen.on_tick(t);
     }
+}
+
+#[derive(SideBySide)]
+#[screen(title = TITLE)]
+#[screen(description = "Sound (1/2)")]
+struct Soundtest {
+    // ----------------------------------------------------------------------------
+    /// Sound is a ***pressure wave*** that propagates
+    /// through a **medium** (*gas*, *liquid* or *solid*).
+    #[widget(Ripple)]
+    p0: ScreenParagraph,
+    // ----------------------------------------------------------------------------
+    /// Propagation is caused by the **oscillation** (*vibration*) of
+    /// the medium's *particles*, around their ***equilibrium*** positions.
+    #[widget(Particles)]
+    p1: ScreenParagraph,
+    // ----------------------------------------------------------------------------
+    /// Sound has the following properties:
+    p2: ScreenParagraph,
+    // ----------------------------------------------------------------------------
+    /// • **Speed**: ~343 m/s in **air**
+    /// • **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)
+    /// • **Period**: time between two oscillations
+    /// • **Wavelength**: distance between two oscillations
+    /// • **Frequency**: cycles/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)
+    /// • **Spectrum**, or *Timbre*
+    l0: ScreenList,
 }
 
 impl<'a> Default for Sound<'a> {

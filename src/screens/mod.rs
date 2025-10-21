@@ -19,28 +19,8 @@ macro_rules! leafy {
     };
 }
 
-// pub(crate) use leafy;
-
-pub(crate) trait Screen : WidgetRef {
+pub trait Screen : WidgetRef {
     fn title(&self) -> &'static str;
-    fn on_key_event(&mut self, k: KeyEvent) {}
-    fn on_tick(&mut self, t: usize) {}
+    fn on_key_event(&mut self, _: KeyEvent) {}
+    fn on_tick(&mut self, _: usize) {}
 }
-
-// The ideal would be:
-// 
-
-// #[derive(Screen)]
-// #[screen(layout = Layout::SideBySide)]
-
-// struct MyScreen {
-//     // ---------------------------
-//     /// Get **markdown comments**
-//     ph1: Paragraph<'_>,
-//     // ---------------------------
-//     /// - First item
-//     /// - Second item
-//     /// - etc.
-//     ph2: List<'_>
-//     // ---------------------------
-// }
