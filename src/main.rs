@@ -19,11 +19,7 @@ use crate::{screens::{
     agenda::Agenda, 
     digital::{Digital, Digital2}, 
     faust::{
-        basics::FaustBasics, 
-        basics2::FaustBasics2, 
-        intro::FaustIntro, 
-        synthesis::FaustSynthesis, 
-        time::{FaustTime}
+        basics::FaustBasics, basics2::FaustBasics2, functions::FaustFunctions, intro::FaustIntro, synthesis::FaustSynthesis, time::FaustTime
     }, 
     myself::Myself, 
     signal::{Signal, Signal2}, 
@@ -64,6 +60,7 @@ impl<'a> App<'a> {
             Box::new(FaustIntro::default()),
             Box::new(FaustBasics::default()),
             Box::new(FaustBasics2::default()),
+            Box::new(FaustFunctions::default()),
             Box::new(FaustSynthesis::default()),
             Box::new(FaustTime::default()),
         ];
@@ -110,19 +107,19 @@ impl<'a> App<'a> {
         if k.modifiers.contains(KeyModifiers::CONTROL) {
             match k.code {
                 // Next screen (Ctrl + Esp):
-                KeyCode::Char(' ') => {
+                KeyCode::Char(' ') | KeyCode::Null => {
                     if self.index < self.screens.len() -1 {
                        self.index += 1;
                     } 
                 }
                 // Previous screen (Ctrl + Backspace):
-                KeyCode::Char('h') => {
+                KeyCode::Backspace | KeyCode::Char('h') => {
                     if self.index > 0 {
                        self.index -= 1;
                     }
                 }
-                // Quit app (Ctrl + q):
-                KeyCode::Char('q') => {
+                // Quit app (Ctrl + w):
+                KeyCode::Char('w') => {
                     self.exit();
                 }
                 // Otherwise, dispatch to current screen:
@@ -185,7 +182,7 @@ impl<'a> App<'a> {
             .title_bottom(
                 line![
                     "Ctrl + (", 
-                    "[q] Quit | ", 
+                    "[w] Quit | ", 
                     "[bsp] Prev | ", 
                     "[spc] Next | ",
                     "[F4] Jump)"
