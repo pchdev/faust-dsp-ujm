@@ -10,8 +10,9 @@ use ratatui::{
 use indoc::indoc;
 
 use crate::{
-    screens::{leafy, Screen, SideBySide}, 
-    widgets::{faustblock::FaustWidget}
+    leafy,
+    screens::{layouts::sidebyside::SideBySide, Screen}, 
+    widgets::faustblock::FaustWidget
 };
 
 /// Font is 'Future':

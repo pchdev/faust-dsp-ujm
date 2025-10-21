@@ -12,11 +12,8 @@ use ratatui::{
 use indoc::indoc;
 
 use crate::{
-    screens::{
-        leafy, 
-        Screen, 
-        SideBySide
-    }, 
+    leafy,
+    screens::{layouts::sidebyside::SideBySide, Screen},
     widgets::{
         aliasing::Aliasing, 
         quantization::Quantization, 

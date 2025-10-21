@@ -12,7 +12,8 @@ use ratatui::{
 use indoc::indoc;
 
 use crate::{
-    screens::{leafy, PlainFull, Screen, SideBySide}, 
+    leafy,
+    screens::{layouts::{plainfull::PlainFull, sidebyside::SideBySide}, Screen},
     widgets::{spectrogram::SpectrumCanvas, waveform::Waveform}, 
 };
 

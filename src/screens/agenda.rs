@@ -26,7 +26,7 @@ use time::{macros::format_description, Date, Month, Time, UtcDateTime};
 use time::macros::time;
 use time::ext::NumericalDuration;
 
-use crate::screens::{Focus, Screen};
+use crate::screens::{layouts::sidebyside::Focus, Screen};
 
 const TITLE: &'static str = indoc!{"
 ┏━┓┏━╸┏━╸┏┓╻╺┳┓┏━┓
@@ -349,7 +349,8 @@ impl<'a> WidgetRef for Agenda<'a> {
                         text![
                             line!(fmtd).bold().underlined().centered(),
                             line!(""),
-                            line!(fmth).centered().italic()
+                            line!(fmth).centered().italic(),
+                            line!(""),
                         ]
                     ).render(lhrv[1], buf);
                     let mut state = ev.state.clone();

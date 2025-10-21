@@ -9,9 +9,8 @@ use ratatui::{
 
 use indoc::indoc;
 
-use crate::{
-    screens::{leafy, PlainFull, Screen}, 
-};
+use crate::leafy;
+use crate::screens::{layouts::plainfull::PlainFull, Screen};
 
 /// Font is 'Future':
 const TITLE: &'static str = indoc!{"
@@ -19,18 +18,6 @@ const TITLE: &'static str = indoc!{"
 ┣━┫┣╸ ┃  ┃  ┃ ┃╹
 ╹ ╹┗━╸┗━╸┗━╸┗━┛╹
 "};
-
-
-// #[derive(Default, Debug)]
-// struct Logos {}
-
-
-// impl WidgetRef for Logos {
-//     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
-//     }
-// }
-
-// impl InteractiveWidget for Logos {}
 
 
 pub struct Myself<'a> {
@@ -66,23 +53,10 @@ impl<'a> Default for Myself<'a> {
                 .add_paragraph(indoc! {
                     "• First time teaching... but **in your shoes**, *12 years ago* :)"
                 }) 
-                // .add_paragraph(indoc! {
-                //     "• Got an internship at ***SCRIME-LaBRI*** in Bordeaux! \
-                //     Worked for 3 years there after that, as a \
-                //     *Computer Music Designer* (*RIM*). \
-                //     Then worked as a \"*freelancer*\", on my own sound installation \
-                //     and other projects."
-                // }) 
-                // .add_paragraph(indoc! {
-                //     "• Then, ***COVID*** happened :( But got into a (*secret*) \
-                //     project with ***GRAME*** (*Max2FaustTranslator*) in Lyon."
-                // }) 
                 .add_paragraph(leafy! {
                     "Now in *Inria/INSA* team ***Emeraude***, working as a *research engineer* in *Lyon*, alongside:"
                 }) 
-                // .add_widget(2, Box::new(Logos::default()))
                 .add_list(vec![
-                    // "• Tanguy Risset (Team Boss)",
                     "• **Romain Michon**",
                     "• **Stéphane Letz**",
                     "• Yann Orlarey",
@@ -98,10 +72,6 @@ impl<'a> Default for Myself<'a> {
                 .add_paragraph(indoc! {
                     "• **P.S**: I'm not really an expert in DSP :("
                 })
-                // .add_paragraph(indoc! {
-                //     "• Not really a musician anymore, not really expert in **DSP** either (sorry)... \
-                //     I like **code** (and *pixels*), and helping researchers."
-                // })
                 ,   
         }
     }

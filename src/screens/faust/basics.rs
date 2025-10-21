@@ -10,7 +10,8 @@ use ratatui::{
 use indoc::indoc;
 
 use crate::{
-    screens::{leafy, Screen, SideBySide}, 
+    leafy, 
+    screens::{layouts::sidebyside::SideBySide, Screen}, 
     widgets::faustblock::FaustWidget
 };
 
@@ -32,7 +33,6 @@ macro_rules! example {
         )        
     };
 }
-
 
 pub struct FaustBasics<'a> {
     screen: SideBySide<'a>,
