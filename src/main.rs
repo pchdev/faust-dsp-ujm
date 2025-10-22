@@ -19,7 +19,12 @@ use crate::{screens::{
     agenda::Agenda, 
     digital::{Digital, Digital2}, 
     faust::{
-        basics::FaustBasics, basics2::FaustBasics2, functions::FaustFunctions, intro::FaustIntro, synthesis::FaustSynthesis, time::FaustTime
+        basics::FaustBasics, 
+        basics2::FaustBasics2, 
+        functions::FaustFunctions, 
+        intro::FaustIntro, 
+        synthesis::FaustSynthesis, 
+        time::FaustTime
     }, 
     myself::Myself, 
     signal::{Signal, Signal2}, 

@@ -3,7 +3,7 @@ use crossterm::event::{KeyEvent};
 
 use ratatui::{
     buffer::Buffer, prelude::Rect, 
-    widgets::{Paragraph, WidgetRef}
+    widgets::WidgetRef
 };
 
 use indoc::indoc;
@@ -18,7 +18,6 @@ use crate::{
 };
 
 use macros::Screen;
-
 
 const TITLE: &'static str = indoc!{"
 ┏━┓┏━┓╻ ╻┏┓╻╺┳┓
@@ -37,8 +36,15 @@ impl<'a> WidgetRef for Sound<'a> {
 }
 
 impl<'a> Screen for Sound<'a> {
+    type Layout = SideBySide<'a>;
     fn title(&self) -> &'static str {
+        TITLE
+    }
+    fn description(&self) -> &'static str {
         "Sound (1/2)"
+    }
+    fn layout(&mut self) -> &mut Self::Layout {
+        &mut self.screen
     }
     fn on_key_event(&mut self, k: KeyEvent) {
         self.screen.on_key_event(k);
@@ -49,7 +55,8 @@ impl<'a> Screen for Sound<'a> {
     }
 }
 
-#[derive(SideBySide)]
+#[derive(Screen)]
+#[screen(layout = Layout::SideBySide)]
 #[screen(title = TITLE)]
 #[screen(description = "Sound (1/2)")]
 struct Soundtest {
@@ -57,15 +64,15 @@ struct Soundtest {
     /// Sound is a ***pressure wave*** that propagates
     /// through a **medium** (*gas*, *liquid* or *solid*).
     #[widget(Ripple)]
-    p0: ScreenParagraph,
+    p0: Paragraph,
     // ----------------------------------------------------------------------------
     /// Propagation is caused by the **oscillation** (*vibration*) of
     /// the medium's *particles*, around their ***equilibrium*** positions.
     #[widget(Particles)]
-    p1: ScreenParagraph,
+    p1: Paragraph,
     // ----------------------------------------------------------------------------
     /// Sound has the following properties:
-    p2: ScreenParagraph,
+    p2: Paragraph,
     // ----------------------------------------------------------------------------
     /// • **Speed**: ~343 m/s in **air**
     /// • **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)
@@ -73,7 +80,7 @@ struct Soundtest {
     /// • **Wavelength**: distance between two oscillations
     /// • **Frequency**: cycles/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)
     /// • **Spectrum**, or *Timbre*
-    l0: ScreenList,
+    l0: List,
 }
 
 impl<'a> Default for Sound<'a> {
