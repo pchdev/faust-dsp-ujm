@@ -1,16 +1,17 @@
 
-use crossterm::event::{KeyEvent};
-
-use ratatui::{
-    buffer::Buffer, prelude::Rect, 
-    widgets::WidgetRef
-};
 
 use indoc::indoc;
 
 use crate::{
     leafy,
-    screens::{layouts::{plainfull::PlainFull, sidebyside::SideBySide}, Screen}, 
+    screens::{
+        layouts::{
+            plainfull::PlainFull, 
+            sidebyside::SideBySide, 
+            Layout
+        }, 
+        Screen
+    }, 
     widgets::{
         particles::Particles, 
         ripple::Ripple, 
@@ -29,59 +30,46 @@ pub struct Sound<'a> {
     screen: SideBySide<'a>,
 }
 
-impl<'a> WidgetRef for Sound<'a> {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
-        self.screen.render_ref(area, buf);
-    }
-}
-
 impl<'a> Screen for Sound<'a> {
-    type Layout = SideBySide<'a>;
     fn title(&self) -> &'static str {
         TITLE
     }
     fn description(&self) -> &'static str {
         "Sound (1/2)"
     }
-    fn layout(&mut self) -> &mut Self::Layout {
-        &mut self.screen
+    fn layout(&self) -> Option<&dyn Layout> {
+        Some(&self.screen)
     }
-    fn on_key_event(&mut self, k: KeyEvent) {
-        self.screen.on_key_event(k);
-    }
-
-    fn on_tick(&mut self, t: usize) {
-        self.screen.on_tick(t);
+    fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
+        Some(&mut self.screen)
     }
 }
 
-#[derive(Screen)]
-#[screen(layout = Layout::SideBySide)]
-#[screen(title = TITLE)]
-#[screen(description = "Sound (1/2)")]
-struct Soundtest {
-    // ----------------------------------------------------------------------------
-    /// Sound is a ***pressure wave*** that propagates
-    /// through a **medium** (*gas*, *liquid* or *solid*).
-    #[widget(Ripple)]
-    p0: Paragraph,
-    // ----------------------------------------------------------------------------
-    /// Propagation is caused by the **oscillation** (*vibration*) of
-    /// the medium's *particles*, around their ***equilibrium*** positions.
-    #[widget(Particles)]
-    p1: Paragraph,
-    // ----------------------------------------------------------------------------
-    /// Sound has the following properties:
-    p2: Paragraph,
-    // ----------------------------------------------------------------------------
-    /// • **Speed**: ~343 m/s in **air**
-    /// • **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)
-    /// • **Period**: time between two oscillations
-    /// • **Wavelength**: distance between two oscillations
-    /// • **Frequency**: cycles/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)
-    /// • **Spectrum**, or *Timbre*
-    l0: List,
-}
+// #[derive(Screen)]
+// #[screen(layout = Layout::SideBySide)]
+// #[screen(title = TITLE)]
+// #[screen(description = "Sound (1/2)")]
+// struct Soundtest {
+//     // ----------------------------------------------------------------------------
+//     /// Sound is a ***pressure wave*** that propagates
+//     /// through a **medium** (*gas*, *liquid* or *solid*).
+//     p0: (Paragraph, Ripple),
+//     // ----------------------------------------------------------------------------
+//     /// Propagation is caused by the **oscillation** (*vibration*) of
+//     /// the medium's *particles*, around their ***equilibrium*** positions.
+//     p1: (Paragraph, Particles),
+//     // ----------------------------------------------------------------------------
+//     /// Sound has the following properties:
+//     p2: Paragraph,
+//     // ----------------------------------------------------------------------------
+//     /// • **Speed**: ~343 m/s in **air**
+//     /// • **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)
+//     /// • **Period**: time between two oscillations
+//     /// • **Wavelength**: distance between two oscillations
+//     /// • **Frequency**: cycles/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)
+//     /// • **Spectrum**, or *Timbre*
+//     l0: List,
+// }
 
 impl<'a> Default for Sound<'a> {
     fn default() -> Self {
@@ -122,32 +110,28 @@ impl<'a> Default for Sound<'a> {
 }
 
 pub struct Sound2<'a> {
-    screen: PlainFull<'a>,
-}
-
-impl<'a> WidgetRef for Sound2<'a> {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
-        self.screen.render_ref(area, buf);
-    }
+    layout: PlainFull<'a>,
 }
 
 impl<'a> Screen for Sound2<'a> {
     fn title(&self) -> &'static str {
+        TITLE
+    }
+    fn description(&self) -> &'static str {
         "Sound (2/2)"
     }
-    fn on_key_event(&mut self, k: KeyEvent) {
-        self.screen.on_key_event(k);
+    fn layout(&self) -> Option<&dyn Layout> {
+        Some(&self.layout)
     }
-
-    fn on_tick(&mut self, t: usize) {
-        self.screen.on_tick(t);
+    fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
+        Some(&mut self.layout)
     }
 }
 
 impl<'a> Default for Sound2<'a> {
     fn default() -> Self {
         Sound2 {
-            screen: PlainFull::default()
+            layout: PlainFull::default()
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
                     "• Our ***perception*** of sound is made from the conversion of the vibrations reaching our ***eardrums*** to \

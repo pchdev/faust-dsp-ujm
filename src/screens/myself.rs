@@ -1,15 +1,7 @@
-
-use crossterm::event::{KeyEvent};
-
-use ratatui::{
-    buffer::Buffer, 
-    prelude::Rect, 
-    widgets::WidgetRef
-};
-
 use indoc::indoc;
 
 use crate::leafy;
+use crate::screens::layouts::Layout;
 use crate::screens::{layouts::plainfull::PlainFull, Screen};
 
 /// Font is 'Future':
@@ -21,31 +13,28 @@ const TITLE: &'static str = indoc!{"
 
 
 pub struct Myself<'a> {
-    screen: PlainFull<'a>,
-}
-
-impl<'a> WidgetRef for Myself<'a> {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
-        self.screen.render_ref(area, buf);
-    }
+    layout: PlainFull<'a>,
 }
 
 impl<'a> Screen for Myself<'a> {
     fn title(&self) -> &'static str {
+        TITLE
+    }
+    fn description(&self) -> &'static str {
         "Hello!"
     }
-    fn on_key_event(&mut self, k: KeyEvent) {
-        self.screen.on_key_event(k);
+    fn layout(&self) -> Option<&dyn Layout> {
+        Some(&self.layout)
     }
-    fn on_tick(&mut self, t: usize) {
-        self.screen.on_tick(t);
+    fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
+        Some(&mut self.layout)
     }
 }
 
 impl<'a> Default for Myself<'a> {
     fn default() -> Self {
         Myself {
-            screen: PlainFull::default()
+            layout: PlainFull::default()
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
                     "• My name is **Pierre**, nice to meet you all!"

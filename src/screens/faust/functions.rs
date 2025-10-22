@@ -11,7 +11,7 @@ use indoc::indoc;
 
 use crate::{
     leafy,
-    screens::{layouts::sidebyside::SideBySide, Screen}, 
+    screens::{layouts::{sidebyside::SideBySide, Layout}, Screen}, 
     widgets::faustblock::FaustWidget
 };
 
@@ -35,40 +35,37 @@ macro_rules! example {
 }
 
 pub struct FaustFunctions<'a> {
-    screen: SideBySide<'a>,
-}
-
-impl<'a> WidgetRef for FaustFunctions<'a> {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
-        self.screen.render_ref(area, buf);
-    }
+    layout: SideBySide<'a>,
 }
 
 impl<'a> Screen for FaustFunctions<'a> {
     fn title(&self) -> &'static str {
+        TITLE
+    }
+    fn description(&self) -> &'static str {
         "Faust: functions"
     }
-    fn on_key_event(&mut self, k: KeyEvent) {
-        self.screen.on_key_event(k);
+    fn layout(&self) -> Option<&dyn Layout> {
+        Some(&self.layout)
     }
-    fn on_tick(&mut self, t: usize) {
-        self.screen.on_tick(t);
+    fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
+        Some(&mut self.layout)
     }
 }
 
 impl<'a> Default for FaustFunctions<'a> {
     fn default() -> Self {
         FaustFunctions {
-            screen: SideBySide::default()
+            layout: SideBySide::default()
                 .add_title(TITLE)
                 // ---------------------------------------------------------------------------------------
                 .add_paragraph(leafy! {
-                    "***Function definitions*** in Faust have the syntax *function(argument1, argument2, ...) = expression;*"
+                    "***Function definitions*** in Faust have the syntax *function(parameter1, parameter2, ...) = expression;*"
                 })
                 .add_widget(0, example!("f1.dsp"))
                 // ---------------------------------------------------------------------------------------
                 .add_paragraph(leafy! {
-                    "In order to ***call*** (**execute**) that function, we need to ***replace its arguments*** \
+                    "In order to ***call*** (**execute**) that function, we need to ***replace its parameters (arguments)*** \
                     with the values we want to pass as parameters."
                 })
                 .add_widget(1, example!("f2.dsp"))

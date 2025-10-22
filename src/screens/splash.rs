@@ -1,10 +1,8 @@
 
-use crossterm::event::{KeyCode, KeyEvent};
 use ratatui::{
-    buffer::Buffer, layout::{
-        Flex, 
-        Rect
-    }, style::Stylize, 
+    buffer::Buffer, 
+    layout::{Flex, Rect}, 
+    style::Stylize, 
     text::Text, 
     widgets::{
         Widget, WidgetRef
@@ -14,7 +12,7 @@ use ratatui_macros::{horizontal, vertical, line};
 
 use indoc::indoc;
 
-use crate::screens::Screen;
+use crate::screens::{Layout, Screen};
 
 /// Got from: https://patorjk.com/software/taag/
 /// Font is 'ANSI Shadow'
@@ -31,10 +29,6 @@ const FAUST: &'static str = indoc!{"
 #[derive(Debug, Default)]
 pub struct Splash;
 
-// enum State {
-//     Start,
-//     Dissolve(usize)
-// }
 
 impl WidgetRef for Splash {   
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
@@ -58,17 +52,15 @@ impl WidgetRef for Splash {
 
 impl Screen for Splash {
     fn title(&self) -> &'static str {
-        "Title"
+        FAUST
     }
-    fn on_key_event(&mut self, k: KeyEvent) {
-        match k.code {
-            KeyCode::Down => {
-
-            }
-            KeyCode::Enter => {
-                
-            } 
-            _ => ()
-        }
+    fn description(&self) -> &'static str {
+        "Splash"
+    }
+    fn layout(&self) -> Option<&dyn Layout> {
+        None
+    }
+    fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
+        None
     }
 }

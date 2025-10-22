@@ -18,8 +18,7 @@ use ratatui_macros::horizontal;
 
 use crate::{
     screens::{
-        layouts::content::{Content, ContentArea},
-        Screen
+        layouts::{content::{Content, ContentArea}, Layout},
     }, 
     widgets::InteractiveWidget
 };
@@ -36,12 +35,12 @@ pub struct SideBySide<'a> {
     fullscreen: bool,
 }
 
-impl<'a> SideBySide<'a> {
-    pub fn add_title(mut self, title: &'static str) -> Self {
+impl<'a> Layout for SideBySide<'a> {
+    fn add_title(mut self, title: &'static str) -> Self {
         self.lhs.title = Some(String::from(title));
         return self;
     }
-    pub fn add_paragraph(mut self, txt: &'static str) -> Self {
+    fn add_paragraph(mut self, txt: &'static str) -> Self {
         self.lhs.contents.push(
             Content::Paragraph(
                 Paragraph::new(
@@ -51,7 +50,7 @@ impl<'a> SideBySide<'a> {
         );
         return self;
     }
-    pub fn add_list(mut self, list: Vec<&'static str>) -> Self {
+    fn add_list(mut self, list: Vec<&'static str>) -> Self {
         let mut items = vec![];
         for i in list {
             items.push(String::from(i));
@@ -61,16 +60,13 @@ impl<'a> SideBySide<'a> {
         );
         return self;
     }
-    pub fn add_widget(mut self, index: usize, w: Box<dyn InteractiveWidget>) -> Self {
+    fn add_widget(mut self, index: usize, w: Box<dyn InteractiveWidget>) -> Self {
         self.rhs.insert(index, w);
         return self;
     }
 }
 
-impl<'a> Screen for SideBySide<'a> {
-    fn title(&self) -> &'static str {
-        "side-by-side template"
-    }
+impl<'a> InteractiveWidget for SideBySide<'a> {
     fn on_key_event(&mut self, k: KeyEvent) {
         match self.focus {
             Focus::Lhs => {

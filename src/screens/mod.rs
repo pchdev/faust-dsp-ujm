@@ -1,7 +1,9 @@
 use crossterm::event::KeyEvent;
 use ratatui::{
-    widgets::WidgetRef
+    buffer::Buffer, layout::Rect, widgets::WidgetRef
 };
+
+use crate::{screens::layouts::Layout, widgets::InteractiveWidget};
 
 pub mod layouts;
 pub mod myself;
@@ -19,11 +21,45 @@ macro_rules! leafy {
     };
 }
 
-pub trait Screen : WidgetRef {
-    type Layout;
+pub trait Screen {
     fn title(&self) -> &'static str;
     fn description(&self) -> &'static str;
-    fn layout(&mut self) -> &mut Self::Layout;
-    fn on_key_event(&mut self, _: KeyEvent) {}
-    fn on_tick(&mut self, _: usize) {}
+    fn layout(&self) -> Option<&dyn Layout>;
+    fn layout_mut(&mut self) -> Option<&mut dyn Layout>;
+
+    fn on_key_event(&mut self, k: KeyEvent) {
+        if let Some(l) = self.layout_mut() {
+            l.on_key_event(k);
+        }
+    }
+    fn on_tick(&mut self, t: usize) {
+        if let Some(l) = self.layout_mut() {
+            l.on_tick(t);
+        }
+    }
 }
+
+// impl InteractiveWidget for dyn Screen {
+//     fn on_key_event(&mut self, k: KeyEvent) {}
+//     fn on_tick(&mut self, t: usize) {}
+// }
+
+impl<T> WidgetRef for T 
+where 
+    T: Screen 
+{
+    fn render_ref(&self,area:Rect,buf: &mut Buffer) {
+        if let Some(l) = self.layout() {
+            l.render_ref(area, buf);
+        } 
+    }
+}
+
+// impl WidgetRef for dyn Screen {
+//     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
+//         if let Some(l) = self.layout() {
+//             l.render_ref(area, buf);
+//         } 
+//     }
+// }
+

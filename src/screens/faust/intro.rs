@@ -11,7 +11,7 @@ use indoc::indoc;
 
 use crate::{
     leafy,
-    screens::{layouts::sidebyside::SideBySide, Screen}, 
+    screens::{layouts::{sidebyside::SideBySide, Layout}, Screen}, 
     widgets::faustblock::FaustWidget
 };
 
@@ -26,31 +26,28 @@ const HELLO440: &'static str =
     include_str!("../../../examples/basics/hello440.dsp");
 
 pub struct FaustIntro<'a> {
-    screen: SideBySide<'a>,
-}
-
-impl<'a> WidgetRef for FaustIntro<'a> {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
-        self.screen.render_ref(area, buf);
-    }
+    layout: SideBySide<'a>,
 }
 
 impl<'a> Screen for FaustIntro<'a> {
     fn title(&self) -> &'static str {
+        TITLE
+    }
+    fn description(&self) -> &'static str {
         "Enter Faust!"
     }
-    fn on_key_event(&mut self, k: KeyEvent) {
-        self.screen.on_key_event(k);
+    fn layout(&self) -> Option<&dyn Layout> {
+        Some(&self.layout)
     }
-    fn on_tick(&mut self, t: usize) {
-        self.screen.on_tick(t);
+    fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
+        Some(&mut self.layout)
     }
 }
 
 impl<'a> Default for FaustIntro<'a> {
     fn default() -> Self {
         FaustIntro {
-            screen: SideBySide::default()
+            layout: SideBySide::default()
                 .add_title(TITLE)
                 .add_paragraph(leafy! {
                     "**Faust** (*Functional Audio Stream*) is a programming language \

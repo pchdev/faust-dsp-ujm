@@ -1,19 +1,8 @@
-
-use crossterm::event::{KeyEvent};
-
-use ratatui::{
-    buffer::Buffer, 
-    prelude::Rect, 
-    widgets::{
-        WidgetRef, 
-    }
-};
-
 use indoc::indoc;
 
 use crate::{
     leafy,
-    screens::{layouts::sidebyside::SideBySide, Screen},
+    screens::{layouts::{sidebyside::SideBySide, Layout}, Screen},
     widgets::{
         aliasing::Aliasing, 
         quantization::Quantization, 
@@ -29,31 +18,28 @@ const TITLE: &'static str = indoc!{"
 "};
 
 pub struct Digital<'a> {
-    screen: SideBySide<'a>
-}
-
-impl<'a> WidgetRef for Digital<'a> {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
-        self.screen.render_ref(area, buf);
-    }
+    layout: SideBySide<'a>
 }
 
 impl<'a> Screen for Digital<'a> {
     fn title(&self) -> &'static str {
+        TITLE
+    }
+    fn description(&self) -> &'static str {
         "Digital Audio Signal (1/2)"
     }
-    fn on_key_event(&mut self, k: KeyEvent) {
-        self.screen.on_key_event(k);
+    fn layout(&self) -> Option<&dyn Layout> {
+        Some(&self.layout)
     }
-    fn on_tick(&mut self, t: usize) {
-        self.screen.on_tick(t);
+    fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
+        Some(&mut self.layout)
     }
 }
 
 impl<'a> Default for Digital<'a> {
     fn default() -> Self {
         Digital {
-            screen: SideBySide::default()
+            layout: SideBySide::default()
                 .add_title(TITLE)
                 .add_paragraph(indoc! {
                     "• To ***digitize*** a continuous signal implies *discretizing* it. \
@@ -81,31 +67,28 @@ impl<'a> Default for Digital<'a> {
 }
 
 pub struct Digital2<'a> {
-    screen: SideBySide<'a>
-}
-
-impl<'a> WidgetRef for Digital2<'a> {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
-        self.screen.render_ref(area, buf);
-    }
+    layout: SideBySide<'a>
 }
 
 impl<'a> Screen for Digital2<'a> {
     fn title(&self) -> &'static str {
+        TITLE
+    }
+    fn description(&self) -> &'static str {
         "Digital Audio Signal (2/2)"
     }
-    fn on_key_event(&mut self, k: KeyEvent) {
-        self.screen.on_key_event(k);
+    fn layout(&self) -> Option<&dyn Layout> {
+        Some(&self.layout)
     }
-    fn on_tick(&mut self, t: usize) {
-        self.screen.on_tick(t);
+    fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
+        Some(&mut self.layout)
     }
 }
 
 impl<'a> Default for Digital2<'a> {
     fn default() -> Self {
         Digital2 {
-            screen: SideBySide::default()
+            layout: SideBySide::default()
                 .add_title(TITLE)
                 .add_paragraph(leafy! {
                     "• Once we take a sample of a signal at a given time, we need to determine the ***scale of its value***, \

@@ -1,17 +1,8 @@
-
-use crossterm::event::{KeyEvent};
-
-use ratatui::{
-    buffer::Buffer, 
-    prelude::Rect, 
-    widgets::{WidgetRef}
-};
-
 use indoc::indoc;
 
 use crate::{
     leafy,
-    screens::{layouts::sidebyside::SideBySide, Screen}, 
+    screens::{layouts::{sidebyside::SideBySide, Layout}, Screen}, 
     widgets::faustblock::FaustWidget
 };
 
@@ -35,31 +26,28 @@ macro_rules! example {
 }
 
 pub struct FaustSynthesis<'a> {
-    screen: SideBySide<'a>,
-}
-
-impl<'a> WidgetRef for FaustSynthesis<'a> {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {   
-        self.screen.render_ref(area, buf);
-    }
+    layout: SideBySide<'a>,
 }
 
 impl<'a> Screen for FaustSynthesis<'a> {
     fn title(&self) -> &'static str {
+        TITLE
+    }
+    fn description(&self) -> &'static str {
         "Faust: basic synthesis"
     }
-    fn on_key_event(&mut self, k: KeyEvent) {
-        self.screen.on_key_event(k);
+    fn layout(&self) -> Option<&dyn Layout> {
+        Some(&self.layout)
     }
-    fn on_tick(&mut self, t: usize) {
-        self.screen.on_tick(t);
+    fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
+        Some(&mut self.layout)
     }
 }
 
 impl<'a> Default for FaustSynthesis<'a> {
     fn default() -> Self {
         FaustSynthesis {
-            screen: SideBySide::default()
+            layout: SideBySide::default()
                 .add_title(TITLE)
                 // ---------------------------------------------------------------------------------------
                 .add_paragraph(leafy! {

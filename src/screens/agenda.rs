@@ -26,7 +26,7 @@ use time::{macros::format_description, Date, Month, Time, UtcDateTime};
 use time::macros::time;
 use time::ext::NumericalDuration;
 
-use crate::screens::{layouts::sidebyside::Focus, Screen};
+use crate::screens::{layouts::{sidebyside::Focus, Layout}, Screen};
 
 const TITLE: &'static str = indoc!{"
 ┏━┓┏━╸┏━╸┏┓╻╺┳┓┏━┓
@@ -127,9 +127,9 @@ impl<'a> WidgetRef for MonthSchedule<'a> {
 }
 
 pub struct Agenda<'a> {
-    date: Date,
+      date: Date,
     msched: Vec<MonthSchedule<'a>>,
-    focus: Focus,
+     focus: Focus,
 }
 
 impl<'a> Agenda<'a> {
@@ -168,8 +168,18 @@ impl<'a> Agenda<'a> {
 
 impl<'a> Screen for Agenda<'a> {
     fn title(&self) -> &'static str {
+        TITLE
+    }
+    fn description(&self) -> &'static str {
         "Agenda"
     }
+    fn layout(&self) -> Option<&dyn Layout> {
+        None
+    }
+    fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
+        None
+    }
+
     fn on_key_event(&mut self, k: KeyEvent) {
         match self.focus {
             Focus::Lhs => {

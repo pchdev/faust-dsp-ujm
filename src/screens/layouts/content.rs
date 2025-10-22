@@ -15,30 +15,6 @@ pub struct ContentArea<'a> {
 }
 
 impl<'a> ContentArea<'a> {
-    pub fn add_title(mut self, title: &'static str) -> Self {
-        self.title = Some(String::from(title));
-        return self;
-    }
-    pub fn add_paragraph(mut self, txt: &'static str) -> Self {
-        self.contents.push(
-            Content::Paragraph(
-                Paragraph::new(
-                    tui_markdown::from_str(txt)
-                ).wrap(Wrap {trim: true})
-            )
-        );
-        return self;
-    }
-    pub fn add_list(mut self, list: Vec<&'static str>) -> Self {
-        let mut items = vec![];
-        for i in list {
-            items.push(String::from(i));
-        }
-        self.contents.push(
-            Content::List(items, ListState::default())
-        );
-        return self;
-    }
     pub fn on_key_event(&mut self, k: KeyEvent) {
         match k.code {
             KeyCode::Down => {

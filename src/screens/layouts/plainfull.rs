@@ -6,19 +6,22 @@ use ratatui::{
 };
 use ratatui_macros::horizontal;
 
-use crate::screens::{layouts::content::{Content, ContentArea}, Screen};
+use crate::{
+    screens::layouts::{content::{Content, ContentArea}, Layout}, 
+    widgets::InteractiveWidget
+};
 
 #[derive(Default)]
 pub struct PlainFull<'a> {
     contents: ContentArea<'a>,
 }
 
-impl<'a> PlainFull<'a> {
-    pub fn add_title(mut self, title: &'static str) -> Self {
+impl<'a> Layout for PlainFull<'a> {
+    fn add_title(mut self, title: &'static str) -> Self {
         self.contents.title = Some(String::from(title));
         return self;
     }
-    pub fn add_paragraph(mut self, txt: &'static str) -> Self {
+    fn add_paragraph(mut self, txt: &'static str) -> Self {
         self.contents.contents.push(
             Content::Paragraph(
                 Paragraph::new(
@@ -28,7 +31,7 @@ impl<'a> PlainFull<'a> {
         );
         return self;
     }
-    pub fn add_list(mut self, list: Vec<&'static str>) -> Self {
+    fn add_list(mut self, list: Vec<&'static str>) -> Self {
         let mut items = vec![];
         for i in list {
             items.push(String::from(i));
@@ -40,10 +43,7 @@ impl<'a> PlainFull<'a> {
     }    
 }
 
-impl<'a> Screen for PlainFull<'a> {
-    fn title(&self) -> &'static str {
-        "plain-full template"
-    }
+impl<'a> InteractiveWidget for PlainFull<'a> {
     fn on_key_event(&mut self, k: KeyEvent) {
         self.contents.on_key_event(k);   
     }
