@@ -21,7 +21,7 @@ macro_rules! leafy {
     };
 }
 
-pub trait Screen {
+pub trait Screen : WidgetRef {
     fn title(&self) -> &'static str;
     fn description(&self) -> &'static str;
     fn layout(&self) -> Option<&dyn Layout>;
@@ -38,28 +38,4 @@ pub trait Screen {
         }
     }
 }
-
-// impl InteractiveWidget for dyn Screen {
-//     fn on_key_event(&mut self, k: KeyEvent) {}
-//     fn on_tick(&mut self, t: usize) {}
-// }
-
-impl<T> WidgetRef for T 
-where 
-    T: Screen 
-{
-    fn render_ref(&self,area:Rect,buf: &mut Buffer) {
-        if let Some(l) = self.layout() {
-            l.render_ref(area, buf);
-        } 
-    }
-}
-
-// impl WidgetRef for dyn Screen {
-//     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
-//         if let Some(l) = self.layout() {
-//             l.render_ref(area, buf);
-//         } 
-//     }
-// }
 

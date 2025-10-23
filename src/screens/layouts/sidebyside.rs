@@ -18,10 +18,104 @@ use ratatui_macros::horizontal;
 
 use crate::{
     screens::{
-        layouts::{content::{Content, ContentArea}, Layout},
+        layouts::{
+            content::{
+                Content, 
+                ContentArea
+            }, 
+            Layout
+        },
     }, 
     widgets::InteractiveWidget
 };
+
+// #[derive(Screen)]
+// #[screen(layout = Layout::SideBySide)]
+// #[screen(title = TITLE)]
+// #[screen(description = "Sound (1/2)")]
+// struct Soundtest {
+//     // ----------------------------------------------------------------------------
+//     /// Sound is a ***pressure wave*** that propagates
+//     /// through a **medium** (*gas*, *liquid* or *solid*).
+//     p0: (Paragraph, Ripple),
+//     // ----------------------------------------------------------------------------
+//     /// Propagation is caused by the **oscillation** (*vibration*) of
+//     /// the medium's *particles*, around their ***equilibrium*** positions.
+//     p1: (Paragraph, Particles),
+//     // ----------------------------------------------------------------------------
+//     /// Sound has the following properties:
+//     p2: Paragraph,
+//     // ----------------------------------------------------------------------------
+//     /// • **Speed**: ~343 m/s in **air**
+//     /// • **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)
+//     /// • **Period**: time between two oscillations
+//     /// • **Wavelength**: distance between two oscillations
+//     /// • **Frequency**: cycles/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)
+//     /// • **Spectrum**, or *Timbre*
+//     l0: List,
+// }
+
+macro_rules! side_by_side {
+    // ------------------------------------------------------------------
+    (
+        name: $name:ident, 
+        title: $title:expr, 
+        description: $descr:literal
+    // ------------------------------------------------------------------
+    ) => {
+
+        pub struct $name<'a> {
+            layout: SideBySide<'a>
+        }
+        impl<'a> ratatui::widgets::WidgetRef for $name<'a> {
+            fn render_ref(&self, 
+                area: ratatui::prelude::Rect, 
+                 buf: &mut ratatui::prelude::Buffer
+            ) {
+                self.layout.render_ref(area, buf);   
+            }            
+        }
+        impl<'a> Screen for $name<'a> {
+            fn title(&self) -> &'static str {
+                $title
+            }
+            fn description(&self) -> &'static str {
+                $descr
+            }
+            fn layout(&self) -> Option<&dyn Layout> {
+                Some(&self.layout)
+            }
+            fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
+                Some(&mut self.layout)
+            }
+        }
+    };
+    // ------------------------------------------------------------------
+    (
+        name: $name:ident,
+        title: $title:expr, 
+        description: $descr:literal, 
+        contents: [ 
+            $(wparagraph: {$wph:expr, $w:expr}),*
+        ]
+    // ------------------------------------------------------------------
+    ) => {        
+        side_by_side!(name: $name, title: $title, description: $descr);
+
+        impl<'a> Default for $name<'a> {
+            fn default() -> Self {
+                let mut layout = SideBySide::default().add_title($title);
+                $(
+                    layout = layout.add_paragraph(crate::leafy!{$wph});
+                    layout = layout.add_widget($w);
+                )*
+                Self { layout }
+            }
+        }
+    }
+}
+
+pub(crate) use side_by_side;
 
 #[derive(Default, PartialEq)]
 pub enum Focus { #[default] Lhs, Rhs }
@@ -60,8 +154,8 @@ impl<'a> Layout for SideBySide<'a> {
         );
         return self;
     }
-    fn add_widget(mut self, index: usize, w: Box<dyn InteractiveWidget>) -> Self {
-        self.rhs.insert(index, w);
+    fn add_widget(mut self, w: Box<dyn InteractiveWidget>) -> Self {
+        self.rhs.insert(self.lhs.contents.len()-1, w);
         return self;
     }
 }

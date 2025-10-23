@@ -1,6 +1,7 @@
 
 
 use indoc::indoc;
+use ratatui::widgets::WidgetRef;
 
 use crate::{
     leafy,
@@ -18,8 +19,6 @@ use crate::{
     }
 };
 
-use macros::Screen;
-
 const TITLE: &'static str = indoc!{"
 ┏━┓┏━┓╻ ╻┏┓╻╺┳┓
 ┗━┓┃ ┃┃ ┃┃┗┫ ┃┃
@@ -27,7 +26,13 @@ const TITLE: &'static str = indoc!{"
 "};
 
 pub struct Sound<'a> {
-    screen: SideBySide<'a>,
+    layout: SideBySide<'a>,
+}
+
+impl<'a> WidgetRef for Sound<'a> {
+    fn render_ref(&self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer) {
+        self.layout.render_ref(area, buf);
+    }
 }
 
 impl<'a> Screen for Sound<'a> {
@@ -38,56 +43,32 @@ impl<'a> Screen for Sound<'a> {
         "Sound (1/2)"
     }
     fn layout(&self) -> Option<&dyn Layout> {
-        Some(&self.screen)
+        Some(&self.layout)
     }
     fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
-        Some(&mut self.screen)
+        Some(&mut self.layout)
     }
 }
 
-// #[derive(Screen)]
-// #[screen(layout = Layout::SideBySide)]
-// #[screen(title = TITLE)]
-// #[screen(description = "Sound (1/2)")]
-// struct Soundtest {
-//     // ----------------------------------------------------------------------------
-//     /// Sound is a ***pressure wave*** that propagates
-//     /// through a **medium** (*gas*, *liquid* or *solid*).
-//     p0: (Paragraph, Ripple),
-//     // ----------------------------------------------------------------------------
-//     /// Propagation is caused by the **oscillation** (*vibration*) of
-//     /// the medium's *particles*, around their ***equilibrium*** positions.
-//     p1: (Paragraph, Particles),
-//     // ----------------------------------------------------------------------------
-//     /// Sound has the following properties:
-//     p2: Paragraph,
-//     // ----------------------------------------------------------------------------
-//     /// • **Speed**: ~343 m/s in **air**
-//     /// • **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)
-//     /// • **Period**: time between two oscillations
-//     /// • **Wavelength**: distance between two oscillations
-//     /// • **Frequency**: cycles/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)
-//     /// • **Spectrum**, or *Timbre*
-//     l0: List,
-// }
+
 
 impl<'a> Default for Sound<'a> {
     fn default() -> Self {
         Sound {
-            screen: SideBySide::default()
+            layout: SideBySide::default()
                 .add_title(TITLE)
                 .add_paragraph(leafy!(
                     "Sound is a ***pressure wave*** that propagates \
                     through a **medium** (*gas*, *liquid* or *solid*).
                     "
                 ))
-                .add_widget(0, Box::new(Ripple::new()))
+                .add_widget(Box::new(Ripple::new()))
                 .add_paragraph(leafy! {
                     "Propagation is caused by the **oscillation** (*vibration*) of \
                     the medium's *particles*, around their ***equilibrium*** positions.
                     "
                 })
-                .add_widget(1, Box::new(Particles::new(400)))
+                .add_widget(Box::new(Particles::new(400)))
                 .add_paragraph(indoc! {
                     "• Sound has the following **properties**:"
                 })
@@ -111,6 +92,12 @@ impl<'a> Default for Sound<'a> {
 
 pub struct Sound2<'a> {
     layout: PlainFull<'a>,
+}
+
+impl<'a> WidgetRef for Sound2<'a> {
+    fn render_ref(&self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer) {
+        self.layout.render_ref(area, buf);
+    }
 }
 
 impl<'a> Screen for Sound2<'a> {

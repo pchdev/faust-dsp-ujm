@@ -19,8 +19,7 @@ use crate::{screens::{
     agenda::Agenda, 
     digital::{Digital, Digital2}, 
     faust::{
-        basics::FaustBasics, 
-        basics2::FaustBasics2, 
+        basics::{FaustBasics, FaustBasics2},
         functions::FaustFunctions, 
         intro::FaustIntro, 
         synthesis::FaustSynthesis, 
@@ -71,7 +70,7 @@ impl<'a> App<'a> {
         ];
         // Populate menu popup:
         app.menu.populate_from_string(
-            app.screens.iter().map(|s| s.title().into()).collect()
+            app.screens.iter().map(|s| s.description().into()).collect()
         );
 
         // TODO:

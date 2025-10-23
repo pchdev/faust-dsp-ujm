@@ -1,4 +1,5 @@
 use indoc::indoc;
+use ratatui::widgets::{Widget, WidgetRef};
 
 use crate::{
     leafy,
@@ -19,6 +20,12 @@ const TITLE: &'static str = indoc!{"
 
 pub struct Digital<'a> {
     layout: SideBySide<'a>
+}
+
+impl<'a> WidgetRef for Digital<'a> {
+    fn render_ref(&self,area:ratatui::prelude::Rect,buf: &mut ratatui::prelude::Buffer) {
+        self.layout.render_ref(area, buf);
+    }
 }
 
 impl<'a> Screen for Digital<'a> {
@@ -48,10 +55,10 @@ impl<'a> Default for Digital<'a> {
                     "
                 })
                 .add_paragraph(leafy! {
-                    "***Sampling*** means taking a sample of a signal at a certain frequency/rate (***sample rate***).
-                    "
+                    "***Sampling*** means taking a sample of a signal at a certain \
+                    frequency/rate (***sample rate***)."
                 })
-                .add_widget(1, Box::new(SamplingIllustration::default()))
+                .add_widget(Box::new(SamplingIllustration::default()))
                 .add_list(vec![
                     "• **Audio CD**: *44.1 kHz*",
                     "• **Pro Audio**: *48/96 kHz*",
@@ -61,13 +68,19 @@ impl<'a> Default for Digital<'a> {
                     "• Because of ***aliasing***, the *sampling rate* must be **at least two times superior** to \
                     the **highest frequency** we want to represent (*Nyquist-Shannon*)."
                 ))
-                .add_widget(5, Box::new(Aliasing::default()))
+                .add_widget(Box::new(Aliasing::default()))
         }
     }
 }
 
 pub struct Digital2<'a> {
     layout: SideBySide<'a>
+}
+
+impl<'a> WidgetRef for Digital2<'a> {
+    fn render_ref(&self,area:ratatui::prelude::Rect,buf: &mut ratatui::prelude::Buffer) {
+        self.layout.render_ref(area, buf);
+    }
 }
 
 impl<'a> Screen for Digital2<'a> {
@@ -96,7 +109,7 @@ impl<'a> Default for Digital2<'a> {
                     (*quality vs. storage tradeoff*).
                     "
                 })
-                .add_widget(0, Box::new(Quantization::default()))
+                .add_widget(Box::new(Quantization::default()))
                 .add_list(vec![
                     "• **Audio CD**: 16-bits (65,536 values, 98 dB SNR)",
                     "• **Pro Audio**: 24-bits (~16,7 mil., 146 dB SNR)",

@@ -21,7 +21,7 @@ pub trait Layout : InteractiveWidget {
     -> Self where Self: Sized {
         self
     }
-    fn add_widget(mut self, index: usize, w: Box<dyn InteractiveWidget>) 
+    fn add_widget(mut self, w: Box<dyn InteractiveWidget>) 
     -> Self where Self: Sized {
         self
     }

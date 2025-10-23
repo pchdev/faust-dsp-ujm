@@ -1,6 +1,3 @@
-
-use crossterm::event::{KeyEvent};
-
 use ratatui::{
     buffer::Buffer, 
     prelude::Rect, 
@@ -29,6 +26,12 @@ pub struct FaustIntro<'a> {
     layout: SideBySide<'a>,
 }
 
+impl<'a> WidgetRef for FaustIntro<'a> {
+    fn render_ref(&self, area: Rect, buf: &mut Buffer) {
+        self.layout.render_ref(area, buf);   
+    }
+}
+
 impl<'a> Screen for FaustIntro<'a> {
     fn title(&self) -> &'static str {
         TITLE
@@ -54,6 +57,7 @@ impl<'a> Default for FaustIntro<'a> {
                     specifically made for ***audio DSP and synthesis***. \
                     It was created by **Yann Orlarey**, **Dominique Fober** & **Stéphane Letz** at **GRAME** in 2002."
                 })
+                .add_widget(Box::new(FaustWidget::new(HELLO440)))
                 .add_list(vec! [
                     "**+** *Functional* paradigm",
                     "**+** Declarative, math-like syntax",
@@ -73,7 +77,6 @@ impl<'a> Default for FaustIntro<'a> {
                 .add_paragraph(leafy! {
                     "Dedicated online IDE: ***https://faustide.grame.fr***"
                 })
-                .add_widget(0, Box::new(FaustWidget::new(HELLO440)))
                 ,
         }
     }

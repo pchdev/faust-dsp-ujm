@@ -1,6 +1,7 @@
 
 
 use indoc::indoc;
+use ratatui::widgets::WidgetRef;
 
 use crate::{
     leafy,
@@ -24,6 +25,12 @@ const TITLE: &'static str = indoc!{"
 
 pub struct Signal<'a> {
     layout: PlainFull<'a>,
+}
+
+impl<'a> WidgetRef for Signal<'a> {
+    fn render_ref(&self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer) {
+        self.layout.render_ref(area, buf);
+    }
 }
 
 impl<'a> Screen for Signal<'a> {
@@ -70,6 +77,12 @@ pub struct Signal2<'a> {
     layout: SideBySide<'a>,
 }
 
+impl<'a> WidgetRef for Signal2<'a> {
+    fn render_ref(&self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer) {
+        self.layout.render_ref(area, buf);
+    }
+}
+
 impl<'a> Screen for Signal2<'a> {
     fn title(&self) -> &'static str {
         TITLE
@@ -94,7 +107,7 @@ impl<'a> Default for Signal2<'a> {
                     "With an oscilloscope, we can measure the **amplitude** of a signal at a given *point in time* (***time-domain***), \
                     through the visualisation of a ***waveform***."
                 })   
-                .add_widget(0, Box::new(Waveform::new()))
+                .add_widget(Box::new(Waveform::new()))
                 .add_paragraph(indoc! {
                     "• An analog signal can already be processed as it is, with ***analog effects***: \
                     *tape delay*, *distortion*, *chorus*, *reverberation (spring, plate)*, etc."
@@ -105,7 +118,7 @@ impl<'a> Default for Signal2<'a> {
                     For this purpose, it's far more efficient to switch to the ***frequency domain***, which requires the analog signal to \
                     be turned into a ***digital signal***..."
                 })               
-                .add_widget(2, Box::new(SpectrumCanvas::default())) 
+                .add_widget(Box::new(SpectrumCanvas::default())) 
                 ,            
         }
     }

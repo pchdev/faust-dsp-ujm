@@ -1,4 +1,5 @@
 use indoc::indoc;
+use ratatui::widgets::{Widget, WidgetRef};
 
 use crate::leafy;
 use crate::screens::layouts::Layout;
@@ -28,6 +29,12 @@ impl<'a> Screen for Myself<'a> {
     }
     fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
         Some(&mut self.layout)
+    }
+}
+
+impl<'a> WidgetRef for Myself<'a> {
+    fn render_ref(&self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer) {
+        self.layout.render(area, buf);
     }
 }
 
