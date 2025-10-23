@@ -1,9 +1,6 @@
 use crossterm::event::KeyEvent;
-use ratatui::{
-    buffer::Buffer, layout::Rect, widgets::WidgetRef
-};
-
-use crate::{screens::layouts::Layout, widgets::InteractiveWidget};
+use ratatui::{buffer::Buffer, layout::Rect, widgets::WidgetRef};
+use crate::{screens::layouts::Layout};
 
 pub mod layouts;
 pub mod myself;
@@ -21,19 +18,34 @@ macro_rules! leafy {
     };
 }
 
-pub trait Screen : WidgetRef {
+pub trait Screen {
     fn title(&self) -> &'static str;
     fn description(&self) -> &'static str;
-    fn layout(&self) -> Option<&dyn Layout>;
-    fn layout_mut(&mut self) -> Option<&mut dyn Layout>;
+    fn build() -> (Box<dyn Screen>, Option<Box<dyn Layout>>) where Self: Sized;
 
-    fn on_key_event(&mut self, k: KeyEvent) {
-        if let Some(l) = self.layout_mut() {
+    fn render(&self, 
+        layout: &Option<Box<dyn Layout>>, 
+          area: Rect, 
+           buf: &mut Buffer
+    ) {
+        if let Some(l) = layout {
+            l.render_ref(area, buf);
+        }
+    }
+
+    fn on_key_event(&mut self, 
+        layout: &mut Option<Box<dyn Layout>>, 
+             k: KeyEvent
+    ) {
+        if let Some(l) = layout {
             l.on_key_event(k);
         }
     }
-    fn on_tick(&mut self, t: usize) {
-        if let Some(l) = self.layout_mut() {
+    fn on_tick(&mut self, 
+        layout: &mut Option<Box<dyn Layout>>, 
+             t: usize
+    ) {
+        if let Some(l) = layout {
             l.on_tick(t);
         }
     }

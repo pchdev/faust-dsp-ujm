@@ -1,6 +1,7 @@
 
 
 use indoc::indoc;
+use macros::Screen;
 use ratatui::widgets::WidgetRef;
 
 use crate::{
@@ -25,70 +26,95 @@ const TITLE: &'static str = indoc!{"
 ┗━┛┗━┛┗━┛╹ ╹╺┻┛
 "};
 
-pub struct Sound<'a> {
-    layout: SideBySide<'a>,
+
+use crate::screens::layouts::LayoutEnum;
+
+#[derive(Default)]
+struct ScreenParagraph;
+
+#[derive(Default)]
+struct ScreenList;
+
+#[derive(Screen, Default)]
+#[screen(layout = LayoutEnum::SideBySide)]
+#[screen(title = TITLE)]
+#[screen(description = "Sound")]
+pub struct SoundDerived {
+    /// The contents of the paragraph
+    p0: (ScreenParagraph, Ripple),
+    // Same but with no animation
+    p1: ScreenParagraph,
+    /// - This is a List
+    /// - With several dots
+    l0: ScreenList,
 }
 
-impl<'a> WidgetRef for Sound<'a> {
-    fn render_ref(&self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer) {
-        self.layout.render_ref(area, buf);
-    }
+#[test]
+fn derived_test() {
+    let sd = SoundDerived::default();
+    println!("{}", sd.title());
+    println!("{}", sd.description());
 }
 
-impl<'a> Screen for Sound<'a> {
+
+#[derive(Default)]
+pub struct Sound;
+
+impl Screen for Sound {
     fn title(&self) -> &'static str {
         TITLE
     }
     fn description(&self) -> &'static str {
         "Sound (1/2)"
     }
-    fn layout(&self) -> Option<&dyn Layout> {
-        Some(&self.layout)
-    }
-    fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
-        Some(&mut self.layout)
-    }
-}
-
-
-
-impl<'a> Default for Sound<'a> {
-    fn default() -> Self {
-        Sound {
-            layout: SideBySide::default()
-                .add_title(TITLE)
-                .add_paragraph(leafy!(
-                    "Sound is a ***pressure wave*** that propagates \
-                    through a **medium** (*gas*, *liquid* or *solid*).
-                    "
-                ))
-                .add_widget(Box::new(Ripple::new()))
-                .add_paragraph(leafy! {
-                    "Propagation is caused by the **oscillation** (*vibration*) of \
-                    the medium's *particles*, around their ***equilibrium*** positions.
-                    "
-                })
-                .add_widget(Box::new(Particles::new(400)))
-                .add_paragraph(indoc! {
-                    "• Sound has the following **properties**:"
-                })
-                .add_list(vec! {
-                    "• **Speed**: ~343 m/s in **air**",
-                    "• **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)",
-                    "• **Period**: time between two oscillations",
-                    "• **Wavelength**: distance between two oscillations",
-                    "• **Frequency**: cycles/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)",
-                    "• **Spectrum**, or *Timbre*"
-                })
-        }
-        // • Speed:
-        //  - Air: ~340 m/s
-        //  - Water: ~1,480 m/s
-        //  - Steel: ~5,960 m/s
-        //  - Solid atomic hydrogen: ~36,000 m/s
-        //  - Speed of light: 299,792,458 m/s
+    fn build() -> (Box<dyn Screen>, Option<Box<dyn Layout>>) where Self: Sized {
+        (
+            Box::new(Self::default()), 
+            Some(Box::new(
+                SideBySide::default()
+                    .add_title(TITLE)
+            ))
+        )
     }
 }
+
+// impl<'a> Default for Sound<'a> {
+//     fn default() -> Self {
+//         Sound {
+//             layout: SideBySide::default()
+//                 .add_title(TITLE)
+//                 .add_paragraph(leafy!(
+//                     "Sound is a ***pressure wave*** that propagates \
+//                     through a **medium** (*gas*, *liquid* or *solid*).
+//                     "
+//                 ))
+//                 .add_widget(Box::new(Ripple::new()))
+//                 .add_paragraph(leafy! {
+//                     "Propagation is caused by the **oscillation** (*vibration*) of \
+//                     the medium's *particles*, around their ***equilibrium*** positions.
+//                     "
+//                 })
+//                 .add_widget(Box::new(Particles::new(400)))
+//                 .add_paragraph(indoc! {
+//                     "• Sound has the following **properties**:"
+//                 })
+//                 .add_list(vec! {
+//                     "• **Speed**: ~343 m/s in **air**",
+//                     "• **Amplitude**: in *Pascals* (***Pa***) or *Decibels* (***dB***)",
+//                     "• **Period**: time between two oscillations",
+//                     "• **Wavelength**: distance between two oscillations",
+//                     "• **Frequency**: cycles/sec., in *Hertz* (***Hz***, ***kHz***, ***MHz***)",
+//                     "• **Spectrum**, or *Timbre*"
+//                 })
+//         }
+//         // • Speed:
+//         //  - Air: ~340 m/s
+//         //  - Water: ~1,480 m/s
+//         //  - Steel: ~5,960 m/s
+//         //  - Solid atomic hydrogen: ~36,000 m/s
+//         //  - Speed of light: 299,792,458 m/s
+//     }
+// }
 
 pub struct Sound2<'a> {
     layout: PlainFull<'a>,

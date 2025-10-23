@@ -82,7 +82,9 @@ impl WidgetRef for FaustEditor {
                     )
             )
             .tab_width(4)
-            .syntax_highlighter(Some(SyntaxHighlighter::new("gruvbox-light", "rs")))
+            .syntax_highlighter(
+                Some(SyntaxHighlighter::new("gruvbox-light", "rs"))
+            )
             .wrap(true)
             .render(area, buf)
         ;

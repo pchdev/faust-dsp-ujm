@@ -16,19 +16,13 @@ use ratatui_macros::{line, };
 use tachyonfx::{fx, EffectManager, Interpolation};
 
 use crate::{screens::{
-    agenda::Agenda, 
-    digital::{Digital, Digital2}, 
-    faust::{
+    agenda::Agenda, digital::{Digital, Digital2}, faust::{
         basics::{FaustBasics, FaustBasics2},
         functions::FaustFunctions, 
         intro::FaustIntro, 
         synthesis::FaustSynthesis, 
         time::FaustTime
-    }, 
-    myself::Myself, 
-    signal::{Signal, Signal2}, 
-    sound::{Sound, Sound2}, 
-    splash::Splash, Screen
+    }, layouts::Layout, myself::Myself, signal::{Signal, Signal2}, sound::{Sound, Sound2}, splash::Splash, Screen
 }, widgets::popup_menu::PopupMenu
 };
 
@@ -42,7 +36,7 @@ fn main() -> io::Result<()> {
 #[derive(Default)]
 pub struct App<'a> {
       index: usize,
-    screens: Vec<Box<dyn Screen>>,
+    screens: Vec<(Box<dyn Screen>, Option<Box<dyn Layout>>)>,
        menu: PopupMenu<'a>,
          fx: EffectManager<()>,
        exit: bool,
@@ -52,25 +46,26 @@ impl<'a> App<'a> {
     pub fn new() -> Self {
         let mut app = App::default();
         app.screens = vec![
-            Box::new(Splash::default()),
-            Box::new(Myself::default()),
-            Box::new(Agenda::default()),
-            Box::new(Sound::default()),
-            Box::new(Sound2::default()),
-            Box::new(Signal::default()),
-            Box::new(Signal2::default()),            
-            Box::new(Digital::default()),
-            Box::new(Digital2::default()),            
-            Box::new(FaustIntro::default()),
-            Box::new(FaustBasics::default()),
-            Box::new(FaustBasics2::default()),
-            Box::new(FaustFunctions::default()),
-            Box::new(FaustSynthesis::default()),
-            Box::new(FaustTime::default()),
+            Sound::build()
+            // Box::new(Splash::default()),
+            // Box::new(Myself::default()),
+            // Box::new(Agenda::default()),
+            // Box::new(Sound::default()),
+            // Box::new(Sound2::default()),
+            // Box::new(Signal::default()),
+            // Box::new(Signal2::default()),            
+            // Box::new(Digital::default()),
+            // Box::new(Digital2::default()),            
+            // Box::new(FaustIntro::default()),
+            // Box::new(FaustBasics::default()),
+            // Box::new(FaustBasics2::default()),
+            // Box::new(FaustFunctions::default()),
+            // Box::new(FaustSynthesis::default()),
+            // Box::new(FaustTime::default()),
         ];
         // Populate menu popup:
         app.menu.populate_from_string(
-            app.screens.iter().map(|s| s.description().into()).collect()
+            app.screens.iter().map(|s| s.0.description().into()).collect()
         );
 
         // TODO:
@@ -99,7 +94,7 @@ impl<'a> App<'a> {
             }
             if last_tick.elapsed() >= tick_rate {
                 let screen = &mut self.screens[self.index];
-                screen.on_tick(tick_count);
+                screen.0.on_tick(&mut screen.1, tick_count);
                 last_tick = Instant::now();
                 tick_count += 1;
             }
@@ -129,7 +124,7 @@ impl<'a> App<'a> {
                 // Otherwise, dispatch to current screen:
                 _ => {
                     let screen = &mut self.screens[self.index];
-                    screen.on_key_event(k);
+                    screen.0.on_key_event(&mut screen.1, k);
                 }
             }
         } else { 
@@ -151,7 +146,7 @@ impl<'a> App<'a> {
                     }
                     _ => {
                         let screen = &mut self.screens[self.index];
-                        screen.on_key_event(k);
+                        screen.0.on_key_event(&mut screen.1, k);
                     }
                 }
             }
@@ -202,7 +197,7 @@ impl<'a> App<'a> {
         let inner = block.inner(frame.area());
         let screen = &self.screens[self.index];
         frame.render_widget(&block, frame.area());
-        screen.render_ref(inner, frame.buffer_mut());
+        screen.0.render(&screen.1, inner, frame.buffer_mut());
         self.menu.render_ref(frame.area(), frame.buffer_mut());
     }
 

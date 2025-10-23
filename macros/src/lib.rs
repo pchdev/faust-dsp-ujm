@@ -55,7 +55,7 @@ impl Parse for ScreenArgs {
                 }
             }
             if input.peek(Token![,]) {
-                input.parse::<Token![,]>()?;
+               input.parse::<Token![,]>()?;
             }
         }
         Ok(ScreenArgs { layout, description, title })
@@ -68,6 +68,10 @@ pub fn derive_screen(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let struct_name = input.ident;    
 
+    let mut title = None;
+    let mut descr = None;
+    let mut layout = None;
+
     // Parse attributes:
     for attr in &input.attrs {
         // Get attribute name:
@@ -77,23 +81,61 @@ pub fn derive_screen(input: TokenStream) -> TokenStream {
                 let args = attr.parse_args::<ScreenArgs>().expect(
                     "Failed to parse #[screen(...)] attribute arguments"
                 );
+                if args.title.is_some() {
+                    title = args.title;
+                }
+                if args.description.is_some() {
+                    descr = args.description;
+                }
+                if args.layout.is_some() {
+                    layout = args.layout;
+                }
             }
             _ => {
-                
+                unreachable!("nope")
             }
         }
     }
+    let title_str = title.expect(
+        "Missing #[screen(title = ...)]"
+    );
+    let descr_str = descr.expect(
+        "Missing #[screen(description = ...)]"
+    );
+    let layout_expr = layout
+        .map(|expr| quote! { #expr })
+        .unwrap_or_else(|| quote! { LayoutEnum::None })
+    ;
+    
     let expanded = quote! { 
-        impl Default for #struct_name {
-            fn default() -> Self {
-                #struct_name {
-                    screen: 
-                }
+        impl Screen for #struct_name {
+            fn title(&self) -> &'static str {
+                #title_str
+            }
+            fn description(&self) -> &'static str {
+                #descr_str
+            }
+            fn build() -> (Box<dyn Screen>, Option<Box<dyn Layout>>) {
+                let layout: Option<Box<dyn Layout>> = match #layout_expr {
+                    LayoutEnum::None => None,
+                    LayoutEnum::SideBySide => {
+                        Some(
+                            Box::new(
+                                SideBySide::default()
+                            )
+                        )
+                    }
+                    LayoutEnum::Plainfull => {
+                        Some(
+                            Box::new(
+                                PlainFull::default()
+                            )
+                        )
+                    }
+                };
+                (Box::new(#struct_name::default()), layout)
             }
         }
-        // struct #struct_name {
-
-        // }
     };
     TokenStream::from(expanded)
 }

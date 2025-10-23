@@ -1,5 +1,16 @@
 use crossterm::event::{KeyCode, KeyEvent};
-use ratatui::{buffer::Buffer, layout::{self, Constraint, Flex, Rect}, style::{Style, Stylize}, widgets::{HighlightSpacing, List, ListItem, ListState, Paragraph, StatefulWidget, Widget, WidgetRef, Wrap}};
+use ratatui::{
+    buffer::Buffer, 
+    layout::{self, Constraint, Flex, Rect}, 
+    style::{Style, Stylize}, 
+    widgets::{
+        HighlightSpacing, 
+        List, ListItem, ListState, 
+        Paragraph, 
+        StatefulWidget, Widget, WidgetRef
+    }
+};
+
 use ratatui_macros::vertical;
 
 pub enum Content<'a> {

@@ -1,5 +1,5 @@
 use indoc::indoc;
-use ratatui::widgets::{Widget, WidgetRef};
+use ratatui::widgets::{WidgetRef};
 
 use crate::{
     leafy,
@@ -23,7 +23,7 @@ pub struct Digital<'a> {
 }
 
 impl<'a> WidgetRef for Digital<'a> {
-    fn render_ref(&self,area:ratatui::prelude::Rect,buf: &mut ratatui::prelude::Buffer) {
+    fn render_ref(&self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer) {
         self.layout.render_ref(area, buf);
     }
 }
@@ -106,8 +106,7 @@ impl<'a> Default for Digital2<'a> {
                 .add_paragraph(leafy! {
                     "• Once we take a sample of a signal at a given time, we need to determine the ***scale of its value***, \
                     this is called ***quantization***. Increasing the scale implies reducing the ***quantization noise*** \
-                    (*quality vs. storage tradeoff*).
-                    "
+                    (*quality vs. storage tradeoff*)."
                 })
                 .add_widget(Box::new(Quantization::default()))
                 .add_list(vec![
@@ -121,8 +120,7 @@ impl<'a> Default for Digital2<'a> {
                 })
                 .add_paragraph(
                     "• Finally, sending a digital signal to audio speakers involves the inverse process of an **ADC**: \
-                    *Digital-to-Analog Conversion* (**DAC**).
-                    "
+                    *Digital-to-Analog Conversion* (**DAC**)."
                 )
         }
     }
