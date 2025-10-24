@@ -5,10 +5,13 @@ use syn::{
     parse_macro_input, 
     DeriveInput, 
     Expr, 
-    Lit, Token
+    Lit, 
+    Meta, 
+    Token, 
+    TypeTuple
 };
 
-use quote::quote;
+use quote::{quote, ToTokens};
 
 struct ScreenArgs {
     title: Option<Expr>,
@@ -95,6 +98,40 @@ pub fn derive_screen(input: TokenStream) -> TokenStream {
                 unreachable!("nope")
             }
         }
+    }
+    // Parse struct fields if any:
+    let mut doc_lines = Vec::new();
+    match &input.data {
+        syn::Data::Struct(s) => {
+            for field in &s.fields {
+                // match the type of the field:
+                match &field.ty {
+                    TypeTuple => {
+                        println!("Tuple!");
+                        for attr in &field.attrs {
+                            if attr.path().is_ident("doc") {
+                                let meta = attr.meta.require_name_value().unwrap();
+                                if let syn::Expr::Lit(l) = &meta.value {
+                                    if let syn::Lit::Str(str) = &l.lit {
+                                        doc_lines.push(str.value().trim().to_owned());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    syn::Type::Verbatim(tok) => {
+                        match tok.to_string().as_str() {
+                            "ScreenParagraph" => {
+                                println!("Paragraph!")
+                            }
+                            _ => ()
+                        }
+                    }
+                    _ => ()
+                }
+            }
+        }
+        _ => ()
     }
     let title_str = title.expect(
         "Missing #[screen(title = ...)]"

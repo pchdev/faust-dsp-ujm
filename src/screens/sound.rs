@@ -41,7 +41,7 @@ struct ScreenList;
 #[screen(description = "Sound")]
 pub struct SoundDerived {
     /// The contents of the paragraph
-    p0: (ScreenParagraph, Ripple),
+    // p0: (ScreenParagraph, Ripple),
     // Same but with no animation
     p1: ScreenParagraph,
     /// - This is a List
@@ -55,7 +55,6 @@ fn derived_test() {
     println!("{}", sd.title());
     println!("{}", sd.description());
 }
-
 
 #[derive(Default)]
 pub struct Sound;
@@ -116,52 +115,52 @@ impl Screen for Sound {
 //     }
 // }
 
-pub struct Sound2<'a> {
-    layout: PlainFull<'a>,
-}
+// pub struct Sound2<'a> {
+//     layout: PlainFull<'a>,
+// }
 
-impl<'a> WidgetRef for Sound2<'a> {
-    fn render_ref(&self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer) {
-        self.layout.render_ref(area, buf);
-    }
-}
+// impl<'a> WidgetRef for Sound2<'a> {
+//     fn render_ref(&self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer) {
+//         self.layout.render_ref(area, buf);
+//     }
+// }
 
-impl<'a> Screen for Sound2<'a> {
-    fn title(&self) -> &'static str {
-        TITLE
-    }
-    fn description(&self) -> &'static str {
-        "Sound (2/2)"
-    }
-    fn layout(&self) -> Option<&dyn Layout> {
-        Some(&self.layout)
-    }
-    fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
-        Some(&mut self.layout)
-    }
-}
+// impl<'a> Screen for Sound2<'a> {
+//     fn title(&self) -> &'static str {
+//         TITLE
+//     }
+//     fn description(&self) -> &'static str {
+//         "Sound (2/2)"
+//     }
+//     fn layout(&self) -> Option<&dyn Layout> {
+//         Some(&self.layout)
+//     }
+//     fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
+//         Some(&mut self.layout)
+//     }
+// }
 
-impl<'a> Default for Sound2<'a> {
-    fn default() -> Self {
-        Sound2 {
-            layout: PlainFull::default()
-                .add_title(TITLE)
-                .add_paragraph(indoc! {
-                    "• Our ***perception*** of sound is made from the conversion of the vibrations reaching our ***eardrums*** to \
-                    a *signal of nerve impulses*, transmitted and interpreted by **the brain**."
-                })
-                .add_paragraph(indoc! {
-                    "• Human ears can typically identify sounds ***from 20 Hz to 20 kHz***."
-                })
-                .add_list(vec![
-                    "• **Bat**: 2000 to 110,000 Hz",
-                    "• **Porpoise**: 75 to 150,000 Hz",
-                    "• **Cat**: 45 to 64,000 Hz",
-                    "• **Dog**: 67 to 45,000 Hz",
-                    "• **Chicken**: 125 to 2,000 Hz"
-                ]
-            )
-        }
-    }
-}
+// impl<'a> Default for Sound2<'a> {
+//     fn default() -> Self {
+//         Sound2 {
+//             layout: PlainFull::default()
+//                 .add_title(TITLE)
+//                 .add_paragraph(indoc! {
+//                     "• Our ***perception*** of sound is made from the conversion of the vibrations reaching our ***eardrums*** to \
+//                     a *signal of nerve impulses*, transmitted and interpreted by **the brain**."
+//                 })
+//                 .add_paragraph(indoc! {
+//                     "• Human ears can typically identify sounds ***from 20 Hz to 20 kHz***."
+//                 })
+//                 .add_list(vec![
+//                     "• **Bat**: 2000 to 110,000 Hz",
+//                     "• **Porpoise**: 75 to 150,000 Hz",
+//                     "• **Cat**: 45 to 64,000 Hz",
+//                     "• **Dog**: 67 to 45,000 Hz",
+//                     "• **Chicken**: 125 to 2,000 Hz"
+//                 ]
+//             )
+//         }
+//     }
+// }
 

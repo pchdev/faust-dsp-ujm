@@ -16,13 +16,21 @@ use ratatui_macros::{line, };
 use tachyonfx::{fx, EffectManager, Interpolation};
 
 use crate::{screens::{
-    agenda::Agenda, digital::{Digital, Digital2}, faust::{
-        basics::{FaustBasics, FaustBasics2},
-        functions::FaustFunctions, 
-        intro::FaustIntro, 
-        synthesis::FaustSynthesis, 
-        time::FaustTime
-    }, layouts::Layout, myself::Myself, signal::{Signal, Signal2}, sound::{Sound, Sound2}, splash::Splash, Screen
+    // agenda::Agenda, 
+    // digital::{Digital, Digital2}, 
+    // faust::{
+    //     basics::{FaustBasics, FaustBasics2},
+    //     functions::FaustFunctions, 
+    //     intro::FaustIntro, 
+    //     synthesis::FaustSynthesis, 
+    //     time::FaustTime
+    // }, 
+    layouts::Layout, 
+    // myself::Myself, 
+    // signal::{Signal, Signal2}, 
+    sound::{Sound}, 
+    // splash::Splash, 
+    Screen
 }, widgets::popup_menu::PopupMenu
 };
 
