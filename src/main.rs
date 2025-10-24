@@ -16,20 +16,20 @@ use ratatui_macros::{line, };
 use tachyonfx::{fx, EffectManager, Interpolation};
 
 use crate::{screens::{
-    // digital::{Digital, Digital2}, 
-    // faust::{
-    //     basics::{FaustBasics, FaustBasics2},
-    //     functions::FaustFunctions, 
-    //     intro::FaustIntro, 
-    //     synthesis::FaustSynthesis, 
-    //     time::FaustTime
-    // }, 
+    faust::{
+        intro::FaustIntro, 
+        // basics::{FaustBasics, FaustBasics2},
+        // functions::FaustFunctions, 
+        // synthesis::FaustSynthesis, 
+        // time::FaustTime
+    }, 
     layouts::Layout, 
-    // signal::{Signal, Signal2}, 
     splash::Splash, 
     myself::Myself, 
     agenda::Agenda, 
     sound::{Sound, Sound2},
+    signal::{Signal, Signal2}, 
+    digital::{Digital, Digital2}, 
     Screen
 }, widgets::popup_menu::PopupMenu
 };
@@ -59,16 +59,11 @@ impl<'a> App<'a> {
             Agenda::build(),            
             Sound::build(),
             Sound2::build(),
-
-
-            // Box::new(Agenda::default()),
-            // Box::new(Sound::default()),
-            // Box::new(Sound2::default()),
-            // Box::new(Signal::default()),
-            // Box::new(Signal2::default()),            
-            // Box::new(Digital::default()),
-            // Box::new(Digital2::default()),            
-            // Box::new(FaustIntro::default()),
+            Signal::build(),
+            Signal2::build(),
+            Digital::build(),
+            Digital2::build(),
+            FaustIntro::build(),
             // Box::new(FaustBasics::default()),
             // Box::new(FaustBasics2::default()),
             // Box::new(FaustFunctions::default()),

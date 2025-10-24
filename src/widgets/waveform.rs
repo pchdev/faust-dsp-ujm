@@ -29,8 +29,8 @@ pub struct Waveform {
     cblock: ControlBlock,
 }
 
-impl Waveform {
-    pub(crate) fn new() -> Self {
+impl Default for Waveform {
+    fn default() -> Self {
         Waveform {
             phase: 0f32,
             coords: [(0.0, 0.0); RESOLUTION],

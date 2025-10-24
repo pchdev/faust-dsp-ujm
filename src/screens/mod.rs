@@ -1,16 +1,15 @@
 use crossterm::event::KeyEvent;
-use ratatui::{buffer::Buffer, layout::Rect, widgets::WidgetRef};
+use ratatui::{buffer::Buffer, layout::Rect};
 use crate::{screens::layouts::Layout};
 
 pub mod layouts;
 pub mod splash;
 pub mod myself;
 pub mod agenda;
-// pub mod signal;
 pub mod sound;
-
-// pub mod digital;
-// pub mod faust;
+pub mod signal;
+pub mod digital;
+pub mod faust;
 
 #[macro_export]
 macro_rules! leafy {

@@ -101,7 +101,7 @@ fn parse_field_doc_lines_as_list(field: &syn::Field) -> Vec<Lit> {
     doc_lines
 }
 
-#[proc_macro_derive(Screen, attributes(screen))]
+#[proc_macro_derive(Screen, attributes(screen, faust))]
 pub fn derive_screen(input: TokenStream) -> TokenStream {
     // Parse and retrieve derived struct's name:
     let input = parse_macro_input!(input as DeriveInput);
@@ -173,9 +173,31 @@ pub fn derive_screen(input: TokenStream) -> TokenStream {
                                 let ident = p.path.get_ident().unwrap();
                                 // TODO: Get the type, generate compile time assertion
                                 // if it doesn't implement InteractiveWidget trait
-                                mthchain.push(quote! {
-                                    .add_widget(Box::new(#ident::default()))
-                                });
+                                match ident.to_string().as_str() {
+                                    "FaustWidget" => {
+                                        // Parse field attribute 'faust'
+                                        for attr in &field.attrs {
+                                            let ident = attr.path().get_ident().unwrap();
+                                            match ident.to_string().as_str() {
+                                                "faust" => {
+                                                    let file: Expr = attr.parse_args().unwrap();
+                                                    mthchain.push(quote! {
+                                                        .add_widget(Box::new(
+                                                            FaustWidget::new(#file)
+                                                        ))
+                                                    });                                                    
+                                                }
+                                                _ => ()
+                                            }
+                                        }
+                                    }
+                                    _ => {
+                                        mthchain.push(quote! {
+                                            .add_widget(Box::new(#ident::default()))
+                                        });
+                                    }
+                                }
+
                             }
                         }
                     }
