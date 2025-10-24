@@ -18,7 +18,7 @@ use ratatui::{
 
 use crate::widgets::{control::block::ControlBlock, InteractiveWidget};
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Particles {
     pub tick: usize,
     pub frequency: usize,
@@ -26,16 +26,19 @@ pub struct Particles {
     controls: ControlBlock
 }
 
-impl Particles {
-    pub(crate) fn new(amplitude: usize) -> Self {
+impl Default for Particles {
+    fn default() -> Self {
         Particles { 
             tick: 0,
             frequency: 1,
-            amplitude,
+            amplitude: 400,
             controls: ControlBlock::default()
                 .add_button("test")
-        }
+        }        
     }
+}
+
+impl Particles {
     fn position(&self, pos: (usize, usize)) -> (f64, f64) {
         // Spacing between each particle:
         const SPACING: f64 = 25.0;

@@ -18,6 +18,13 @@ macro_rules! leafy {
     };
 }
 
+
+#[derive(Default)]
+struct ScreenParagraph;
+
+#[derive(Default)]
+struct ScreenList;
+
 pub trait Screen {
     fn title(&self) -> &'static str;
     fn description(&self) -> &'static str;

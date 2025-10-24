@@ -28,8 +28,8 @@ use crate::{screens::{
     layouts::Layout, 
     // myself::Myself, 
     // signal::{Signal, Signal2}, 
-    sound::{Sound}, 
     // splash::Splash, 
+    sound::Sound,
     Screen
 }, widgets::popup_menu::PopupMenu
 };

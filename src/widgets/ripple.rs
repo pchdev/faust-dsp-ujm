@@ -23,7 +23,7 @@ use crate::widgets::{
     InteractiveWidget
 };
 // DFDDC8
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Ripple {
     amplitude: f32,
     distance: f32,
@@ -31,8 +31,8 @@ pub struct Ripple {
     cblock: ControlBlock
 }
 
-impl Ripple {
-    pub(crate) fn new() -> Self {
+impl Default for Ripple {
+    fn default() -> Self {
         let mut r = Ripple {
             amplitude: 1.0,
             distance: 0.25,
