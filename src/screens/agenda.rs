@@ -166,6 +166,52 @@ impl<'a> Agenda<'a> {
     }
 }
 
+impl<'a> Default for Agenda<'a> {
+    fn default() -> Self {
+        Self {
+            date: Date::from_calendar_date(2025, Month::October, 1).unwrap(),
+            msched: vec![
+                MonthSchedule::new(Month::October)
+                    .add_date(13, time!(14:30), time!(18:30), vec![
+                        item!(strikethrough!("• Sound")),
+                        item!(strikethrough!("• Audio Signal")),
+                        item!(strikethrough!("• From Analog to Digital")),
+                        item!(strikethrough!("• Sampling")),
+                        item!(strikethrough!("• Quantization")),
+                        item!(strikethrough!("• Digital Audio Formats")),
+                        item!(strikethrough!("• Digital Audio Processing and Synthesis")),
+                        item!(strikethrough!("• The Faust programming language")), 
+                        item!(strikethrough!("• Faust playground!")), 
+                    ])
+                    .add_date(20, time!(14:30), time!(18:30), vec![
+                        item!(md!("• First steps with **Faust**!")),
+                        item!(md!("• **IDE** and programming **tools**/**environment**")),
+                        item!(md!("• **Library**, **documentation** and **examples**")),
+                        item!(md!("• **Simple DSP effects** (*ringmod*, *delay*)")),
+                        item!(md!("• **GUI** for **control** (*sliders*, *buttons*...)")),
+                        item!(md!("• **Simple synthesis**: *oscillators* and *waveforms*")),
+                        item!(md!("• **Handling time** in Faust"))
+                    ]),
+                MonthSchedule::new(Month::November)
+                    .add_date(10, time!(14:30), time!(18:30), vec![
+                        item!(md!("• **Playing/recording** from/to *buffers* & *sound files*")),
+                        item!(md!("• **Filtering** & advanced effects")),
+                        item!(md!("• Building a **simple synthesizer**")),
+                        item!(md!("• **Personal projects**"))
+                    ])
+                    .add_date(17, time!(14:30), time!(18:30), vec![
+                        item!(md!("• **Personal projects** + *on-demand* info"))
+                    ])
+                    .add_date(26, time!(14:30), time!(16:30), vec![
+                        item!(md!("• **Personal projects** + *on-demand* info"))
+                    ]
+                )
+            ],
+            focus: Focus::Lhs,
+        }
+    }
+}
+
 impl<'a> Screen for Agenda<'a> {
     fn title(&self) -> &'static str {
         TITLE
@@ -173,14 +219,11 @@ impl<'a> Screen for Agenda<'a> {
     fn description(&self) -> &'static str {
         "Agenda"
     }
-    fn layout(&self) -> Option<&dyn Layout> {
-        None
-    }
-    fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
-        None
+    fn build() -> (Box<dyn Screen>, Option<Box<dyn Layout>>) where Self: Sized {
+        (Box::new(Agenda::default()), None)
     }
 
-    fn on_key_event(&mut self, k: KeyEvent) {
+    fn on_key_event(&mut self, _: &mut Option<Box<dyn Layout>>, k: KeyEvent) {
         match self.focus {
             Focus::Lhs => {
                 match k.code {
@@ -241,58 +284,11 @@ impl<'a> Screen for Agenda<'a> {
             }
         }
     }
-}
-
-
-impl<'a> Default for Agenda<'a> {
-    fn default() -> Self {
-        Self {
-            date: Date::from_calendar_date(2025, Month::October, 1).unwrap(),
-            msched: vec![
-                MonthSchedule::new(Month::October)
-                    .add_date(13, time!(14:30), time!(18:30), vec![
-                        item!(strikethrough!("• Sound")),
-                        item!(strikethrough!("• Audio Signal")),
-                        item!(strikethrough!("• From Analog to Digital")),
-                        item!(strikethrough!("• Sampling")),
-                        item!(strikethrough!("• Quantization")),
-                        item!(strikethrough!("• Digital Audio Formats")),
-                        item!(strikethrough!("• Digital Audio Processing and Synthesis")),
-                        item!(strikethrough!("• The Faust programming language")), 
-                        item!(strikethrough!("• Faust playground!")), 
-                    ])
-                    .add_date(20, time!(14:30), time!(18:30), vec![
-                        item!(md!("• First steps with **Faust**!")),
-                        item!(md!("• **IDE** and programming **tools**/**environment**")),
-                        item!(md!("• **Library**, **documentation** and **examples**")),
-                        item!(md!("• **Simple DSP effects** (*ringmod*, *delay*)")),
-                        item!(md!("• **GUI** for **control** (*sliders*, *buttons*...)")),
-                        item!(md!("• **Simple synthesis**: *oscillators* and *waveforms*")),
-                        item!(md!("• **Handling time** in Faust"))
-                    ]),
-                MonthSchedule::new(Month::November)
-                    .add_date(10, time!(14:30), time!(18:30), vec![
-                        item!(md!("• **Playing/recording** from/to *buffers* & *sound files*")),
-                        item!(md!("• **Filtering** & advanced effects")),
-                        item!(md!("• Building a **simple synthesizer**")),
-                        item!(md!("• **Personal projects**"))
-                    ])
-                    .add_date(17, time!(14:30), time!(18:30), vec![
-                        item!(md!("• **Personal projects** + *on-demand* info"))
-                    ])
-                    .add_date(26, time!(14:30), time!(16:30), vec![
-                        item!(md!("• **Personal projects** + *on-demand* info"))
-                    ]
-                )
-            ],
-            focus: Focus::Lhs,
-        }
-    }
-}
-
-
-impl<'a> WidgetRef for Agenda<'a> {
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {
+    fn render(&self, 
+                 _: &Option<Box<dyn Layout>>, 
+              area: Rect, 
+               buf: &mut Buffer
+    ) {
         // Divide the screen in two horizontally:
         let [lhl, lhr] = horizontal![==50%, ==50%]
             .flex(Flex::Center)
@@ -378,4 +374,8 @@ impl<'a> WidgetRef for Agenda<'a> {
         }
     }
 }
+
+
+
+
 

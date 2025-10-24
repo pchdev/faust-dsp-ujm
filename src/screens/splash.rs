@@ -5,7 +5,7 @@ use ratatui::{
     style::Stylize, 
     text::Text, 
     widgets::{
-        Widget, WidgetRef
+        Widget
     }
 };
 use ratatui_macros::{horizontal, vertical, line};
@@ -30,9 +30,22 @@ const FAUST: &'static str = indoc!{"
 pub struct Splash;
 
 
-impl WidgetRef for Splash {   
-    fn render_ref(&self, area: Rect, buf: &mut Buffer) {
-        let mut txt = Text::from(FAUST);
+impl Screen for Splash {
+    fn title(&self) -> &'static str {
+        FAUST
+    }
+    fn description(&self) -> &'static str {
+        "Splash"
+    }
+    fn build() -> (Box<dyn Screen>, Option<Box<dyn Layout>>) where Self: Sized {
+        (Box::new(Splash::default()), None)
+    }
+    fn render(&self, 
+           _: &Option<Box<dyn Layout>>, 
+        area: Rect, 
+         buf: &mut Buffer
+    ) {
+    let mut txt = Text::from(FAUST);
         txt.push_line("");
         txt.push_line(
             line![" Digital Audio Processing and Synthesis"]
@@ -47,20 +60,5 @@ impl WidgetRef for Splash {
             .areas(lv)
         ;
         txt.render(lh, buf);
-    }
-}
-
-impl Screen for Splash {
-    fn title(&self) -> &'static str {
-        FAUST
-    }
-    fn description(&self) -> &'static str {
-        "Splash"
-    }
-    fn layout(&self) -> Option<&dyn Layout> {
-        None
-    }
-    fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
-        None
     }
 }

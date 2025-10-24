@@ -1,9 +1,11 @@
 use indoc::indoc;
+use macros::Screen;
 use ratatui::widgets::{Widget, WidgetRef};
 
 use crate::leafy;
-use crate::screens::layouts::Layout;
-use crate::screens::{layouts::plainfull::PlainFull, Screen};
+use crate::screens::layouts::{Layout, LayoutEnum};
+use crate::screens::{ScreenList, ScreenParagraph};
+use crate::screens::{layouts::plainfull::PlainFull, layouts::sidebyside::SideBySide, Screen};
 
 /// Font is 'Future':
 const TITLE: &'static str = indoc!{"
@@ -12,63 +14,35 @@ const TITLE: &'static str = indoc!{"
 ╹ ╹┗━╸┗━╸┗━╸┗━┛╹
 "};
 
-
-pub struct Myself<'a> {
-    layout: PlainFull<'a>,
-}
-
-impl<'a> Screen for Myself<'a> {
-    fn title(&self) -> &'static str {
-        TITLE
-    }
-    fn description(&self) -> &'static str {
-        "Hello!"
-    }
-    fn layout(&self) -> Option<&dyn Layout> {
-        Some(&self.layout)
-    }
-    fn layout_mut(&mut self) -> Option<&mut dyn Layout> {
-        Some(&mut self.layout)
-    }
-}
-
-impl<'a> WidgetRef for Myself<'a> {
-    fn render_ref(&self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer) {
-        self.layout.render(area, buf);
-    }
-}
-
-impl<'a> Default for Myself<'a> {
-    fn default() -> Self {
-        Myself {
-            layout: PlainFull::default()
-                .add_title(TITLE)
-                .add_paragraph(indoc! {
-                    "• My name is **Pierre**, nice to meet you all!"
-                }) 
-                .add_paragraph(indoc! {
-                    "• First time teaching... but **in your shoes**, *12 years ago* :)"
-                }) 
-                .add_paragraph(leafy! {
-                    "Now in *Inria/INSA* team ***Emeraude***, working as a *research engineer* in *Lyon*, alongside:"
-                }) 
-                .add_list(vec![
-                    "• **Romain Michon**",
-                    "• **Stéphane Letz**",
-                    "• Yann Orlarey",
-                ])
-                .add_paragraph(indoc! {
-                    "• What I'm working on: "
-                })
-                .add_list(vec![
-                    "• ***Syfala*** (*Faust-to-FPGA toolchain*)",
-                    "• ***FloPoCo*** (*generator of arithmetic cores*) for FPGA",
-                    "• ***Faust***"
-                ])
-                .add_paragraph(indoc! {
-                    "• **P.S**: I'm not really an expert in DSP :("
-                })
-                ,   
-        }
-    }
+#[derive(Screen, Default)]
+#[screen(title = TITLE)]
+#[screen(layout = LayoutEnum::Plainfull)]
+#[screen(description = "Hello!")]
+pub struct Myself {
+    // ------------------------------------------------------------------------
+    /// • My name is **Pierre**, nice to meet you all!
+    p0: ScreenParagraph,
+    // ------------------------------------------------------------------------    
+    /// • First time teaching... but **in your shoes**, *12 years ago* :)
+    p1: ScreenParagraph,
+    // ------------------------------------------------------------------------    
+    /// • Now in *Inria/INSA* team ***Emeraude***, working as 
+    /// a *research engineer* in *Lyon*, alongside:
+    p2: ScreenParagraph,
+    // ------------------------------------------------------------------------    
+    /// • **Romain Michon**"
+    /// • **Stéphane Letz**"
+    /// • Yann Orlarey"
+    l0: ScreenList,
+    // ------------------------------------------------------------------------    
+    /// • What I'm working on:
+    p3: ScreenParagraph,
+    // ------------------------------------------------------------------------    
+    /// • ***Syfala*** (*Faust-to-FPGA toolchain*)
+    /// • ***FloPoCo*** (*generator of arithmetic cores*) for FPGA
+    /// • ***Faust***    
+    l1: ScreenList,
+    // ------------------------------------------------------------------------    
+    /// • **P.S**: I'm not really an expert in DSP :(
+    p4: ScreenParagraph,
 }

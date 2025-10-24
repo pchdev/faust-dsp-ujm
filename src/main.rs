@@ -16,7 +16,6 @@ use ratatui_macros::{line, };
 use tachyonfx::{fx, EffectManager, Interpolation};
 
 use crate::{screens::{
-    // agenda::Agenda, 
     // digital::{Digital, Digital2}, 
     // faust::{
     //     basics::{FaustBasics, FaustBasics2},
@@ -26,10 +25,11 @@ use crate::{screens::{
     //     time::FaustTime
     // }, 
     layouts::Layout, 
-    // myself::Myself, 
     // signal::{Signal, Signal2}, 
-    // splash::Splash, 
-    sound::Sound,
+    splash::Splash, 
+    myself::Myself, 
+    agenda::Agenda, 
+    sound::{Sound, Sound2},
     Screen
 }, widgets::popup_menu::PopupMenu
 };
@@ -54,9 +54,13 @@ impl<'a> App<'a> {
     pub fn new() -> Self {
         let mut app = App::default();
         app.screens = vec![
-            Sound::build()
-            // Box::new(Splash::default()),
-            // Box::new(Myself::default()),
+            Splash::build(),
+            Myself::build(),
+            Agenda::build(),            
+            Sound::build(),
+            Sound2::build(),
+
+
             // Box::new(Agenda::default()),
             // Box::new(Sound::default()),
             // Box::new(Sound2::default()),

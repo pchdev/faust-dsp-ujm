@@ -3,11 +3,12 @@ use ratatui::{buffer::Buffer, layout::Rect, widgets::WidgetRef};
 use crate::{screens::layouts::Layout};
 
 pub mod layouts;
-// pub mod myself;
-// pub mod agenda;
+pub mod splash;
+pub mod myself;
+pub mod agenda;
 // pub mod signal;
 pub mod sound;
-// pub mod splash;
+
 // pub mod digital;
 // pub mod faust;
 
