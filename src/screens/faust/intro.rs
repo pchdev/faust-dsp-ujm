@@ -2,9 +2,8 @@ use macros::Screen;
 use indoc::indoc;
 
 use crate::{
-    leafy,
     screens::{
-        faust::example, layouts::{
+        layouts::{
             sidebyside::SideBySide, 
             plainfull::PlainFull,
             Layout, 

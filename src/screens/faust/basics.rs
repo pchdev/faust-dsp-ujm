@@ -24,7 +24,7 @@ const TITLE: &'static str = indoc!{"
 #[screen(title = TITLE)]
 #[screen(description = "Faust: basics")]
 #[screen(layout = LayoutEnum::SideBySide)]
-struct FaustBasics {
+pub struct FaustBasics {
     // ------------------------------------------------------------------------
     /// Basic program: ***import*** and ***process*** statements.
     #[faust(example!("basics/comments.dsp"))]
@@ -63,7 +63,7 @@ struct FaustBasics {
 #[screen(title = TITLE)]
 #[screen(description = "Faust: basics (2)")]
 #[screen(layout = LayoutEnum::SideBySide)]
-struct FaustBasics2 {
+pub struct FaustBasics2 {
     // ------------------------------------------------------------------------
     /// In Faust, *connecting DSP functions* can be done using the 
     /// ***sequential operator*** '**:**'.
