@@ -184,16 +184,18 @@ impl<'a> Default for Agenda<'a> {
                         item!(strikethrough!("• Faust playground!")), 
                     ])
                     .add_date(20, time!(14:30), time!(18:30), vec![
-                        item!(md!("• First steps with **Faust**!")),
-                        item!(md!("• **IDE** and programming **tools**/**environment**")),
-                        item!(md!("• **Library**, **documentation** and **examples**")),
-                        item!(md!("• **Simple DSP effects** (*ringmod*, *delay*)")),
-                        item!(md!("• **GUI** for **control** (*sliders*, *buttons*...)")),
-                        item!(md!("• **Simple synthesis**: *oscillators* and *waveforms*")),
+                        item!(strikethrough!("• First steps with **Faust**!")),
+                        item!(strikethrough!("• **IDE** and programming **tools**/**environment**")),
+                        item!(strikethrough!("• **Library**, **documentation** and **examples**")),
+                        item!(strikethrough!("• **Simple DSP effects** (*ringmod*, *delay*)")),
+                        item!(strikethrough!("• **GUI** for **control** (*sliders*, *buttons*...)")),
+                        item!(strikethrough!("• **Simple synthesis**: *oscillators* and *waveforms*")),
                         item!(md!("• **Handling time** in Faust"))
                     ]),
                 MonthSchedule::new(Month::November)
                     .add_date(10, time!(14:30), time!(18:30), vec![
+                        item!(md!("• Recap on ***functions***")),
+                        item!(md!("• **Handling time** in Faust")),
                         item!(md!("• **Playing/recording** from/to *buffers* & *sound files*")),
                         item!(md!("• **Filtering** & advanced effects")),
                         item!(md!("• Building a **simple synthesizer**")),
