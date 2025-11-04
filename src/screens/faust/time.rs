@@ -65,13 +65,13 @@ pub struct FaustPhasor {
     #[faust(example!("time/phasor.dsp"))]
     phasor: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------
-    /// Notice anything? A *ramp* is very much like a 
+    /// • Notice anything? A *ramp* is very much like a 
     /// *sawtooth oscillator*, only with a different range 
     /// (0 to 1 instead of -1 to 1).
     _f0: ScreenParagraph,
     // ------------------------------------------------------------------------
     #[faust(example!("time/waveforms.dsp"))]
-    /// With a *ramp* (or *phasor*), we can pretty much build ***all of 
-    /// the waveform oscillators***, with simple operations:
+    /// With a *ramp* (or *phasor*), we can pretty much already build ***all of 
+    /// the simple waveform oscillators***, with a few operations...
     waveforms: (ScreenParagraph, FaustWidget),    
 }
