@@ -21,7 +21,7 @@ use crate::{screens::{
         functions::{FaustFunctions, FaustSignalFunctions}, 
         intro::FaustIntro, 
         synthesis::FaustSynthesis, 
-        time::FaustTime
+        time::{FaustPhasor, FaustTime}
     }, 
     layouts::Layout, 
     myself::Myself, 
@@ -67,6 +67,7 @@ impl<'a> App<'a> {
             FaustSignalFunctions::build(),            
             FaustSynthesis::build(),
             FaustTime::build(),
+            FaustPhasor::build(),
         ];
         // Populate menu popup:
         app.menu.populate_from_string(
@@ -125,6 +126,9 @@ impl<'a> App<'a> {
                 // Quit app (Ctrl + w):
                 KeyCode::Char('w') => {
                     self.exit();
+                }
+                KeyCode::End => {
+                    self.index = self.screens.len()-1;
                 }
                 // Otherwise, dispatch to current screen:
                 _ => {

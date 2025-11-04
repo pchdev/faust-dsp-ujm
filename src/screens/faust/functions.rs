@@ -29,13 +29,13 @@ const TITLE: &'static str = indoc!{"
 pub struct FaustFunctions {
     // ------------------------------------------------------------------------
     /// • ***Functions*** in programming languages usually consist 
-    /// in pieces of code containing a series of instructions to execute. 
-    /// They can be  called once or multiple times, 
-    /// with or without variable parameters.
+    /// in pieces of code containing a ***series of instructions to execute***. 
+    /// They can be called *once or multiple times*, 
+    /// *with or without variable parameters*, and can *return values*. 
     f0: ScreenParagraph,
     // ------------------------------------------------------------------------
     /// ***Function definitions*** in Faust have the syntax
-    ///  *function(parameter1, parameter2, ...) = expression;*",
+    ///  *function(parameter1, parameter2, ...) = expression;*".
     #[faust(example!("functions/f1.dsp"))]
     f1: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------

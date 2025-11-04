@@ -3,10 +3,12 @@ import("stdfaust.lib");
 SR = 48000;
 gui = vbargraph("value[style:numerical]", 0, SR);
 
-// Outputs the value '1' every second:
-counter1s = ((+(1) % SR) ~ _) == 0;
+// We make the '1' (increment) variable:
+counter(i, n) = ((_ + i) % n) ~ _;
 
-// We increment from the trigger:
-counterwf(trigger) = (+(trigger) % 4)~_;
+// Outputs the value '1' 
+// whenever the counter reaches 48000
+// (every second):
+count1s = counter(1, SR) == 0;
 
-process =  counterwf(counter1s) : gui;
+process = counter(count1s, 4) : gui;
