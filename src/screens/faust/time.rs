@@ -74,4 +74,10 @@ pub struct FaustPhasor {
     /// With a *ramp* (or *phasor*), we can pretty much already build ***all of 
     /// the simple waveform oscillators***, with a few operations...
     waveforms: (ScreenParagraph, FaustWidget),    
+        // ------------------------------------------------------------------------
+    #[faust(example!("time/soundfile.dsp"))]
+    /// To playback a ***sound file***, we also typically use a phasor 
+    /// as a *read cursor*. 
+    sfile: (ScreenParagraph, FaustWidget),    
+
 }
