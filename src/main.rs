@@ -20,8 +20,8 @@ use crate::{screens::{
         basics::{FaustBasics, FaustBasics2}, 
         functions::{FaustFunctions, FaustSignalFunctions}, 
         intro::FaustIntro, 
-        synthesis::FaustSynthesis, 
-        time::{FaustPhasor, FaustTime}
+        synthesis::{FaustSynthesis, FaustSynthesisAdditive}, 
+        time::{FaustDelays, FaustPhasor, FaustTime}
     }, 
     layouts::Layout, 
     myself::Myself, 
@@ -68,6 +68,8 @@ impl<'a> App<'a> {
             FaustSynthesis::build(),
             FaustTime::build(),
             FaustPhasor::build(),
+            FaustDelays::build(),            
+            FaustSynthesisAdditive::build(),                        
         ];
         // Populate menu popup:
         app.menu.populate_from_string(

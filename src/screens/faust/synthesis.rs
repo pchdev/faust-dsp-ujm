@@ -54,3 +54,27 @@ pub struct FaustSynthesis {
     // ------------------------------------------------------------------------
 }
 
+#[derive(Screen, Default)]
+#[screen(title = TITLE)]
+#[screen(description = "Faust: additive synthesis")]
+#[screen(layout = LayoutEnum::SideBySide)]
+pub struct FaustSynthesisAdditive {
+    // ------------------------------------------------------------------------
+    /// Waveform or Wavetable synthesis is not the only method that we can use
+    /// in order to create sound. We can also use ***additive synthesis***,
+    /// which is the superposition of oscillators running at different frequencies.
+    /// One really fast way to do this in Faust is to use the ***par*** operator,
+    /// which puts signal expressions ***in parallel*** dynamically.
+    #[faust(example!("synthesis/additive.dsp"))]
+    switch_waveform: (ScreenParagraph, FaustWidget),
+    // ------------------------------------------------------------------------    
+}
+
+#[derive(Screen, Default)]
+#[screen(title = TITLE)]
+#[screen(description = "Faust: subtractive synthesis")]
+#[screen(layout = LayoutEnum::SideBySide)]
+pub struct FaustSynthesisSubtractive {
+
+}
+
