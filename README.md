@@ -35,6 +35,9 @@ cargo run --release
 - **Faust Manual**: [https://faustdoc.grame.fr/manual/introduction/](https://faustdoc.grame.fr/manual/introduction/)
 - **Faust Syntax Documentation**: [https://faustdoc.grame.fr/manual/syntax/#faust-syntax](https://faustdoc.grame.fr/manual/syntax/#faust-syntax)
 - **Faust Libraries Documentation**: [https://faustlibraries.grame.fr/libs/](https://faustlibraries.grame.fr/libs/)
+- **Faust Discord**: [https://discord.gg/qPPcXzJdmR](https://discord.gg/qPPcXzJdmR)
+- **Faustgen downloads**: [https://github.com/grame-cncm/faust/releases/tag/2.81.10](https://github.com/grame-cncm/faust/releases/tag/2.81.10) 
+  - *Note*: faustgen binaries are listed in **Assets** sections, choose the file to download ***depending on your OS*** (*Windows*, *macOS*) & architecture (*win64*, *macOS x64* (old machines), *macOS arm64* (newer mac laptops)). 
 
 
 
