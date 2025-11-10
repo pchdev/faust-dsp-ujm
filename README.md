@@ -22,7 +22,8 @@ cargo run --release
 - `Up/Down` arrows for navigating the slide paragraphs;
 - `Enter` on a paragraph to see the animation (if there's one);
 - `Ctrl+Shift+Left or Right`: switch between left-side and right-side windows;
-- `Ctrl+q`: quit the presentation.
+- `Ctrl+Shift+Up or Down`: toggle fullscreen for right-side panels (animations/faust code);
+- `Ctrl+w`: quit the presentation.
 
 # Resources
 
