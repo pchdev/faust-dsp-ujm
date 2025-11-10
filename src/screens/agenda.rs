@@ -196,9 +196,9 @@ impl<'a> Default for Agenda<'a> {
                     .add_date(10, time!(14:30), time!(18:30), vec![
                         item!(md!("• Recap on ***functions***")),
                         item!(md!("• **Handling time** in Faust")),
+                        item!(md!("• Different types of ***synthesis***")),
                         item!(md!("• **Playing/recording** from/to *buffers* & *sound files*")),
                         item!(md!("• **Filtering** & advanced effects")),
-                        item!(md!("• Building a **simple synthesizer**")),
                         item!(md!("• **Personal projects**"))
                     ])
                     .add_date(17, time!(14:30), time!(18:30), vec![

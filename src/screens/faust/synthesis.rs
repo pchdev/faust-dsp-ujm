@@ -43,7 +43,7 @@ pub struct FaustSynthesis {
     #[faust(example!("synthesis/functions-gui.dsp"))]
     functions_gui: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------
-    /// Finally, the ***select*** primitive (an equivalent to ***switch*** in Max), allow to \
+    /// Finally, the ***select*** primitive (an equivalent to ***switch*** in Max), allow to
     /// select an input from a list. It can be used in this case to *switch between **waveforms***
     #[faust(example!("synthesis/select.dsp"))]
     select: (ScreenParagraph, FaustWidget),
@@ -56,7 +56,7 @@ pub struct FaustSynthesis {
 
 #[derive(Screen, Default)]
 #[screen(title = TITLE)]
-#[screen(description = "Faust: additive synthesis")]
+#[screen(description = "Faust: types of synthesis")]
 #[screen(layout = LayoutEnum::SideBySide)]
 pub struct FaustSynthesisAdditive {
     // ------------------------------------------------------------------------
@@ -68,13 +68,23 @@ pub struct FaustSynthesisAdditive {
     #[faust(example!("synthesis/additive.dsp"))]
     switch_waveform: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------    
-}
-
-#[derive(Screen, Default)]
-#[screen(title = TITLE)]
-#[screen(description = "Faust: subtractive synthesis")]
-#[screen(layout = LayoutEnum::SideBySide)]
-pub struct FaustSynthesisSubtractive {
+    /// In most synthesizers, additive synthesis is done by mixing a few 
+    /// oscillators together, with selectable waveforms. 
+    #[faust(example!("synthesis/additive-classic.dsp"))]
+    additive_classic: (ScreenParagraph, FaustWidget),
+    // ------------------------------------------------------------------------ 
+    /// 
+    #[faust(example!("synthesis/subtractive.dsp"))]
+    subtractive: (ScreenParagraph, FaustWidget),
+    // ------------------------------------------------------------------------ 
+    /// 
+    #[faust(example!("synthesis/fm.dsp"))]
+    fm: (ScreenParagraph, FaustWidget),
+    // ------------------------------------------------------------------------ 
+    /// 
+    #[faust(example!("synthesis/pm.dsp"))]
+    pm: (ScreenParagraph, FaustWidget),
+    // ------------------------------------------------------------------------ 
 
 }
 

@@ -10,5 +10,5 @@ my_constant_function = 440;
 oscillator = os.osci(440);
 
 // Here, we sum the values of the two 'os.osci'
-// functions sample-by-sample:
+// functions, sample-by-sample:
 mix = os.osci(440) + os.osci(880);
