@@ -31,60 +31,61 @@ pub struct FaustSynthesis {
     /// Faust has a in its libraries a good collection of '*basic*' **oscillators**, with different
     /// ***waveforms***: *sine*, *triangle*, *sawtooth*, *square*, *etc.* 
     #[faust(example!("synthesis/oscillators.dsp"))]
-    oscillators: (ScreenParagraph, FaustWidget),
+    _oscillators: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------
     /// When a Faust program starts to be a little more complex, its always good practice to
     /// ***refactor code*** by using ***custom functions*** with variable **parameters**.
     #[faust(example!("synthesis/functions.dsp"))]
-    functions: (ScreenParagraph, FaustWidget),
+    _functions: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------
     /// In Faust, **functions** can take ***any element of the language 
     /// as parameters***, including **GUI elements**.
     #[faust(example!("synthesis/functions-gui.dsp"))]
-    functions_gui: (ScreenParagraph, FaustWidget),
+    _functions_gui: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------
     /// Finally, the ***select*** primitive (an equivalent to ***switch*** in Max), allow to
     /// select an input from a list. It can be used in this case to *switch between **waveforms***
     #[faust(example!("synthesis/select.dsp"))]
-    select: (ScreenParagraph, FaustWidget),
+    _select: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------
     /// Our goal now will be to ***apply this to our previous synthesizer.***
     #[faust(example!("synthesis/switch-waveform.dsp"))]
-    switch_waveform: (ScreenParagraph, FaustWidget),
+    _switch_waveform: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------
 }
 
 #[derive(Screen, Default)]
 #[screen(title = TITLE)]
-#[screen(description = "Faust: types of synthesis")]
+#[screen(description = "Faust: advanced synthesis")]
 #[screen(layout = LayoutEnum::SideBySide)]
 pub struct FaustSynthesisAdditive {
     // ------------------------------------------------------------------------
-    /// Waveform or Wavetable synthesis is not the only method that we can use
+    /// *Waveform or Wavetable synthesis* is not the only method that we can use
     /// in order to create sound. We can also use ***additive synthesis***,
     /// which is the superposition of oscillators running at different frequencies.
     /// One really fast way to do this in Faust is to use the ***par*** operator,
     /// which puts signal expressions ***in parallel*** dynamically.
     #[faust(example!("synthesis/additive.dsp"))]
-    switch_waveform: (ScreenParagraph, FaustWidget),
+    _additive: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------    
-    /// In most synthesizers, additive synthesis is done by mixing a few 
-    /// oscillators together, with selectable waveforms. 
+    /// In most synthesizers, additive synthesis is done by ***mixing a few 
+    /// oscillators together***, with *selectable waveforms*. 
     #[faust(example!("synthesis/additive-classic.dsp"))]
-    additive_classic: (ScreenParagraph, FaustWidget),
+    _additive_classic: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------ 
-    /// 
+    /// Usually, a multimode filter is applied afterwards, to remove
+    /// unwanted frequencies (***subtractive synthesis***).
     #[faust(example!("synthesis/subtractive.dsp"))]
-    subtractive: (ScreenParagraph, FaustWidget),
+    _subtractive: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------ 
-    /// 
+    /// **Frequency-modulation** (***FM***) **synthesis** is another well-known
+    ///  synthesis method.
     #[faust(example!("synthesis/fm.dsp"))]
-    fm: (ScreenParagraph, FaustWidget),
+    _fm: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------ 
-    /// 
+    /// **Physical model** synthesis 
     #[faust(example!("synthesis/pm.dsp"))]
-    pm: (ScreenParagraph, FaustWidget),
+    _pm: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------ 
-
 }
 

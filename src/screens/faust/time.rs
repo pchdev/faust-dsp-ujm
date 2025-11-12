@@ -75,6 +75,20 @@ pub struct FaustPhasor {
     /// the simple waveform oscillators***, with a few operations...
     waveforms: (ScreenParagraph, FaustWidget),    
     // ------------------------------------------------------------------------
+}
+
+const DELAYS: &'static str = indoc!{"
+┏┓ ╻ ╻┏━╸┏━╸┏━╸┏━┓┏━┓   ┏┓     ╺┳┓┏━╸╻  ┏━┓╻ ╻┏━┓
+┣┻┓┃ ┃┣╸ ┣╸ ┣╸ ┣┳┛┗━┓   ┃╺╋╸    ┃┃┣╸ ┃  ┣━┫┗┳┛┗━┓
+┗━┛┗━┛╹  ╹  ┗━╸╹┗╸┗━┛   ┗━┛    ╺┻┛┗━╸┗━╸╹ ╹ ╹ ┗━┛
+"};
+
+#[derive(Screen, Default)]
+#[screen(title = DELAYS)]
+#[screen(description = "Faust: buffers & delays")]
+#[screen(layout = LayoutEnum::SideBySide)]
+pub struct FaustDelays {
+    // ------------------------------------------------------------------------
     #[faust(example!("time/tables.dsp"))]
     /// *Ramps* are often used as ***cursors*** to *read* or 
     /// *write samples* in a ***buffer***.
@@ -86,20 +100,6 @@ pub struct FaustPhasor {
     /// To playback a ***sound file***, we also typically use a phasor 
     /// as a *read cursor*. 
     sfile: (ScreenParagraph, FaustWidget),    
-
-}
-
-const DELAYS: &'static str = indoc!{"
-╺┳┓┏━╸╻  ┏━┓╻ ╻┏━┓
- ┃┃┣╸ ┃  ┣━┫┗┳┛┗━┓
-╺┻┛┗━╸┗━╸╹ ╹ ╹ ┗━┛
-"};
-
-#[derive(Screen, Default)]
-#[screen(title = DELAYS)]
-#[screen(description = "Faust: delays")]
-#[screen(layout = LayoutEnum::SideBySide)]
-pub struct FaustDelays {
     // ------------------------------------------------------------------------
     /// Delaying a signal in Faust can be done using the operator '**@**'.
     /// '***x @ n***' delays a signal 'x' by 'n' **samples**.

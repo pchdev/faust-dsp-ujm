@@ -190,19 +190,17 @@ impl<'a> Default for Agenda<'a> {
                         item!(strikethrough!("• **Simple DSP effects** (*ringmod*, *delay*)")),
                         item!(strikethrough!("• **GUI** for **control** (*sliders*, *buttons*...)")),
                         item!(strikethrough!("• **Simple synthesis**: *oscillators* and *waveforms*")),
-                        item!(md!("• **Handling time** in Faust"))
                     ]),
                 MonthSchedule::new(Month::November)
                     .add_date(10, time!(14:30), time!(18:30), vec![
-                        item!(md!("• Recap on ***functions***")),
-                        item!(md!("• **Handling time** in Faust")),
-                        item!(md!("• Different types of ***synthesis***")),
-                        item!(md!("• **Playing/recording** from/to *buffers* & *sound files*")),
-                        item!(md!("• **Filtering** & advanced effects")),
-                        item!(md!("• **Personal projects**"))
+                        item!(strikethrough!("• Recap on ***functions***")),
+                        item!(strikethrough!("• **Handling time** in Faust")),
                     ])
                     .add_date(17, time!(14:30), time!(18:30), vec![
-                        item!(md!("• **Personal projects** + *on-demand* info"))
+                        item!(md!("• **Playing/recording** from/to *buffers* & *sound files*")),
+                        item!(md!("• ***Delay lines*** and feedback")),
+                        item!(md!("• Other ***synthesis*** methods")),
+                        item!(md!("• **Personal projects**"))
                     ])
                     .add_date(26, time!(14:30), time!(16:30), vec![
                         item!(md!("• **Personal projects** + *on-demand* info"))
