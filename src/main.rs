@@ -17,11 +17,7 @@ use tachyonfx::{fx, EffectManager, Interpolation};
 
 use crate::{screens::{
     Screen, agenda::Agenda, digital::{Digital, Digital2}, faust::{
-        basics::{FaustBasics, FaustBasics2}, 
-        functions::{FaustFunctions, FaustSignalFunctions}, 
-        intro::FaustIntro, 
-        synthesis::{FaustSynthesis, FaustSynthesisAdvanced, FaustSynthesisAdvanced2}, 
-        time::{FaustDelays, FaustPhasor, FaustTime}
+        basics::{FaustBasics, FaustBasics2}, control::FaustControls, functions::{FaustFunctions, FaustSignalFunctions}, intro::FaustIntro, synthesis::{FaustSynthesis, FaustSynthesisAdvanced, FaustSynthesisAdvanced2}, time::{FaustDelays, FaustPhasor, FaustTime}
     }, 
     layouts::Layout, 
     myself::Myself, 
@@ -71,6 +67,7 @@ impl<'a> App<'a> {
             FaustDelays::build(),            
             FaustSynthesisAdvanced::build(),                        
             FaustSynthesisAdvanced2::build(),                        
+            FaustControls::build(),
         ];
         // Populate menu popup:
         app.menu.populate_from_string(

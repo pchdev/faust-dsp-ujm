@@ -35,4 +35,8 @@ pub struct FaustControls {
     /// OSC
     #[faust(example!("controls/osc.dsp"))]
     _osc: (ScreenParagraph, FaustWidget),    
+    // ------------------------------------------------------------------------
+    /// HTTP
+    #[faust(example!("controls/http.dsp"))]
+    _http: (ScreenParagraph, FaustWidget),    
 }
