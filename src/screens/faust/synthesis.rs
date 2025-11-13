@@ -56,9 +56,9 @@ pub struct FaustSynthesis {
 
 #[derive(Screen, Default)]
 #[screen(title = TITLE)]
-#[screen(description = "Faust: advanced synthesis")]
+#[screen(description = "Faust: advanced synthesis (1/2)")]
 #[screen(layout = LayoutEnum::SideBySide)]
-pub struct FaustSynthesisAdditive {
+pub struct FaustSynthesisAdvanced {
     // ------------------------------------------------------------------------
     /// *Waveform or Wavetable synthesis* is not the only method that we can use
     /// in order to create sound. We can also use ***additive synthesis***,
@@ -73,19 +73,41 @@ pub struct FaustSynthesisAdditive {
     #[faust(example!("synthesis/additive-classic.dsp"))]
     _additive_classic: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------ 
-    /// Usually, a multimode filter is applied afterwards, to remove
+    /// Usually, a ***multimode filter*** is applied afterwards, to remove
     /// unwanted frequencies (***subtractive synthesis***).
     #[faust(example!("synthesis/subtractive.dsp"))]
     _subtractive: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------ 
     /// **Frequency-modulation** (***FM***) **synthesis** is another well-known
-    ///  synthesis method.
+    ///  synthesis method, which implies *inter-modulated oscillator graphs*.
     #[faust(example!("synthesis/fm.dsp"))]
     _fm: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------ 
-    /// **Physical model** synthesis 
+}
+
+#[derive(Screen, Default)]
+#[screen(title = TITLE)]
+#[screen(description = "Faust: advanced synthesis (2/2)")]
+#[screen(layout = LayoutEnum::SideBySide)]
+pub struct FaustSynthesisAdvanced2 {
+    // ------------------------------------------------------------------------ 
+    /// ***Physical model synthesis*** consists in ***emulating the physical properties
+    /// of an instrument*** to reproduce its sound. Different methods exist in order
+    /// to achieve this: **modal synthesis**, **FDTD**, **digital waveguides**, *etc.* 
     #[faust(example!("synthesis/pm.dsp"))]
     _pm: (ScreenParagraph, FaustWidget),
+    // ------------------------------------------------------------------------ 
+    /// Faust has in its ***libraries*** a good collection of ***physically-modeled
+    /// instruments*** (*flutes*, *bells*, *guitars*, *voice*, *etc.*). 
+    #[faust(example!("synthesis/pm2.dsp"))]
+    _pm2: (ScreenParagraph, FaustWidget),
+    // ------------------------------------------------------------------------ --- 
+    /// ***Granular synthesis*** is a method which uses overlapping '***grains***' 
+    /// (short fragments of sound, around **1 to 100 milliseconds**)
+    /// from a ***buffer***, which are going to be played at *different speeds*, *phases*,
+    /// *volume* and *frequency*.
+    #[faust(example!("synthesis/granular.dsp"))]
+    _granular: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------ 
 }
 

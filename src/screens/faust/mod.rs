@@ -4,6 +4,7 @@ pub mod basics;
 pub mod functions;
 pub mod synthesis;
 pub mod time;
+pub mod control;
 
 macro_rules! example {
     ($path:literal) => {
