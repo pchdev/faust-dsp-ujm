@@ -1,5 +1,6 @@
 import("stdfaust.lib");
 
+// https://faustdoc.grame.fr/manual/midi/
 declare options "[midi:on]";
 
 // sliders

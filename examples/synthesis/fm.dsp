@@ -6,3 +6,6 @@ minimal_fm(f,m) = os.osci(
 );
 
 process = minimal_fm(440, 20);
+
+// But it's better to use the one in the library:
+process = sy.fm((440, 500, 800), (500, 400)) * 0.25 <: _,_;
