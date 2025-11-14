@@ -73,7 +73,7 @@ pub struct FaustSynthesisAdvanced {
     #[faust(example!("synthesis/additive-classic.dsp"))]
     _additive_classic: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------ 
-    /// Usually, a ***multimode filter*** is applied afterwards, to remove
+    /// Usually, ***filtering*** is applied afterwards, to remove
     /// unwanted frequencies (***subtractive synthesis***).
     #[faust(example!("synthesis/subtractive.dsp"))]
     _subtractive: (ScreenParagraph, FaustWidget),
@@ -97,8 +97,9 @@ pub struct FaustSynthesisAdvanced2 {
     #[faust(example!("synthesis/pm.dsp"))]
     _pm: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------ 
-    /// Faust has in its ***libraries*** a good collection of ***physically-modeled
-    /// instruments*** (*flutes*, *bells*, *guitars*, *voice*, *etc.*). 
+    /// Faust has in its ***libraries*** ('pm' prefix) a good collection 
+    /// of ***physically-modeled instruments***
+    /// (*flutes*, *bells*, *guitars*, *voice*, *etc.*). 
     #[faust(example!("synthesis/pm2.dsp"))]
     _pm2: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------ --- 

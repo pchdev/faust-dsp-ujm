@@ -28,11 +28,20 @@ const TITLE: &'static str = indoc!{"
 #[screen(layout = LayoutEnum::SideBySide)]
 pub struct FaustControls {
     // ------------------------------------------------------------------------
-    /// MIDI
+    /// ***GUI elements*** in Faust can be ordered and gathered into
+    /// horizontal/vertical or tab *layouts*, using '**groups**' or a special
+    /// **path syntax** in their names. 
+    #[faust(example!("controls/groups.dsp"))]
+    _groups: (ScreenParagraph, FaustWidget),
+    // ------------------------------------------------------------------------
+    /// ***MIDI support*** can be added to any Faust program, simply by adding 
+    /// **metadata** on the **GUI elements** that we want to control. 
     #[faust(example!("controls/midi.dsp"))]
     _midi: (ScreenParagraph, FaustWidget),
     // ------------------------------------------------------------------------
-    /// OSC
+    /// ***Open Sound Control*** (***OSC***) support follows the same *metadata* logic. 
+    /// ***OSC*** is a protocol for ***exchanging control data*** between *multimedia devices*,
+    /// such as *synthesizers*, *DAWs*, *audio programming languages*, etc.
     #[faust(example!("controls/osc.dsp"))]
     _osc: (ScreenParagraph, FaustWidget),    
     // ------------------------------------------------------------------------
