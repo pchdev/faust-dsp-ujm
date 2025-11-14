@@ -46,7 +46,7 @@ pub struct FaustControls {
     _osc: (ScreenParagraph, FaustWidget),    
     // ------------------------------------------------------------------------
     /// Finally ***HTTP control*** can be enabled in the same way, which allows
-    /// remote-control of a Faust program within a browser interface.
+    /// *remote-control of a Faust program* within a **browser interface**.
     #[faust(example!("controls/http.dsp"))]
     _http: (ScreenParagraph, FaustWidget),    
 }
