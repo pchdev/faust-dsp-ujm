@@ -1,7 +1,6 @@
 import("stdfaust.lib");
 
-// Simple sine oscillator at low frequency:
-osc = os.osci(110);
+osc = os.osci(440);
 
 // n: delay length (in samples)
 // f: feedback coeff. [0, 1]
@@ -18,15 +17,12 @@ env = button("play") : en.adsr(
 
 del_l = hslider("Delay (left)", 0.25, 0, 5, 0.1) : ba.sec2samp;
 del_r = hslider("Delay (right)", 0.5, 0, 5, 0.1) : ba.sec2samp;
-
 fbk_l = hslider("Feedback (left)", 0.5, 0, 0.9, 0.01);
 fbk_r = hslider("Feedback (right)", 0.5, 0, 0.9, 0.01);
-
 drywet = hslider("Dry/Wet [style:knob]", 0.5, 0, 1, 0.01);
 
 // Define our stereo delay:
-del(x) = 
-    x * (1-drywet) + dfb(del_l, fbk_l, x) * drywet, 
-    x * (1-drywet) + dfb(del_r, fbk_r, x) * drywet;
+del(x) = x * (1-drywet) + dfb(del_l, fbk_l, x) * drywet, 
+         x * (1-drywet) + dfb(del_r, fbk_r, x) * drywet;
 
 process = osc * env : del;

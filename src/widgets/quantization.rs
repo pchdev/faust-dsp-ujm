@@ -35,7 +35,7 @@ impl InteractiveWidget for Quantization {
             KeyCode::Enter => {
                 self.index += 1;
                 if self.index > 2 {
-                    self.index = 0;
+                   self.index = 0;
                 }
             }
             _ => ()
