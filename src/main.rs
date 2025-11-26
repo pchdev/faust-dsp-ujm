@@ -17,7 +17,16 @@ use tachyonfx::{fx, EffectManager, Interpolation};
 
 use crate::{screens::{
     Screen, agenda::Agenda, digital::{Digital, Digital2}, faust::{
-        basics::{FaustBasics, FaustBasics2}, control::FaustControls, functions::{FaustFunctions, FaustSignalFunctions}, intro::FaustIntro, synthesis::{FaustSynthesis, FaustSynthesisAdvanced, FaustSynthesisAdvanced2}, time::{FaustDelays, FaustPhasor, FaustTime}
+        basics::{FaustBasics, FaustBasics2}, 
+        control::FaustControls, 
+        functions::{FaustFunctions, FaustSignalFunctions}, 
+        intro::FaustIntro, 
+        synthesis::{
+            FaustSynthesis, 
+            FaustSynthesisAdvanced, 
+            FaustSynthesisAdvanced2
+        }, 
+        time::{FaustDelays, FaustPhasor, FaustTime}
     }, 
     layouts::Layout, 
     myself::Myself, 

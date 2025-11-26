@@ -1,9 +1,13 @@
 import("stdfaust.lib");
 
+declare author "Pierre Cochard"
+
 sine(f) = os.osci(f);
 triangle(f) = os.triangle(f);
 sawtooth(f) = os.sawtooth(f);
 square(f) = os.square(f);
+
+onoff = checkbox("on/off");
 
 switch_gui(n) = nentry(
     "waveform %n[style:menu{

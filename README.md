@@ -41,6 +41,32 @@ cargo run --release
   - *Note*: faustgen binaries are listed in **Assets** sections, choose the file to download ***depending on your OS*** (*Windows*, *macOS*) & architecture (*win64*, *macOS x64* (old machines), *macOS arm64* (newer mac laptops)). 
 
 
+# Evaluation rules
+
+- **Deadline Monday, January 12th 2026** (by **midnight**)
+- You can send me the code (*as a .zip file*) by e-mail: pierre.cochard@inria.fr
+- Code should **be documented**, and **have a description**
+- If you have any question, you can send me an e-mail: pierre.cochard@inria.fr
+- or contact me on the **Faust discord** (link above).
+
+## .zip file
+- .zip file should contain at least the Faust code in `.dsp` extension.
+- and all other relevant files / pieces of code (Max patchers, etc.)  
+- you can set your name and description above your Faust code, like so:
+
+```rust
+import("stdfaust.lib");
+declare author "Pierre Cochard";
+// Name of the project: Analog synthesizer
+// Description of the project: 
+// Emulation of the Prophet-3 synthesizer.
+// It should be exported as a VST instrument.
+// MIDI Notes should be sent from enclosed Max patch
+// etc.
+
+my_faust_code = ...;
+process = my_faust_code
+```
 
 ## License
 
