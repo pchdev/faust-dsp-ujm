@@ -152,7 +152,7 @@ pub fn derive_screen(input: TokenStream) -> TokenStream {
                                         "ScreenParagraph"  => {
                                             let lit = parse_field_doc_lines_as_paragraph(field);
                                             mthchain.push(quote! {
-                                                .add_paragraph(crate::leafy!(#lit))
+                                                .add_paragraph(tui_screens::leafy!(#lit))
                                             });
                                         }
                                         "ScreenList" => {

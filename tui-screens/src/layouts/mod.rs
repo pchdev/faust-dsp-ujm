@@ -1,4 +1,6 @@
-use crate::{screens::layouts::{plainfull::PlainFull, sidebyside::SideBySide}, widgets::InteractiveWidget};
+use crate::{
+    InteractiveWidget
+};
 
 pub mod content;
 pub mod plainfull;

@@ -1,0 +1,14 @@
+[workspace]
+members = ["tui-screens-macros"]
+
+[package]
+name = "tui-screens"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+crossterm = "0.28.1"
+ratatui = { version = "0.29.0", features = ["all-widgets", "macros", "unstable-rendered-line-info", "unstable-widget-ref", "widget-calendar"] }
+ratatui-macros = "0.6.0"
+tui-markdown = "0.3.5"
+tui-screens-macros = { path = "tui-screens-macros" }

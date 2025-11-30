@@ -1,14 +1,18 @@
 
 use indoc::indoc;
-use macros::Screen;
+
+use tui_screens_macros::Screen;
+use tui_screens::{
+    Screen, ScreenParagraph,
+    layouts::plainfull::PlainFull,
+    layouts::sidebyside::SideBySide,
+    layouts::Layout,
+    layouts::LayoutEnum
+};
 
 use crate::{
     screens::{
-        faust::{self, example},
-        layouts::{
-            plainfull::PlainFull, sidebyside::SideBySide, Layout, LayoutEnum
-        }, 
-        Screen, ScreenParagraph
+        faust::example,
     },
     widgets::{db::Decibels, faustblock::FaustWidget},  
 };

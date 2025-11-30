@@ -1,15 +1,16 @@
-use macros::Screen;
 use indoc::indoc;
+use tui_screens_macros::Screen;
+use tui_screens::{
+    layouts::{
+        sidebyside::SideBySide, 
+        plainfull::PlainFull,
+        Layout, 
+        LayoutEnum
+    }, 
+    Screen, ScreenParagraph, ScreenList
+};
 
 use crate::{
-    screens::{
-        layouts::{
-            sidebyside::SideBySide, 
-            plainfull::PlainFull,
-            Layout, 
-            LayoutEnum
-        }, Screen, ScreenList, ScreenParagraph
-    }, 
     widgets::faustblock::FaustWidget
 };
 

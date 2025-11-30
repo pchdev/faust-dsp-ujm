@@ -18,7 +18,8 @@ use ratatui::{
 };
 use ratatui_macros::vertical;
 
-use crate::widgets::{control::block::ControlBlock, InteractiveWidget};
+use tui_screens::InteractiveWidget;
+use crate::widgets::{control::block::ControlBlock};
 
 const RESOLUTION: usize = 400usize;
 

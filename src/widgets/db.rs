@@ -1,7 +1,12 @@
-use ratatui::{buffer::Buffer, layout::Rect, style::Style, widgets::{Block, Row, Table, WidgetRef}};
-use ratatui_macros::constraints;
+use ratatui::{
+    buffer::Buffer, 
+    layout::Rect, 
+    style::Style, 
+    widgets::{Block, Row, Table, WidgetRef}
+};
 
-use crate::widgets::InteractiveWidget;
+use ratatui_macros::constraints;
+use tui_screens::InteractiveWidget;
 
 #[derive(Debug, Default)]
 pub struct Decibels;

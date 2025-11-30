@@ -1,11 +1,14 @@
 use indoc::indoc;
-use macros::Screen;
-use ratatui::widgets::{Widget, WidgetRef};
-
-use crate::leafy;
-use crate::screens::layouts::{Layout, LayoutEnum};
-use crate::screens::{ScreenList, ScreenParagraph};
-use crate::screens::{layouts::plainfull::PlainFull, layouts::sidebyside::SideBySide, Screen};
+use tui_screens_macros::Screen;
+use tui_screens::{
+    layouts::{
+        sidebyside::SideBySide, 
+        plainfull::PlainFull,
+        Layout, 
+        LayoutEnum
+    }, 
+    Screen, ScreenParagraph, ScreenList
+};
 
 /// Font is 'Future':
 const TITLE: &'static str = indoc!{"

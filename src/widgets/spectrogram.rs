@@ -2,7 +2,7 @@ use ratatui::prelude::*;
 use ratatui::widgets::canvas::{Canvas, Line};
 use ratatui::widgets::WidgetRef;
 
-use crate::widgets::InteractiveWidget;
+use tui_screens::InteractiveWidget;
 
 #[derive(Default, Debug)]
 pub struct SpectrumCanvas;

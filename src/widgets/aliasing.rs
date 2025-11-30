@@ -1,4 +1,5 @@
 use crossterm::event::KeyCode;
+use tui_screens::InteractiveWidget;
 
 use ratatui::{
     layout::Rect, 
@@ -10,8 +11,6 @@ use ratatui::{
         WidgetRef
     }
 };
-
-use crate::widgets::InteractiveWidget;
 
 pub struct Aliasing {
     pub signal_freq: f64,   // cycles across the canvas width

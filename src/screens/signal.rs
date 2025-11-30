@@ -1,15 +1,16 @@
 use indoc::indoc;
-use macros::Screen;
+use tui_screens_macros::Screen;
+use tui_screens::{
+    layouts::{
+        sidebyside::SideBySide, 
+        plainfull::PlainFull,
+        Layout, 
+        LayoutEnum
+    }, 
+    Screen, ScreenParagraph
+};
 
 use crate::{
-    screens::{
-        layouts::{
-            plainfull::PlainFull, 
-            sidebyside::SideBySide, 
-            Layout, LayoutEnum
-        }, 
-        Screen, ScreenParagraph
-    },
     widgets::{
         spectrogram::SpectrumCanvas, 
         waveform::Waveform

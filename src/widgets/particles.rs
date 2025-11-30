@@ -16,7 +16,8 @@ use ratatui::{
     }
 };
 
-use crate::widgets::{control::block::ControlBlock, InteractiveWidget};
+use tui_screens::InteractiveWidget;
+use crate::widgets::control::block::ControlBlock;
 
 #[derive(Debug)]
 pub struct Particles {

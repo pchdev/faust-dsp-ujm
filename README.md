@@ -40,7 +40,6 @@ cargo run --release
 - **Faustgen downloads**: [https://github.com/grame-cncm/faust/releases/tag/2.81.10](https://github.com/grame-cncm/faust/releases/tag/2.81.10) 
   - *Note*: faustgen binaries are listed in **Assets** sections, choose the file to download ***depending on your OS*** (*Windows*, *macOS*) & architecture (*win64*, *macOS x64* (old machines), *macOS arm64* (newer mac laptops)). 
 
-
 # Evaluation rules
 
 - **Deadline Monday, January 12th 2026** (by **midnight**)

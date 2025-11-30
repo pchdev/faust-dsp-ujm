@@ -9,10 +9,11 @@ use ratatui::{
     }
 };
 use ratatui_macros::{horizontal, vertical, line};
-
 use indoc::indoc;
+use tui_screens::{
+    Screen, ScreenHandle, layouts::Layout
+};
 
-use crate::screens::{Layout, Screen};
 
 /// Got from: https://patorjk.com/software/taag/
 /// Font is 'ANSI Shadow'
@@ -37,7 +38,7 @@ impl Screen for Splash {
     fn description(&self) -> &'static str {
         "Splash"
     }
-    fn build() -> (Box<dyn Screen>, Option<Box<dyn Layout>>) where Self: Sized {
+    fn build() -> ScreenHandle where Self: Sized {
         (Box::new(Splash::default()), None)
     }
     fn render(&self, 

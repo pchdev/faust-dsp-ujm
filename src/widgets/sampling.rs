@@ -8,7 +8,7 @@ use ratatui::{
     }
 };
 
-use crate::widgets::InteractiveWidget;
+use tui_screens::InteractiveWidget;
 
 pub struct SamplingIllustration {
     pub signal_freq: f64,   // cycles across the canvas width
@@ -26,9 +26,7 @@ impl Default for SamplingIllustration {
     }
 }
 
-impl InteractiveWidget for SamplingIllustration {
-
-}
+impl InteractiveWidget for SamplingIllustration {}
 
 impl WidgetRef for SamplingIllustration {
     fn render_ref(&self, area: Rect, buf: &mut ratatui::buffer::Buffer) {

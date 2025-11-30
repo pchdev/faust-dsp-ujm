@@ -8,7 +8,8 @@ use ratatui::{
     widgets::{Block, BorderType, Gauge, WidgetRef}
 };
 
-use crate::widgets::{control::ControlWidget, InteractiveWidget};
+use tui_screens::InteractiveWidget;
+use crate::widgets::control::ControlWidget;
 
 #[derive(Debug, Default)]
 pub struct Slider {

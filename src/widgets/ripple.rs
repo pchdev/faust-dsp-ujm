@@ -19,9 +19,11 @@ use ratatui::{
 
 use ratatui_macros::vertical;
 use crate::widgets::{
-    control::block::ControlBlock, 
-    InteractiveWidget
+    control::block::ControlBlock
 };
+
+use tui_screens::InteractiveWidget;
+
 // DFDDC8
 #[derive(Debug)]
 pub struct Ripple {

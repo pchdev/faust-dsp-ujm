@@ -12,7 +12,8 @@ use ratatui::{
 };
 use ratatui_macros::vertical;
 
-use crate::widgets::{control::ControlWidget, InteractiveWidget};
+use tui_screens::InteractiveWidget;
+use crate::widgets::control::ControlWidget;
 
 #[derive(Debug, Default)]
 pub struct Button {

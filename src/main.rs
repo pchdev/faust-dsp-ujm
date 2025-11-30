@@ -1,5 +1,6 @@
 mod screens;
 mod widgets;
+mod audio;
 
 use std::{io, time::{Duration, Instant}};
 use crossterm::event::{
@@ -12,11 +13,14 @@ use ratatui::{
     widgets::{Block, WidgetRef}, 
     DefaultTerminal, Frame
 };
+
 use ratatui_macros::{line, };
 use tachyonfx::{fx, EffectManager, Interpolation};
 
+use tui_screens::{Screen, ScreenHandle};
+
 use crate::{screens::{
-    Screen, agenda::Agenda, digital::{Digital, Digital2}, faust::{
+    agenda::Agenda, digital::{Digital, Digital2}, faust::{
         basics::{FaustBasics, FaustBasics2}, 
         control::FaustControls, 
         functions::{FaustFunctions, FaustSignalFunctions}, 
@@ -28,7 +32,6 @@ use crate::{screens::{
         }, 
         time::{FaustDelays, FaustPhasor, FaustTime}
     }, 
-    layouts::Layout, 
     myself::Myself, 
     signal::{Signal, Signal2}, 
     sound::{Sound, Sound2}, 
@@ -46,7 +49,7 @@ fn main() -> io::Result<()> {
 #[derive(Default)]
 pub struct App<'a> {
       index: usize,
-    screens: Vec<(Box<dyn Screen>, Option<Box<dyn Layout>>)>,
+    screens: Vec<ScreenHandle>,
        menu: PopupMenu<'a>,
          fx: EffectManager<()>,
        exit: bool,

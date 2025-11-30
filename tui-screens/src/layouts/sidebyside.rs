@@ -17,16 +17,14 @@ use ratatui::{
 use ratatui_macros::horizontal;
 
 use crate::{
-    screens::{
-        layouts::{
-            content::{
-                Content, 
-                ContentArea
-            }, 
-            Layout
-        },
-    }, 
-    widgets::InteractiveWidget
+    layouts::{
+        content::{
+            Content, 
+            ContentArea
+        }, 
+        Layout
+    },
+    InteractiveWidget
 };
 
 #[derive(Default, PartialEq)]

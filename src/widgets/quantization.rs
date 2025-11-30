@@ -9,7 +9,7 @@ use ratatui::{
     }
 };
 
-use crate::widgets::InteractiveWidget;
+use tui_screens::InteractiveWidget;
 
 pub struct Quantization {
     pub signal_freq: f64,   // cycles across the canvas width

@@ -25,8 +25,13 @@ use indoc::indoc;
 use time::{macros::format_description, Date, Month, Time, UtcDateTime};
 use time::macros::time;
 use time::ext::NumericalDuration;
+use tui_screens::{
+    Screen, ScreenHandle, 
+    layouts::{
+        Layout, sidebyside::Focus, 
+    }
+};
 
-use crate::screens::{layouts::{sidebyside::Focus, Layout}, Screen};
 
 const TITLE: &'static str = indoc!{"
 ┏━┓┏━╸┏━╸┏┓╻╺┳┓┏━┓
@@ -219,7 +224,7 @@ impl<'a> Screen for Agenda<'a> {
     fn description(&self) -> &'static str {
         "Agenda"
     }
-    fn build() -> (Box<dyn Screen>, Option<Box<dyn Layout>>) where Self: Sized {
+    fn build() -> ScreenHandle where Self: Sized {
         (Box::new(Agenda::default()), None)
     }
 

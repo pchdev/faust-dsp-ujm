@@ -1,21 +1,19 @@
 use indoc::indoc;
-use macros::Screen;
-
-use crate::{
-    screens::{
-        layouts::{
-            plainfull::PlainFull, 
-            sidebyside::SideBySide, 
-            Layout, 
-            LayoutEnum
-        }, 
-        Screen, ScreenList, ScreenParagraph
-    },
-    widgets::{
-        aliasing::Aliasing, 
-        quantization::Quantization, 
-        sampling::SamplingIllustration
+use tui_screens_macros::Screen;
+use tui_screens::{
+    layouts::{
+        sidebyside::SideBySide, 
+        plainfull::PlainFull,
+        Layout, 
+        LayoutEnum
     }, 
+    Screen, ScreenParagraph, ScreenList
+};
+
+use crate::widgets::{
+    aliasing::Aliasing, 
+    quantization::Quantization, 
+    sampling::SamplingIllustration
 };
 
 /// Font is 'Future':
